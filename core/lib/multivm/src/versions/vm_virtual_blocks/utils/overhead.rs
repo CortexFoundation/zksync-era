@@ -191,9 +191,9 @@ pub(crate) fn get_amortized_overhead(
     // properly maintained, since the pubdata is not published. If decided to use the pubdata
     // overhead, it needs to be updated. ```
     // 3. ceil(O3 * overhead_for_block_gas) >= overhead_gas
-    // O3 = max_pubdata_in_tx / MAX_PUBDATA_PER_BLOCK = ceil(gas_limit / gas_per_pubdata_byte_limit) / MAX_PUBDATA_PER_BLOCK
-    // >= (gas_limit / (gas_per_pubdata_byte_limit * MAX_PUBDATA_PER_BLOCK).
-    // ```
+    // O3 = max_pubdata_in_tx / MAX_PUBDATA_PER_BLOCK = ceil(gas_limit / gas_per_pubdata_byte_limit)
+    // / MAX_PUBDATA_PER_BLOCK >= (gas_limit / (gas_per_pubdata_byte_limit *
+    // MAX_PUBDATA_PER_BLOCK). ```
     // Throwing off the `ceil`, while may provide marginally lower
     // overhead to the operator, provides substantially easier formula to work with.
     //

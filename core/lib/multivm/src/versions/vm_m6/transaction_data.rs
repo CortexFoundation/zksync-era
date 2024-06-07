@@ -424,9 +424,9 @@ pub fn get_amortized_overhead(
     // properly maintained, since the pubdata is not published. If decided to use the pubdata
     // overhead, it needs to be updated. ```
     // 3. ceil(O3 * overhead_for_block_gas) >= overhead_gas
-    // O3 = max_pubdata_in_tx / MAX_PUBDATA_PER_BLOCK = ceil(gas_limit / gas_per_pubdata_byte_limit) / MAX_PUBDATA_PER_BLOCK
-    // >= (gas_limit / (gas_per_pubdata_byte_limit * MAX_PUBDATA_PER_BLOCK).
-    // ```
+    // O3 = max_pubdata_in_tx / MAX_PUBDATA_PER_BLOCK = ceil(gas_limit / gas_per_pubdata_byte_limit)
+    // / MAX_PUBDATA_PER_BLOCK >= (gas_limit / (gas_per_pubdata_byte_limit *
+    // MAX_PUBDATA_PER_BLOCK). ```
     // Throwing off the `ceil`, while may provide marginally lower
     // overhead to the operator, provides substantially easier formula to work with.
     //
@@ -438,16 +438,17 @@ pub fn get_amortized_overhead(
     // OB * (TL - OE) > (OE - 1) * EP * MP
     // OB * TL + EP * MP > OE * EP * MP + OE * OB
     // (OB * TL + EP * MP) / (EP * MP + OB) > OE
-    // OE = floor((OB * TL + EP * MP) / (EP * MP + OB)) with possible -1 if the division is without remainder
-    // let overhead_for_pubdata = {
+    // OE = floor((OB * TL + EP * MP) / (EP * MP + OB)) with possible -1 if the division is without
+    // remainder let overhead_for_pubdata = {
     //     let numerator: U256 = overhead_for_block_gas * total_gas_limit
     //         + gas_per_pubdata_byte_limit * U256::from(MAX_PUBDATA_PER_BLOCK);
     //     let denominator =
-    //         gas_per_pubdata_byte_limit * U256::from(MAX_PUBDATA_PER_BLOCK) + overhead_for_block_gas;
+    //         gas_per_pubdata_byte_limit * U256::from(MAX_PUBDATA_PER_BLOCK) +
+    // overhead_for_block_gas;
     //
     //     // Corner case: if `total_gas_limit` = `gas_per_pubdata_byte_limit` = 0
-    //     // then the numerator will be 0 and subtracting 1 will cause a panic, so we just return a zero.
-    //     if numerator.is_zero() {
+    //     // then the numerator will be 0 and subtracting 1 will cause a panic, so we just return a
+    // zero.     if numerator.is_zero() {
     //         0.into()
     //     } else {
     //         (numerator - 1) / denominator
@@ -461,8 +462,8 @@ pub fn get_amortized_overhead(
     // OB * (TL - OE) / MAX_TX_ERGS_LIMIT > (OE/K) - 1
     // OB * (TL - OE) > (OE/K) * MAX_TX_ERGS_LIMIT - MAX_TX_ERGS_LIMIT
     // OB * TL + MAX_TX_ERGS_LIMIT > OE * ( MAX_TX_ERGS_LIMIT/K + OB)
-    // OE = floor(OB * TL + MAX_TX_ERGS_LIMIT / (MAX_TX_ERGS_LIMIT/K + OB)), with possible -1 if the division is without remainder
-    // ```
+    // OE = floor(OB * TL + MAX_TX_ERGS_LIMIT / (MAX_TX_ERGS_LIMIT/K + OB)), with possible -1 if the
+    // division is without remainder ```
     let overhead_for_gas = {
         let numerator = overhead_for_block_gas * total_gas_limit + U256::from(MAX_TX_ERGS_LIMIT);
         let denominator: U256 = U256::from(
