@@ -67,16 +67,18 @@ where
     }
 
     /// Sets the timeout for commit operation.
-    /// With this value set, `SyncTransactionHandle::wait_for_commit` will return a `ClientError::OperationTimeout`
-    /// error if block will not be committed within provided time range.
+    /// With this value set, `SyncTransactionHandle::wait_for_commit` will return a
+    /// `ClientError::OperationTimeout` error if block will not be committed within provided
+    /// time range.
     pub fn commit_timeout(mut self, commit_timeout: Duration) -> Self {
         self.commit_timeout = Some(commit_timeout);
         self
     }
 
     /// Sets the timeout for finalize operation.
-    /// With this value set, `SyncTransactionHandle::wait_for_finalize` will return a `ClientError::OperationTimeout`
-    /// error if block will not be finalized within provided time range.
+    /// With this value set, `SyncTransactionHandle::wait_for_finalize` will return a
+    /// `ClientError::OperationTimeout` error if block will not be finalized within provided
+    /// time range.
     pub fn finalize_timeout(mut self, verify_timeout: Duration) -> Self {
         self.finalize_timeout = Some(verify_timeout);
         self

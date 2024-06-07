@@ -16,7 +16,8 @@ use crate::{
 /// Spawned task collects all the health checks added by different tasks to the
 /// corresponding resource collection and spawns an HTTP server exposing them.
 ///
-/// This layer expects other tasks to add health checks to the `ResourceCollection<HealthCheckResource>`.
+/// This layer expects other tasks to add health checks to the
+/// `ResourceCollection<HealthCheckResource>`.
 ///
 /// ## Effects
 ///
@@ -39,7 +40,8 @@ impl WiringLayer for HealthCheckLayer {
             app_health_check,
         };
 
-        // Healthcheck server only exposes the state provided by other tasks, and also it has to start as soon as possible.
+        // Healthcheck server only exposes the state provided by other tasks, and also it has to
+        // start as soon as possible.
         node.add_unconstrained_task(Box::new(task));
         Ok(())
     }

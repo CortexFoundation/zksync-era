@@ -41,8 +41,8 @@ impl Debug for SystemEnv {
 ///
 /// If `EthCall` mode is chosen, the bootloader will use `mimicCall` opcode
 /// to simulate the call instead of using the standard `execute` method of account.
-/// This is needed to be able to behave equivalently to Ethereum without much overhead for custom account builders.
-/// With `VerifyExecute` mode, transaction will be executed normally.
+/// This is needed to be able to behave equivalently to Ethereum without much overhead for custom
+/// account builders. With `VerifyExecute` mode, transaction will be executed normally.
 /// With `EstimateFee`, the bootloader will be used that has the same behavior
 /// as the full `VerifyExecute` block, but errors in the account validation will be ignored.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]

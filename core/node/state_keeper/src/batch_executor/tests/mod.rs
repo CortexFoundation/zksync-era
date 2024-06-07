@@ -88,7 +88,8 @@ const EXECUTE_L2_TX_AFTER_SNAPSHOT_RECOVERY_CASES: test_casing::Product<(
 )> = Product((SnapshotRecoveryMutation::ALL, StorageType::ALL));
 
 /// Tests that we can continue executing account transactions after emulating snapshot recovery.
-/// Test cases with a set `mutation` ensure that the VM executor correctly detects missing data (e.g., dropped account nonce).
+/// Test cases with a set `mutation` ensure that the VM executor correctly detects missing data
+/// (e.g., dropped account nonce).
 #[test_casing(9, EXECUTE_L2_TX_AFTER_SNAPSHOT_RECOVERY_CASES)]
 #[tokio::test]
 async fn execute_l2_tx_after_snapshot_recovery(
@@ -324,7 +325,8 @@ async fn execute_reverted_tx() {
         &executor
             .execute_tx(alice.loadnext_custom_writes_call(
                 tx.address, 1,
-                1_000_000, // We provide enough gas for tx to be executed, but not enough for the call to be successful.
+                1_000_000, /* We provide enough gas for tx to be executed, but not enough for the
+                           * call to be successful. */
             ))
             .await
             .unwrap(),
@@ -439,8 +441,8 @@ async fn bootloader_tip_out_of_gas() {
 
     let finished_batch = executor.finish_batch().await.unwrap();
 
-    // Just a bit below the gas used for the previous batch execution should be fine to execute the tx
-    // but not enough to execute the block tip.
+    // Just a bit below the gas used for the previous batch execution should be fine to execute the
+    // tx but not enough to execute the block tip.
     tester.set_config(TestConfig {
         save_call_traces: false,
         vm_gas_limit: Some(
@@ -472,7 +474,8 @@ async fn catchup_rocksdb_cache() {
     tester.genesis().await;
     tester.fund(&[alice.address(), bob.address()]).await;
 
-    // Execute a bunch of transactions to populate Postgres-based storage (note that RocksDB stays empty)
+    // Execute a bunch of transactions to populate Postgres-based storage (note that RocksDB stays
+    // empty)
     let mut executor = tester.create_batch_executor(StorageType::Postgres).await;
     for _ in 0..10 {
         let res = executor.execute_tx(alice.execute()).await.unwrap();

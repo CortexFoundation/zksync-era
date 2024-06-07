@@ -68,8 +68,9 @@ impl RocksdbStorage {
 
     /// # Important
     ///
-    /// `Self::L1_BATCH_NUMBER_KEY` must be set at the very end of the process. If it is set earlier, recovery is not fault-tolerant
-    /// (it would be considered complete even if it failed in the middle).
+    /// `Self::L1_BATCH_NUMBER_KEY` must be set at the very end of the process. If it is set
+    /// earlier, recovery is not fault-tolerant (it would be considered complete even if it
+    /// failed in the middle).
     async fn recover_from_snapshot(
         &mut self,
         storage: &mut Connection<'_, Core>,
@@ -99,7 +100,9 @@ impl RocksdbStorage {
 
             let chunk_id = key_chunk.id;
             let Some(chunk_start) = key_chunk.start_entry else {
-                tracing::info!("Chunk {chunk_id} (hashed key range {key_chunk:?}) doesn't have entries in Postgres; skipping");
+                tracing::info!(
+                    "Chunk {chunk_id} (hashed key range {key_chunk:?}) doesn't have entries in Postgres; skipping"
+                );
                 RECOVERY_METRICS.recovered_chunk_count.inc_by(1);
                 continue;
             };
@@ -118,7 +121,9 @@ impl RocksdbStorage {
                     );
                     return Err(err.into());
                 }
-                tracing::info!("Chunk {chunk_id} (hashed key range {key_chunk:?}) is already recovered; skipping");
+                tracing::info!(
+                    "Chunk {chunk_id} (hashed key range {key_chunk:?}) is already recovered; skipping"
+                );
             } else {
                 self.recover_logs_chunk(
                     storage,

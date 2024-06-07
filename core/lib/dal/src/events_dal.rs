@@ -181,7 +181,8 @@ impl EventsDal<'_, '_> {
         copy.send(buffer.as_bytes()).await
     }
 
-    /// Removes all L2-to-L1 logs with a L2 block number strictly greater than the specified `block_number`.
+    /// Removes all L2-to-L1 logs with a L2 block number strictly greater than the specified
+    /// `block_number`.
     pub async fn roll_back_l2_to_l1_logs(&mut self, block_number: L2BlockNumber) -> DalResult<()> {
         sqlx::query!(
             r#"

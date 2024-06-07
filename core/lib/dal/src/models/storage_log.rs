@@ -20,7 +20,8 @@ pub struct DbStorageLog {
     pub l2_block_number: L2BlockNumber,
 }
 
-// We don't want to rely on the Merkle tree crate to import a single type, so we duplicate `TreeEntry` here.
+// We don't want to rely on the Merkle tree crate to import a single type, so we duplicate
+// `TreeEntry` here.
 #[derive(Debug, Clone, Copy)]
 pub struct StorageRecoveryLogEntry {
     pub key: H256,

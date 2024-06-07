@@ -63,7 +63,8 @@ impl TxCache {
 
     async fn remove_tx(&self, tx_hash: H256) {
         self.inner.write().await.tx_cache.remove(&tx_hash);
-        // We intentionally don't change `nonces_by_account`; they should only be changed in response to new L2 blocks
+        // We intentionally don't change `nonces_by_account`; they should only be changed in
+        // response to new L2 blocks
     }
 
     async fn run_updates(
@@ -76,14 +77,17 @@ impl TxCache {
         tracing::info!(
             "Waiting for at least one L1 batch in Postgres to start TxCache::run_updates"
         );
-        // Starting the updater before L1 batches are present in Postgres can lead to some invariants the server logic
-        // implicitly assumes not being upheld. The only case when we'll actually wait here is immediately after snapshot recovery.
+        // Starting the updater before L1 batches are present in Postgres can lead to some
+        // invariants the server logic implicitly assumes not being upheld. The only case
+        // when we'll actually wait here is immediately after snapshot recovery.
         let earliest_l1_batch_number =
             wait_for_l1_batch(&pool, UPDATE_INTERVAL, &mut stop_receiver)
                 .await
                 .context("error while waiting for L1 batch in Postgres")?;
         if let Some(number) = earliest_l1_batch_number {
-            tracing::info!("Successfully waited for at least one L1 batch in Postgres; the earliest one is #{number}");
+            tracing::info!(
+                "Successfully waited for at least one L1 batch in Postgres; the earliest one is #{number}"
+            );
         } else {
             tracing::info!(
                 "Received shutdown signal before TxCache::run_updates is started; shutting down"
@@ -116,7 +120,8 @@ impl TxCache {
                     .unwrap_or(Nonce(0));
                 // Retain only nonces starting from the stored one.
                 *account_nonces = account_nonces.split_off(&stored_nonce);
-                // If we've removed all nonces, drop the account entry so we don't request stored nonces for it later.
+                // If we've removed all nonces, drop the account entry so we don't request stored
+                // nonces for it later.
                 !account_nonces.is_empty()
             });
             drop(inner);

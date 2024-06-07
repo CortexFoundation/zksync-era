@@ -111,10 +111,12 @@ fn prioritize_l1_txns() {
         gen_l1_tx(PriorityOpId(0)),
     ];
     mempool.insert(transactions, HashMap::new());
-    assert!(mempool
-        .next_transaction(&L2TxFilter::default())
-        .unwrap()
-        .is_l1())
+    assert!(
+        mempool
+            .next_transaction(&L2TxFilter::default())
+            .unwrap()
+            .is_l1()
+    )
 }
 
 #[test]
@@ -259,8 +261,8 @@ fn filtering() {
     let account0 = Address::random();
     let account1 = Address::random();
 
-    // First account will have two transactions: one with too low pubdata price and one with the right value.
-    // Second account will have just one transaction with the right value.
+    // First account will have two transactions: one with too low pubdata price and one with the
+    // right value. Second account will have just one transaction with the right value.
     mempool.insert(
         gen_transactions_for_filtering(vec![
             (account0, Nonce(0), unix_timestamp_ms(), 0),
@@ -270,8 +272,8 @@ fn filtering() {
         HashMap::new(),
     );
 
-    // First transaction from first account doesn't match the filter, so we should get the transaction
-    // from the second account.
+    // First transaction from first account doesn't match the filter, so we should get the
+    // transaction from the second account.
     assert_eq!(
         view(mempool.next_transaction(&filter_non_zero)),
         (account1, 0)

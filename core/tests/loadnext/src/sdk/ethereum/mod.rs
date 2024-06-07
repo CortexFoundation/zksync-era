@@ -65,8 +65,8 @@ pub struct EthereumProvider<S: EthereumSigner> {
     polling_interval: Duration,
 }
 
-// TODO (SMA-1623): create a way to pass `Options` (e.g. `nonce`, `gas_limit`, `priority_fee_per_gas`)
-// into methods that perform L1 transactions. The unit is wei.
+// TODO (SMA-1623): create a way to pass `Options` (e.g. `nonce`, `gas_limit`,
+// `priority_fee_per_gas`) into methods that perform L1 transactions. The unit is wei.
 pub const DEFAULT_PRIORITY_FEE: u64 = 2_000_000_000;
 
 impl<S: EthereumSigner> EthereumProvider<S> {
@@ -186,7 +186,8 @@ impl<S: EthereumSigner> EthereumProvider<S> {
         l1_token_address: Address,
         bridge: Option<Address>,
     ) -> Result<Address, ClientError> {
-        // TODO(EVM-571): This should be moved to the shared bridge, which does not have `l2_token_address` on L1. Use L2 contracts instead.
+        // TODO(EVM-571): This should be moved to the shared bridge, which does not have
+        // `l2_token_address` on L1. Use L2 contracts instead.
         let bridge = bridge.unwrap_or(self.default_bridges.l1_erc20_default_bridge.unwrap());
         CallFunctionArgs::new("l2TokenAddress", l1_token_address)
             .for_contract(bridge, &self.l1_erc20_bridge_abi)
@@ -439,7 +440,8 @@ impl<S: EthereumSigner> EthereumProvider<S> {
     }
 
     /// Performs a deposit in zkSync network.
-    /// For ERC20 tokens, a deposit must be approved beforehand via the `EthereumProvider::approve_erc20_token_deposits` method.
+    /// For ERC20 tokens, a deposit must be approved beforehand via the
+    /// `EthereumProvider::approve_erc20_token_deposits` method.
     #[allow(clippy::too_many_arguments)]
     pub async fn deposit(
         &self,
@@ -530,7 +532,8 @@ impl<S: EthereumSigner> EthereumProvider<S> {
             )
             .await?
         } else {
-            // TODO(EVM-571): This should be moved to the shared bridge, and the `requestL2Transaction` method
+            // TODO(EVM-571): This should be moved to the shared bridge, and the
+            // `requestL2Transaction` method
             let bridge_address =
                 bridge_address.unwrap_or(self.default_bridges.l1_erc20_default_bridge.unwrap());
             let contract_function = self

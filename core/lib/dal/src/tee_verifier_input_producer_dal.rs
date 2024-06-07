@@ -31,12 +31,15 @@ pub enum TeeVerifierInputProducerJobStatus {
     Queued,
     /// The job is not going to be processed. This state is designed for manual operations on DB.
     /// It is expected to be used if some jobs should be skipped like:
-    /// - testing purposes (want to check a specific L1 Batch, I can mark everything before it skipped)
+    /// - testing purposes (want to check a specific L1 Batch, I can mark everything before it
+    ///   skipped)
     /// - trim down costs on some environments (if I've done breaking changes,
-    /// makes no sense to wait for everything to be processed, I can just skip them and save resources)
+    /// makes no sense to wait for everything to be processed, I can just skip them and save
+    /// resources)
     ManuallySkipped,
     /// Currently being processed by one of the jobs. Transitory state, will transition to either
-    /// [`TeeVerifierInputProducerStatus::Successful`] or [`TeeVerifierInputProducerStatus::Failed`].
+    /// [`TeeVerifierInputProducerStatus::Successful`] or
+    /// [`TeeVerifierInputProducerStatus::Failed`].
     InProgress,
     /// The final (happy case) state we expect all jobs to end up. After the run is complete,
     /// the job uploaded it's inputs, it lands in successful.

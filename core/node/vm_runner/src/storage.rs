@@ -288,7 +288,8 @@ impl<Io: VmRunnerIo> StorageSyncTask<Io> {
             let rocksdb_builder = RocksdbStorageBuilder::from_rocksdb(rocksdb.clone());
             if rocksdb_builder.l1_batch_number().await == Some(latest_processed_batch + 1) {
                 // RocksDB is already caught up, we might not need to do anything.
-                // Just need to check that the memory diff is up-to-date in case this is a fresh start.
+                // Just need to check that the memory diff is up-to-date in case this is a fresh
+                // start.
                 let state = self.state.read().await;
                 if state
                     .storage

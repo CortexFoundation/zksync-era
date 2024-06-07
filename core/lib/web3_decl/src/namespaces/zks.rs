@@ -57,7 +57,7 @@ pub trait ZksNamespace {
 
     #[method(name = "getAllAccountBalances")]
     async fn get_all_account_balances(&self, address: Address)
-        -> RpcResult<HashMap<Address, U256>>;
+    -> RpcResult<HashMap<Address, U256>>;
 
     #[method(name = "getL2ToL1MsgProof")]
     async fn get_l2_to_l1_msg_proof(
@@ -98,7 +98,7 @@ pub trait ZksNamespace {
 
     #[method(name = "getL1BatchDetails")]
     async fn get_l1_batch_details(&self, batch: L1BatchNumber)
-        -> RpcResult<Option<L1BatchDetails>>;
+    -> RpcResult<Option<L1BatchDetails>>;
 
     #[method(name = "getBytecodeByHash")]
     async fn get_bytecode_by_hash(&self, hash: H256) -> RpcResult<Option<Vec<u8>>>;

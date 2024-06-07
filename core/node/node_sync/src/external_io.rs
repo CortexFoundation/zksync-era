@@ -160,7 +160,8 @@ impl StateKeeperIO for ExternalIO {
 
         if !pending_l2_block_header.has_protocol_version() {
             let pending_l2_block_number = pending_l2_block_header.number();
-            // Fetch protocol version ID for pending L2 blocks to know which VM to use to re-execute them.
+            // Fetch protocol version ID for pending L2 blocks to know which VM to use to re-execute
+            // them.
             let sync_block = self
                 .main_node_client
                 .fetch_l2_block(pending_l2_block_number, false)
@@ -169,7 +170,8 @@ impl StateKeeperIO for ExternalIO {
                 .with_context(|| {
                     format!("pending L2 block #{pending_l2_block_number} is missing on main node")
                 })?;
-            // Loading base system contracts will insert protocol version in the database if it's not present there.
+            // Loading base system contracts will insert protocol version in the database if it's
+            // not present there.
             let protocol_version = sync_block.protocol_version;
             drop(storage);
             self.load_base_system_contracts(protocol_version, &cursor)
@@ -305,7 +307,8 @@ impl StateKeeperIO for ExternalIO {
     }
 
     async fn reject(&mut self, tx: &Transaction, error: &str) -> anyhow::Result<()> {
-        // We are replaying the already executed transactions so no rejections are expected to occur.
+        // We are replaying the already executed transactions so no rejections are expected to
+        // occur.
         anyhow::bail!(
             "Requested rejection of transaction {:?} because of the following error: {error}. \
              This is not supported on external node",

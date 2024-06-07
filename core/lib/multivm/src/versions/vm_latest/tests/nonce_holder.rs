@@ -57,9 +57,11 @@ fn test_nonce_holder() {
                               test_mode: NonceHolderTestMode,
                               error_message: Option<String>,
                               comment: &'static str| {
-        // In this test we have to reset VM state after each test case. Because once bootloader failed during the validation of the transaction,
-        // it will fail again and again. At the same time we have to keep the same storage, because we want to keep the nonce holder contract state.
-        // The easiest way in terms of lifetimes is to reuse `vm_builder` to achieve it.
+        // In this test we have to reset VM state after each test case. Because once bootloader
+        // failed during the validation of the transaction, it will fail again and again. At
+        // the same time we have to keep the same storage, because we want to keep the nonce holder
+        // contract state. The easiest way in terms of lifetimes is to reuse `vm_builder` to
+        // achieve it.
         vm.reset_state(true);
         let mut transaction_data: TransactionData = account
             .get_l2_tx_for_execute_with_nonce(

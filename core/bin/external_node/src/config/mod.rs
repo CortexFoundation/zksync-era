@@ -74,9 +74,9 @@ pub(crate) struct RemoteENConfig {
     pub state_transition_proxy_addr: Option<Address>,
     pub transparent_proxy_admin_addr: Option<Address>,
     pub diamond_proxy_addr: Address,
-    // While on L1 shared bridge and legacy bridge are different contracts with different addresses,
-    // the `l2_erc20_bridge_addr` and `l2_shared_bridge_addr` are basically the same contract, but with
-    // a different name, with names adapted only for consistency.
+    // While on L1 shared bridge and legacy bridge are different contracts with different
+    // addresses, the `l2_erc20_bridge_addr` and `l2_shared_bridge_addr` are basically the same
+    // contract, but with a different name, with names adapted only for consistency.
     pub l1_shared_bridge_proxy_addr: Option<Address>,
     pub l2_shared_bridge_addr: Option<Address>,
     pub l1_erc20_bridge_proxy_addr: Option<Address>,
@@ -219,10 +219,12 @@ pub(crate) struct OptionalENConfig {
         default = "OptionalENConfig::default_max_tx_size_bytes"
     )]
     pub max_tx_size_bytes: usize,
-    /// Max number of cache misses during one VM execution. If the number of cache misses exceeds this value, the API server panics.
-    /// This is a temporary solution to mitigate API request resulting in thousands of DB queries.
+    /// Max number of cache misses during one VM execution. If the number of cache misses exceeds
+    /// this value, the API server panics. This is a temporary solution to mitigate API request
+    /// resulting in thousands of DB queries.
     pub vm_execution_cache_misses_limit: Option<usize>,
-    /// Note: Deprecated option, no longer in use. Left to display a warning in case someone used them.
+    /// Note: Deprecated option, no longer in use. Left to display a warning in case someone used
+    /// them.
     pub transactions_per_sec_limit: Option<u32>,
     /// Limit for fee history block range.
     #[serde(default = "OptionalENConfig::default_fee_history_limit")]
@@ -273,8 +275,8 @@ pub(crate) struct OptionalENConfig {
     /// different node.
     #[serde(default)]
     pub filters_disabled: bool,
-    /// Polling period for mempool cache update - how often the mempool cache is updated from the database.
-    /// Default is 50 milliseconds.
+    /// Polling period for mempool cache update - how often the mempool cache is updated from the
+    /// database. Default is 50 milliseconds.
     #[serde(
         alias = "mempool_cache_update_interval",
         default = "OptionalENConfig::default_mempool_cache_update_interval_ms"
@@ -283,17 +285,18 @@ pub(crate) struct OptionalENConfig {
     /// Maximum number of transactions to be stored in the mempool cache.
     #[serde(default = "OptionalENConfig::default_mempool_cache_size")]
     pub mempool_cache_size: usize,
-    /// Enables extended tracing of RPC calls. This may negatively impact performance for nodes under high load
-    /// (hundreds or thousands RPS).
+    /// Enables extended tracing of RPC calls. This may negatively impact performance for nodes
+    /// under high load (hundreds or thousands RPS).
     #[serde(default = "OptionalENConfig::default_extended_api_tracing")]
     pub extended_rpc_tracing: bool,
 
     // Health checks
-    /// Time limit in milliseconds to mark a health check as slow and log the corresponding warning.
-    /// If not specified, the default value in the health check crate will be used.
+    /// Time limit in milliseconds to mark a health check as slow and log the corresponding
+    /// warning. If not specified, the default value in the health check crate will be used.
     healthcheck_slow_time_limit_ms: Option<u64>,
-    /// Time limit in milliseconds to abort a health check and return "not ready" status for the corresponding component.
-    /// If not specified, the default value in the health check crate will be used.
+    /// Time limit in milliseconds to abort a health check and return "not ready" status for the
+    /// corresponding component. If not specified, the default value in the health check crate
+    /// will be used.
     healthcheck_hard_time_limit_ms: Option<u64>,
 
     // Gas estimation config
@@ -304,7 +307,8 @@ pub(crate) struct OptionalENConfig {
     #[serde(default = "OptionalENConfig::default_estimate_gas_acceptable_overestimation")]
     pub estimate_gas_acceptable_overestimation: u32,
     /// The multiplier to use when suggesting gas price. Should be higher than one,
-    /// otherwise if the L1 prices soar, the suggested gas price won't be sufficient to be included in block.
+    /// otherwise if the L1 prices soar, the suggested gas price won't be sufficient to be included
+    /// in block.
     #[serde(default = "OptionalENConfig::default_gas_price_scale_factor")]
     pub gas_price_scale_factor: f64,
 
@@ -315,33 +319,37 @@ pub(crate) struct OptionalENConfig {
         default = "OptionalENConfig::default_merkle_tree_processing_delay_ms"
     )]
     merkle_tree_processing_delay_ms: u64,
-    /// Maximum number of L1 batches to be processed by the Merkle tree at a time. L1 batches are processed in a bulk
-    /// only if they are readily available (i.e., mostly during node catch-up). Increasing this value reduces the number
-    /// of I/O operations at the cost of requiring more RAM (order of 100 MB / batch).
+    /// Maximum number of L1 batches to be processed by the Merkle tree at a time. L1 batches are
+    /// processed in a bulk only if they are readily available (i.e., mostly during node
+    /// catch-up). Increasing this value reduces the number of I/O operations at the cost of
+    /// requiring more RAM (order of 100 MB / batch).
     #[serde(
         alias = "max_blocks_per_tree_batch",
         alias = "max_l1_batches_per_tree_iter",
         default = "OptionalENConfig::default_merkle_tree_max_l1_batches_per_iter"
     )]
     pub merkle_tree_max_l1_batches_per_iter: usize,
-    /// Maximum number of files concurrently opened by Merkle tree RocksDB. Useful to fit into OS limits; can be used
-    /// as a rudimentary way to control RAM usage of the tree.
+    /// Maximum number of files concurrently opened by Merkle tree RocksDB. Useful to fit into OS
+    /// limits; can be used as a rudimentary way to control RAM usage of the tree.
     pub merkle_tree_max_open_files: Option<NonZeroU32>,
-    /// Chunk size for multi-get operations. Can speed up loading data for the Merkle tree on some environments,
-    /// but the effects vary wildly depending on the setup (e.g., the filesystem used).
+    /// Chunk size for multi-get operations. Can speed up loading data for the Merkle tree on some
+    /// environments, but the effects vary wildly depending on the setup (e.g., the filesystem
+    /// used).
     #[serde(default = "OptionalENConfig::default_merkle_tree_multi_get_chunk_size")]
     pub merkle_tree_multi_get_chunk_size: usize,
-    /// Capacity of the block cache for the Merkle tree RocksDB. Reasonable values range from ~100 MiB to several GiB.
-    /// The default value is 128 MiB.
+    /// Capacity of the block cache for the Merkle tree RocksDB. Reasonable values range from ~100
+    /// MiB to several GiB. The default value is 128 MiB.
     #[serde(default = "OptionalENConfig::default_merkle_tree_block_cache_size_mb")]
     merkle_tree_block_cache_size_mb: usize,
-    /// If specified, RocksDB indices and Bloom filters will be managed by the block cache, rather than
-    /// being loaded entirely into RAM on the RocksDB initialization. The block cache capacity should be increased
-    /// correspondingly; otherwise, RocksDB performance can significantly degrade.
+    /// If specified, RocksDB indices and Bloom filters will be managed by the block cache, rather
+    /// than being loaded entirely into RAM on the RocksDB initialization. The block cache
+    /// capacity should be increased correspondingly; otherwise, RocksDB performance can
+    /// significantly degrade.
     #[serde(default)]
     pub merkle_tree_include_indices_and_filters_in_block_cache: bool,
-    /// Byte capacity of memtables (recent, non-persisted changes to RocksDB). Setting this to a reasonably
-    /// large value (order of 512 MiB) is helpful for large DBs that experience write stalls.
+    /// Byte capacity of memtables (recent, non-persisted changes to RocksDB). Setting this to a
+    /// reasonably large value (order of 512 MiB) is helpful for large DBs that experience
+    /// write stalls.
     #[serde(default = "OptionalENConfig::default_merkle_tree_memtable_capacity_mb")]
     merkle_tree_memtable_capacity_mb: usize,
     /// Timeout to wait for the Merkle tree database to run compaction on stalled writes.
@@ -349,67 +357,75 @@ pub(crate) struct OptionalENConfig {
     merkle_tree_stalled_writes_timeout_sec: u64,
 
     // Postgres config (new parameters)
-    /// Threshold in milliseconds for the DB connection lifetime to denote it as long-living and log its details.
-    /// If not specified, such logging will be disabled.
+    /// Threshold in milliseconds for the DB connection lifetime to denote it as long-living and
+    /// log its details. If not specified, such logging will be disabled.
     database_long_connection_threshold_ms: Option<u64>,
-    /// Threshold in milliseconds to denote a DB query as "slow" and log its details. If not specified, such logging will be disabled.
+    /// Threshold in milliseconds to denote a DB query as "slow" and log its details. If not
+    /// specified, such logging will be disabled.
     database_slow_query_threshold_ms: Option<u64>,
 
     // Other config settings
-    /// Capacity of the queue for asynchronous L2 block sealing. Once this many L2 blocks are queued,
-    /// sealing will block until some of the L2 blocks from the queue are processed.
-    /// 0 means that sealing is synchronous; this is mostly useful for performance comparison, testing etc.
+    /// Capacity of the queue for asynchronous L2 block sealing. Once this many L2 blocks are
+    /// queued, sealing will block until some of the L2 blocks from the queue are processed.
+    /// 0 means that sealing is synchronous; this is mostly useful for performance comparison,
+    /// testing etc.
     #[serde(
         alias = "miniblock_seal_queue_capacity",
         default = "OptionalENConfig::default_l2_block_seal_queue_capacity"
     )]
     pub l2_block_seal_queue_capacity: usize,
-    /// Configures whether to persist protective reads when persisting L1 batches in the state keeper.
-    /// Protective reads are never required by full nodes so far, not until such a node runs a full Merkle tree
-    /// (presumably, to participate in L1 batch proving).
+    /// Configures whether to persist protective reads when persisting L1 batches in the state
+    /// keeper. Protective reads are never required by full nodes so far, not until such a node
+    /// runs a full Merkle tree (presumably, to participate in L1 batch proving).
     /// By default, set to `true` as a temporary safety measure.
     #[serde(default = "OptionalENConfig::default_protective_reads_persistence_enabled")]
     pub protective_reads_persistence_enabled: bool,
-    /// Address of the L1 diamond proxy contract used by the consistency checker to match with the origin of logs emitted
-    /// by commit transactions. If not set, it will not be verified.
-    // This is intentionally not a part of `RemoteENConfig` because fetching this info from the main node would defeat
-    // its purpose; the consistency checker assumes that the main node may provide false information.
+    /// Address of the L1 diamond proxy contract used by the consistency checker to match with the
+    /// origin of logs emitted by commit transactions. If not set, it will not be verified.
+    // This is intentionally not a part of `RemoteENConfig` because fetching this info from the
+    // main node would defeat its purpose; the consistency checker assumes that the main node
+    // may provide false information.
     pub contracts_diamond_proxy_addr: Option<Address>,
-    /// Number of requests per second allocated for the main node HTTP client. Default is 100 requests.
+    /// Number of requests per second allocated for the main node HTTP client. Default is 100
+    /// requests.
     #[serde(default = "OptionalENConfig::default_main_node_rate_limit_rps")]
     pub main_node_rate_limit_rps: NonZeroUsize,
 
     #[serde(default)]
     pub l1_batch_commit_data_generator_mode: L1BatchCommitmentMode,
-    /// Enables application-level snapshot recovery. Required to start a node that was recovered from a snapshot,
-    /// or to initialize a node from a snapshot. Has no effect if a node that was initialized from a Postgres dump
-    /// or was synced from genesis.
+    /// Enables application-level snapshot recovery. Required to start a node that was recovered
+    /// from a snapshot, or to initialize a node from a snapshot. Has no effect if a node that
+    /// was initialized from a Postgres dump or was synced from genesis.
     ///
-    /// This is an experimental and incomplete feature; do not use unless you know what you're doing.
+    /// This is an experimental and incomplete feature; do not use unless you know what you're
+    /// doing.
     #[serde(default)]
     pub snapshots_recovery_enabled: bool,
-    /// Maximum concurrency factor for the concurrent parts of snapshot recovery for Postgres. It may be useful to
-    /// reduce this factor to about 5 if snapshot recovery overloads I/O capacity of the node. Conversely,
-    /// if I/O capacity of your infra is high, you may increase concurrency to speed up Postgres recovery.
+    /// Maximum concurrency factor for the concurrent parts of snapshot recovery for Postgres. It
+    /// may be useful to reduce this factor to about 5 if snapshot recovery overloads I/O
+    /// capacity of the node. Conversely, if I/O capacity of your infra is high, you may
+    /// increase concurrency to speed up Postgres recovery.
     #[serde(default = "OptionalENConfig::default_snapshots_recovery_postgres_max_concurrency")]
     pub snapshots_recovery_postgres_max_concurrency: NonZeroUsize,
 
-    /// Enables pruning of the historical node state (Postgres and Merkle tree). The node will retain
-    /// recent state and will continuously remove (prune) old enough parts of the state in the background.
+    /// Enables pruning of the historical node state (Postgres and Merkle tree). The node will
+    /// retain recent state and will continuously remove (prune) old enough parts of the state
+    /// in the background.
     #[serde(default)]
     pub pruning_enabled: bool,
     /// Number of L1 batches pruned at a time.
     #[serde(default = "OptionalENConfig::default_pruning_chunk_size")]
     pub pruning_chunk_size: u32,
-    /// Delta between soft- and hard-removing data from Postgres. Should be reasonably large (order of 60 seconds).
-    /// The default value is 60 seconds.
+    /// Delta between soft- and hard-removing data from Postgres. Should be reasonably large (order
+    /// of 60 seconds). The default value is 60 seconds.
     #[serde(default = "OptionalENConfig::default_pruning_removal_delay_sec")]
     pruning_removal_delay_sec: NonZeroU64,
-    /// If set, L1 batches will be pruned after the batch timestamp is this old (in seconds). Note that an L1 batch
-    /// may be temporarily retained for other reasons; e.g., a batch cannot be pruned until it is executed on L1,
-    /// which happens roughly 24 hours after its generation on the mainnet. Thus, in practice this value can specify
-    /// the retention period greater than that implicitly imposed by other criteria (e.g., 7 or 30 days).
-    /// If set to 0, L1 batches will not be retained based on their timestamp. The default value is 1 hour.
+    /// If set, L1 batches will be pruned after the batch timestamp is this old (in seconds). Note
+    /// that an L1 batch may be temporarily retained for other reasons; e.g., a batch cannot be
+    /// pruned until it is executed on L1, which happens roughly 24 hours after its generation
+    /// on the mainnet. Thus, in practice this value can specify the retention period greater
+    /// than that implicitly imposed by other criteria (e.g., 7 or 30 days). If set to 0, L1
+    /// batches will not be retained based on their timestamp. The default value is 1 hour.
     #[serde(default = "OptionalENConfig::default_pruning_data_retention_sec")]
     pruning_data_retention_sec: u64,
 }
@@ -585,7 +601,8 @@ impl OptionalENConfig {
         self.merkle_tree_memtable_capacity_mb * BYTES_IN_MEGABYTE
     }
 
-    /// Returns the timeout to wait for the Merkle tree database to run compaction on stalled writes.
+    /// Returns the timeout to wait for the Merkle tree database to run compaction on stalled
+    /// writes.
     pub fn merkle_tree_stalled_writes_timeout(&self) -> Duration {
         Duration::from_secs(self.merkle_tree_stalled_writes_timeout_sec)
     }
@@ -646,11 +663,13 @@ impl OptionalENConfig {
 /// This part of the external node config is required for its operation.
 #[derive(Debug, Deserialize)]
 pub(crate) struct RequiredENConfig {
-    /// L1 chain ID (e.g., 9 for Ethereum mainnet). This ID will be checked against the `eth_client_url` RPC provider on initialization
-    /// to ensure that there's no mismatch between the expected and actual L1 network.
+    /// L1 chain ID (e.g., 9 for Ethereum mainnet). This ID will be checked against the
+    /// `eth_client_url` RPC provider on initialization to ensure that there's no mismatch
+    /// between the expected and actual L1 network.
     pub l1_chain_id: L1ChainId,
-    /// L2 chain ID (e.g., 270 for zkSync Era mainnet). This ID will be checked against the `main_node_url` RPC provider on initialization
-    /// to ensure that there's no mismatch between the expected and actual L2 network.
+    /// L2 chain ID (e.g., 270 for zkSync Era mainnet). This ID will be checked against the
+    /// `main_node_url` RPC provider on initialization to ensure that there's no mismatch
+    /// between the expected and actual L2 network.
     pub l2_chain_id: L2ChainId,
 
     /// Port on which the HTTP RPC server is listening.
@@ -684,7 +703,8 @@ impl RequiredENConfig {
             http_port: 0,
             ws_port: 0,
             healthcheck_port: 0,
-            // L1 and L2 clients must be instantiated before accessing mocks, so these values don't matter
+            // L1 and L2 clients must be instantiated before accessing mocks, so these values don't
+            // matter
             eth_client_url: "http://localhost".parse().unwrap(),
             main_node_url: "http://localhost".parse().unwrap(),
             state_cache_path: temp_dir
@@ -735,30 +755,33 @@ impl PostgresConfig {
     }
 }
 
-/// Experimental part of the external node config. All parameters in this group can change or disappear without notice.
-/// Eventually, parameters from this group generally end up in the optional group.
+/// Experimental part of the external node config. All parameters in this group can change or
+/// disappear without notice. Eventually, parameters from this group generally end up in the
+/// optional group.
 #[derive(Debug, Deserialize)]
 pub(crate) struct ExperimentalENConfig {
     // State keeper cache config
     /// Block cache capacity of the state keeper RocksDB cache. The default value is 128 MB.
     #[serde(default = "ExperimentalENConfig::default_state_keeper_db_block_cache_capacity_mb")]
     state_keeper_db_block_cache_capacity_mb: usize,
-    /// Maximum number of files concurrently opened by state keeper cache RocksDB. Useful to fit into OS limits; can be used
-    /// as a rudimentary way to control RAM usage of the cache.
+    /// Maximum number of files concurrently opened by state keeper cache RocksDB. Useful to fit
+    /// into OS limits; can be used as a rudimentary way to control RAM usage of the cache.
     pub state_keeper_db_max_open_files: Option<NonZeroU32>,
 
     // Snapshot recovery
-    /// Approximate chunk size (measured in the number of entries) to recover in a single iteration.
-    /// Reasonable values are order of 100,000 (meaning an iteration takes several seconds).
+    /// Approximate chunk size (measured in the number of entries) to recover in a single
+    /// iteration. Reasonable values are order of 100,000 (meaning an iteration takes several
+    /// seconds).
     ///
-    /// **Important.** This value cannot be changed in the middle of tree recovery (i.e., if a node is stopped in the middle
-    /// of recovery and then restarted with a different config).
+    /// **Important.** This value cannot be changed in the middle of tree recovery (i.e., if a node
+    /// is stopped in the middle of recovery and then restarted with a different config).
     #[serde(default = "ExperimentalENConfig::default_snapshots_recovery_tree_chunk_size")]
     pub snapshots_recovery_tree_chunk_size: u64,
 
     // Commitment generator
-    /// Maximum degree of parallelism during commitment generation, i.e., the maximum number of L1 batches being processed in parallel.
-    /// If not specified, commitment generator will use a value roughly equal to the number of CPU cores with some clamping applied.
+    /// Maximum degree of parallelism during commitment generation, i.e., the maximum number of L1
+    /// batches being processed in parallel. If not specified, commitment generator will use a
+    /// value roughly equal to the number of CPU cores with some clamping applied.
     pub commitment_generator_max_parallelism: Option<NonZeroU32>,
 }
 

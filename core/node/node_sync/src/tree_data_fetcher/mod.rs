@@ -96,16 +96,16 @@ enum StepOutcome {
     RemoteHashMissing,
 }
 
-/// Component fetching tree data (i.e., state root hashes for L1 batches) from external sources, such as
-/// the main node, and persisting this data to Postgres.
+/// Component fetching tree data (i.e., state root hashes for L1 batches) from external sources,
+/// such as the main node, and persisting this data to Postgres.
 ///
 /// # Overview
 ///
 /// This component allows a node to operate w/o a Merkle tree or w/o waiting the tree to catch up.
-/// It can be operated together with Metadata calculator or instead of it. In the first case, Metadata calculator
-/// (which is generally expected to be slower) will check that data returned by the main node is correct
-/// (i.e., "trust but verify" trust model). Additionally, the persisted data will be checked against L1 commitment transactions
-/// by Consistency checker.
+/// It can be operated together with Metadata calculator or instead of it. In the first case,
+/// Metadata calculator (which is generally expected to be slower) will check that data returned by
+/// the main node is correct (i.e., "trust but verify" trust model). Additionally, the persisted
+/// data will be checked against L1 commitment transactions by Consistency checker.
 #[derive(Debug)]
 pub struct TreeDataFetcher {
     main_node_client: Box<dyn MainNodeClient>,
@@ -159,7 +159,9 @@ impl TreeDataFetcher {
             let earliest_l1_batch = storage.blocks_dal().get_earliest_l1_batch_number().await?;
             let earliest_l1_batch =
                 earliest_l1_batch.context("all L1 batches disappeared from Postgres")?;
-            tracing::debug!("No L1 batches with metadata present in the storage; will fetch the earliest batch #{earliest_l1_batch}");
+            tracing::debug!(
+                "No L1 batches with metadata present in the storage; will fetch the earliest batch #{earliest_l1_batch}"
+            );
             earliest_l1_batch
         };
         Ok(if l1_batch_to_fetch <= last_l1_batch {
@@ -222,8 +224,8 @@ impl TreeDataFetcher {
         self.health_updater.update(health.into());
     }
 
-    /// Runs this component until a fatal error occurs or a stop signal is received. Transient errors
-    /// (e.g., no network connection) are handled gracefully by retrying after a delay.
+    /// Runs this component until a fatal error occurs or a stop signal is received. Transient
+    /// errors (e.g., no network connection) are handled gracefully by retrying after a delay.
     pub async fn run(self, mut stop_receiver: watch::Receiver<bool>) -> anyhow::Result<()> {
         self.metrics.observe_info(&self);
         self.health_updater
@@ -243,8 +245,8 @@ impl TreeDataFetcher {
                     false
                 }
                 Ok(StepOutcome::NoProgress | StepOutcome::RemoteHashMissing) => {
-                    // Update health status even if no progress was made to timely clear a previously set
-                    // "affected" health.
+                    // Update health status even if no progress was made to timely clear a
+                    // previously set "affected" health.
                     self.update_health(last_updated_l1_batch);
                     true
                 }

@@ -81,8 +81,8 @@ pub fn l1_batch_params(
     )
 }
 
-/// Provider of L1 batch parameters for state keeper I/O implementations. The provider is stateless; i.e., it doesn't
-/// enforce a particular order of method calls.
+/// Provider of L1 batch parameters for state keeper I/O implementations. The provider is stateless;
+/// i.e., it doesn't enforce a particular order of method calls.
 #[derive(Debug)]
 pub struct L1BatchParamsProvider {
     snapshot: Option<SnapshotRecoveryStatus>,
@@ -97,15 +97,16 @@ impl L1BatchParamsProvider {
         Ok(Self { snapshot })
     }
 
-    /// Returns state root hash and timestamp of an L1 batch with the specified number waiting for the hash to be computed
-    /// if necessary.
+    /// Returns state root hash and timestamp of an L1 batch with the specified number waiting for
+    /// the hash to be computed if necessary.
     pub async fn wait_for_l1_batch_params(
         &self,
         storage: &mut Connection<'_, Core>,
         number: L1BatchNumber,
     ) -> anyhow::Result<(H256, u64)> {
         let first_l1_batch = if let Some(snapshot) = &self.snapshot {
-            // Special case: if we've recovered from a snapshot, we allow to wait for the snapshot L1 batch.
+            // Special case: if we've recovered from a snapshot, we allow to wait for the snapshot
+            // L1 batch.
             if number == snapshot.l1_batch_number {
                 return Ok((snapshot.l1_batch_root_hash, snapshot.l1_batch_timestamp));
             }
@@ -125,7 +126,8 @@ impl L1BatchParamsProvider {
         storage: &mut Connection<'_, Core>,
         number: L1BatchNumber,
     ) -> anyhow::Result<(H256, u64)> {
-        // If the state root is not known yet, this duration will be used to back off in the while loops
+        // If the state root is not known yet, this duration will be used to back off in the while
+        // loops
         const SAFE_STATE_ROOT_INTERVAL: Duration = Duration::from_millis(100);
 
         let stage_started_at: Instant = Instant::now();
@@ -169,7 +171,8 @@ impl L1BatchParamsProvider {
             .map_err(Into::into)
     }
 
-    /// Returns a header of the first L2 block in the specified L1 batch regardless of whether the batch is sealed or not.
+    /// Returns a header of the first L2 block in the specified L1 batch regardless of whether the
+    /// batch is sealed or not.
     pub async fn load_first_l2_block_in_batch(
         &self,
         storage: &mut Connection<'_, Core>,
@@ -246,7 +249,9 @@ impl L1BatchParamsProvider {
             .wait_for_l1_batch_params(storage, prev_l1_batch_number)
             .await
             .context("failed getting hash for previous L1 batch")?;
-        tracing::info!("Got state root hash for previous L1 batch #{prev_l1_batch_number}: {prev_l1_batch_hash:?}");
+        tracing::info!(
+            "Got state root hash for previous L1 batch #{prev_l1_batch_number}: {prev_l1_batch_hash:?}"
+        );
 
         anyhow::ensure!(
             prev_l1_batch_timestamp < l1_batch_timestamp,

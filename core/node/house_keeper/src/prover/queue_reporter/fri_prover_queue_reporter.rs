@@ -41,12 +41,13 @@ impl PeriodicJob for FriProverQueueReporter {
 
         for (job_identifiers, stats) in &stats {
             // BEWARE, HERE BE DRAGONS.
-            // In database, the `circuit_id` stored is the circuit for which the aggregation is done,
-            // not the circuit which is running.
+            // In database, the `circuit_id` stored is the circuit for which the aggregation is
+            // done, not the circuit which is running.
             // There is a single node level aggregation circuit, which is circuit 2.
             // This can aggregate multiple leaf nodes (which may belong to different circuits).
-            // This reporting is a hacky forced way to use `circuit_id` 2 which will solve auto scalers.
-            // A proper fix will be later provided to solve this at database level.
+            // This reporting is a hacky forced way to use `circuit_id` 2 which will solve auto
+            // scalers. A proper fix will be later provided to solve this at database
+            // level.
             let circuit_id = if job_identifiers.aggregation_round == 2 {
                 2
             } else {

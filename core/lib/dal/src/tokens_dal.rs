@@ -101,7 +101,8 @@ impl TokensDal<'_, '_> {
                 } else if let Some(deployed_at) = token_deployment_data.get(&address) {
                     (deployed_at > &block_number).then_some(address.0)
                 } else {
-                    // Token belongs to a "pending" L2 block that's not yet fully inserted to the database.
+                    // Token belongs to a "pending" L2 block that's not yet fully inserted to the
+                    // database.
                     Some(address.0)
                 }
             })
@@ -375,7 +376,8 @@ mod tests {
             .roll_back_tokens(L2BlockNumber(99))
             .await
             .unwrap();
-        // Token must be removed despite it's failed deployment being earlier than the last retained miniblock.
+        // Token must be removed despite it's failed deployment being earlier than the last retained
+        // miniblock.
         assert_eq!(
             storage
                 .tokens_dal()

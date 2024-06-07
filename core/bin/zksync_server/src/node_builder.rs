@@ -238,7 +238,8 @@ impl MainNodeBuilder {
             ),
             postgres_storage_caches_config,
             rpc_config.vm_concurrency_limit(),
-            ApiContracts::load_from_disk(), // TODO (BFT-138): Allow to dynamically reload API contracts
+            ApiContracts::load_from_disk(), /* TODO (BFT-138): Allow to dynamically reload API
+                                             * contracts */
         ));
         Ok(self)
     }
@@ -411,16 +412,19 @@ impl MainNodeBuilder {
             .add_query_eth_client_layer()?
             .add_sequencer_l1_gas_layer()?;
 
-        // Sort the components, so that the components they may depend on each other are added in the correct order.
+        // Sort the components, so that the components they may depend on each other are added in
+        // the correct order.
         components.sort_unstable_by_key(|component| match component {
-            // API consumes the resources provided by other layers (multiple ones), so it has to come the last.
+            // API consumes the resources provided by other layers (multiple ones), so it has to
+            // come the last.
             Component::HttpApi | Component::WsApi => 1,
             // Default priority.
             _ => 0,
         });
 
         // Add "component-specific" layers.
-        // Note that the layers are added only once, so it's fine to add the same layer multiple times.
+        // Note that the layers are added only once, so it's fine to add the same layer multiple
+        // times.
         for component in &components {
             match component {
                 Component::HttpApi => {

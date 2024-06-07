@@ -52,7 +52,8 @@ impl<K: Ord + Copy, V: Clone> SequentialCache<K, V> {
     ///
     /// # Errors
     ///
-    /// Returns an error when keys order is incorrect (a smaller key is inserted after a larger one).
+    /// Returns an error when keys order is incorrect (a smaller key is inserted after a larger
+    /// one).
     pub fn insert(&mut self, items: Vec<(K, V)>) -> anyhow::Result<()> {
         for (key, value) in items {
             let latency = METRICS.latency[&(self.name, Method::Insert)].start();
@@ -72,9 +73,9 @@ impl<K: Ord + Copy, V: Clone> SequentialCache<K, V> {
 
     /// Queries and returns all values associated with keys strictly greater than the specified key.
     /// Returns `None` if cache cannot be used for this key -
-    ///     that is, the oldest cache element is larger than the key requested, and we cannot guarantee
-    ///     that there were no (dropped) elements between the requested key and the oldest hash element
-    /// Otherwise returns `Some(results)`
+    ///     that is, the oldest cache element is larger than the key requested, and we cannot
+    /// guarantee     that there were no (dropped) elements between the requested key and the
+    /// oldest hash element Otherwise returns `Some(results)`
     ///     with the cache tail starting from the requested key - but not including it.
     ///     Can be empty if the requested key is the largest in the cache.
     pub fn query(&self, after: K) -> Option<Vec<(K, V)>> {

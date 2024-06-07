@@ -7,8 +7,8 @@ use zksync_system_constants::{L1_GAS_PER_PUBDATA_BYTE, MAX_L2_TX_GAS_LIMIT, MAX_
 use crate::vm_refunds_enhancement::old_vm::utils::heap_page_from_base;
 
 /// The size of the bootloader memory in bytes which is used by the protocol.
-/// While the maximal possible size is a lot higher, we restrict ourselves to a certain limit to reduce
-/// the requirements on RAM.
+/// While the maximal possible size is a lot higher, we restrict ourselves to a certain limit to
+/// reduce the requirements on RAM.
 pub(crate) const USED_BOOTLOADER_MEMORY_BYTES: usize = 1 << 24;
 pub(crate) const USED_BOOTLOADER_MEMORY_WORDS: usize = USED_BOOTLOADER_MEMORY_BYTES / 32;
 
@@ -32,7 +32,8 @@ pub const MAX_CYCLES_FOR_TX: u32 = u32::MAX;
 /// The first 32 slots are reserved for debugging purposes
 pub(crate) const DEBUG_SLOTS_OFFSET: usize = 8;
 pub(crate) const DEBUG_FIRST_SLOTS: usize = 32;
-/// The next 33 slots are reserved for dealing with the paymaster context (1 slot for storing length + 32 slots for storing the actual context).
+/// The next 33 slots are reserved for dealing with the paymaster context (1 slot for storing length
+/// + 32 slots for storing the actual context).
 pub(crate) const PAYMASTER_CONTEXT_SLOTS: usize = 32 + 1;
 /// The next PAYMASTER_CONTEXT_SLOTS + 7 slots free slots are needed before each tx, so that the
 /// postOp operation could be encoded correctly.
@@ -75,8 +76,8 @@ pub(crate) const BOOTLOADER_TX_ENCODING_SPACE: u32 =
 // Size of the bootloader tx description in words
 pub(crate) const BOOTLOADER_TX_DESCRIPTION_SIZE: usize = 2;
 
-/// The actual descriptions of transactions should start after the minor descriptions and a MAX_POSTOP_SLOTS
-/// free slots to allow postOp encoding.
+/// The actual descriptions of transactions should start after the minor descriptions and a
+/// MAX_POSTOP_SLOTS free slots to allow postOp encoding.
 pub(crate) const TX_DESCRIPTION_OFFSET: usize = BOOTLOADER_TX_DESCRIPTION_OFFSET
     + BOOTLOADER_TX_DESCRIPTION_SIZE * MAX_TXS_IN_BLOCK
     + MAX_POSTOP_SLOTS;
@@ -106,7 +107,8 @@ pub const RESULT_SUCCESS_FIRST_SLOT: u32 =
 
 /// How many gas bootloader is allowed to spend within one block.
 /// Note that this value doesn't correspond to the gas limit of any particular transaction
-/// (except for the fact that, of course, gas limit for each transaction should be <= `BLOCK_GAS_LIMIT`).
+/// (except for the fact that, of course, gas limit for each transaction should be <=
+/// `BLOCK_GAS_LIMIT`).
 pub(crate) const BLOCK_GAS_LIMIT: u32 =
     zk_evm_1_3_3::zkevm_opcode_defs::system_params::VM_INITIAL_FRAME_ERGS;
 

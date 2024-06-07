@@ -33,7 +33,8 @@ enum CheckError {
     /// Error that is caused by the main node providing incorrect information etc.
     #[error("failed validating commit transaction")]
     Validation(anyhow::Error),
-    /// Error that is caused by violating invariants internal to *this* node (e.g., not having expected data in Postgres).
+    /// Error that is caused by violating invariants internal to *this* node (e.g., not having
+    /// expected data in Postgres).
     #[error("internal error")]
     Internal(anyhow::Error),
 }
@@ -80,7 +81,8 @@ impl ConsistencyCheckerDetails {
     }
 }
 
-/// Default [`HandleConsistencyCheckerEvent`] implementation that reports the batch number as a metric and via health check details.
+/// Default [`HandleConsistencyCheckerEvent`] implementation that reports the batch number as a
+/// metric and via health check details.
 #[derive(Debug)]
 struct ConsistencyCheckerHealthUpdater {
     inner: HealthUpdater,
@@ -124,9 +126,9 @@ impl HandleConsistencyCheckerEvent for ConsistencyCheckerHealthUpdater {
 }
 
 /// Consistency checker behavior when L1 commit data divergence is detected.
-// This is a temporary workaround for a bug that sometimes leads to incorrect L1 batch data returned by the server
-// (and thus persisted by external nodes). Eventually, we want to go back to bailing on L1 data mismatch;
-// for now, it's only enabled for the unit tests.
+// This is a temporary workaround for a bug that sometimes leads to incorrect L1 batch data returned
+// by the server (and thus persisted by external nodes). Eventually, we want to go back to bailing
+// on L1 data mismatch; for now, it's only enabled for the unit tests.
 #[derive(Debug)]
 enum L1DataMismatchBehavior {
     #[cfg(test)]
@@ -183,8 +185,8 @@ impl LocalL1BatchCommitData {
 
         // For Boojum batches, `bootloader_initial_content_commitment` and `events_queue_commitment`
         // are computed by the commitment generator.
-        // I.e., for these batches, we may have partial metadata in Postgres, which would not be sufficient
-        // to compute local L1 commitment.
+        // I.e., for these batches, we may have partial metadata in Postgres, which would not be
+        // sufficient to compute local L1 commitment.
         if !this.is_pre_boojum()
             && (metadata.bootloader_initial_content_commitment.is_none()
                 || metadata.events_queue_commitment.is_none())
@@ -245,8 +247,8 @@ impl LocalL1BatchCommitData {
     }
 }
 
-/// Determines which DA source was used in the `reference` commitment. It's assumed that the commitment was created
-/// using `CommitBatchInfo::into_token()`.
+/// Determines which DA source was used in the `reference` commitment. It's assumed that the
+/// commitment was created using `CommitBatchInfo::into_token()`.
 ///
 /// # Errors
 ///
@@ -272,7 +274,7 @@ pub fn detect_da(
         _ => {
             return Err(parse_error(format!(
                 "reference has unexpected shape; expected a tuple, got {reference:?}"
-            )))
+            )));
         }
     };
     let Some(last_reference_token) = reference.last() else {
@@ -281,9 +283,11 @@ pub fn detect_da(
 
     let last_reference_token = match last_reference_token {
         Token::Bytes(bytes) => bytes,
-        _ => return Err(parse_error(format!(
-            "last reference token has unexpected shape; expected bytes, got {last_reference_token:?}"
-        ))),
+        _ => {
+            return Err(parse_error(format!(
+                "last reference token has unexpected shape; expected bytes, got {last_reference_token:?}"
+            )));
+        }
     };
     match last_reference_token.first() {
         Some(&byte) if byte == PUBDATA_SOURCE_CALLDATA => Ok(PubdataDA::Calldata),
@@ -530,7 +534,9 @@ impl ConsistencyChecker {
 
         while let Err(err) = self.sanity_check_diamond_proxy_addr().await {
             if err.is_transient() {
-                tracing::warn!("Transient error checking diamond proxy contract; will retry after a delay: {err}");
+                tracing::warn!(
+                    "Transient error checking diamond proxy contract; will retry after a delay: {err}"
+                );
                 if tokio::time::timeout(self.sleep_interval, stop_receiver.changed())
                     .await
                     .is_ok()
@@ -544,7 +550,8 @@ impl ConsistencyChecker {
             }
         }
 
-        // It doesn't make sense to start the checker until we have at least one L1 batch with metadata.
+        // It doesn't make sense to start the checker until we have at least one L1 batch with
+        // metadata.
         let earliest_l1_batch_number =
             wait_for_l1_batch_with_metadata(&self.pool, self.sleep_interval, &mut stop_receiver)
                 .await?;
@@ -584,9 +591,9 @@ impl ConsistencyChecker {
         let mut batch_number = first_batch_to_check;
         while !*stop_receiver.borrow_and_update() {
             let mut storage = self.pool.connection().await?;
-            // The batch might be already committed but not yet processed by the external node's tree
-            // OR the batch might be processed by the external node's tree but not yet committed.
-            // We need both.
+            // The batch might be already committed but not yet processed by the external node's
+            // tree OR the batch might be processed by the external node's tree but not
+            // yet committed. We need both.
             let local =
                 LocalL1BatchCommitData::new(&mut storage, batch_number, self.commitment_mode)
                     .await?;
@@ -627,7 +634,9 @@ impl ConsistencyChecker {
                     }
                 }
                 Err(err) if err.is_transient() => {
-                    tracing::warn!("Transient error while verifying L1 batch #{batch_number}; will retry after a delay: {err}");
+                    tracing::warn!(
+                        "Transient error while verifying L1 batch #{batch_number}; will retry after a delay: {err}"
+                    );
                     if tokio::time::timeout(self.sleep_interval, stop_receiver.changed())
                         .await
                         .is_ok()
@@ -648,10 +657,11 @@ impl ConsistencyChecker {
     }
 }
 
-/// Repeatedly polls the DB until there is an L1 batch with metadata. We may not have such a batch initially
-/// if the DB is recovered from an application-level snapshot.
+/// Repeatedly polls the DB until there is an L1 batch with metadata. We may not have such a batch
+/// initially if the DB is recovered from an application-level snapshot.
 ///
-/// Returns the number of the *earliest* L1 batch with metadata, or `None` if the stop signal is received.
+/// Returns the number of the *earliest* L1 batch with metadata, or `None` if the stop signal is
+/// received.
 async fn wait_for_l1_batch_with_metadata(
     pool: &ConnectionPool<Core>,
     poll_interval: Duration,

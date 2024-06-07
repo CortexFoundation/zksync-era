@@ -83,7 +83,8 @@ impl EthNamespace {
         let call_overrides = request.get_call_overrides()?;
         let tx = L2Tx::from_request(request.into(), self.state.api_config.max_tx_size)?;
 
-        // It is assumed that the previous checks has already enforced that the `max_fee_per_gas` is at most u64.
+        // It is assumed that the previous checks has already enforced that the `max_fee_per_gas` is
+        // at most u64.
         let call_result: Vec<u8> = self
             .state
             .tx_sender
@@ -263,8 +264,8 @@ impl EthNamespace {
                 );
                 return Err(err.into());
             }
-            // We need to sort `transactions` by their index in block since `get_transactions()` returns
-            // transactions in an arbitrary order.
+            // We need to sort `transactions` by their index in block since `get_transactions()`
+            // returns transactions in an arbitrary order.
             transactions.sort_unstable_by_key(|tx| tx.transaction_index);
 
             transactions
@@ -417,8 +418,8 @@ impl EthNamespace {
             .map_err(DalError::generalize)?;
 
         // TODO (SMA-1612): currently account nonce is returning always, but later we will
-        //  return account nonce for account abstraction and deployment nonce for non account abstraction.
-        //  Strip off deployer nonce part.
+        //  return account nonce for account abstraction and deployment nonce for non account
+        // abstraction.  Strip off deployer nonce part.
         let (mut account_nonce, _) = decompose_full_nonce(full_nonce);
 
         if matches!(block_id, BlockId::Number(BlockNumber::Pending)) {
@@ -664,7 +665,8 @@ impl EthNamespace {
             base_fee_per_gas.len()
         ]);
 
-        // `base_fee_per_gas` for next L2 block cannot be calculated, appending last fee as a placeholder.
+        // `base_fee_per_gas` for next L2 block cannot be calculated, appending last fee as a
+        // placeholder.
         base_fee_per_gas.push(*base_fee_per_gas.last().unwrap());
         Ok(FeeHistory {
             oldest_block: web3::BlockNumber::Number(oldest_block.into()),
@@ -719,8 +721,9 @@ impl EthNamespace {
                 };
 
                 // It's possible the `tx_hashes` vector is empty,
-                // meaning there are no transactions in cache that are newer than `from_timestamp_excluded`.
-                // In this case we should return empty result and don't update `from_timestamp_excluded`.
+                // meaning there are no transactions in cache that are newer than
+                // `from_timestamp_excluded`. In this case we should return empty
+                // result and don't update `from_timestamp_excluded`.
                 if let Some((last_timestamp, _)) = tx_hashes.last() {
                     *from_timestamp_excluded = *last_timestamp;
                 }
@@ -768,8 +771,9 @@ impl EthNamespace {
 
                 let mut storage = self.state.acquire_connection().await?;
 
-                // Check if there is more than one block in range and there are more than `req_entities_limit` logs that satisfies filter.
-                // In this case we should return error and suggest requesting logs with smaller block range.
+                // Check if there is more than one block in range and there are more than
+                // `req_entities_limit` logs that satisfies filter. In this case we
+                // should return error and suggest requesting logs with smaller block range.
                 if *from_block != to_block {
                     if let Some(l2_block_number) = storage
                         .events_web3_dal()

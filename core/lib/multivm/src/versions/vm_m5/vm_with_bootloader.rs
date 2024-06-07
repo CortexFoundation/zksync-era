@@ -122,8 +122,8 @@ impl From<BlockContext> for DerivedBlockContext {
 }
 
 /// The size of the bootloader memory in bytes which is used by the protocol.
-/// While the maximal possible size is a lot higher, we restrict ourselves to a certain limit to reduce
-/// the requirements on RAM.
+/// While the maximal possible size is a lot higher, we restrict ourselves to a certain limit to
+/// reduce the requirements on RAM.
 pub(crate) const USED_BOOTLOADER_MEMORY_BYTES: usize = 1 << 24;
 pub(crate) const USED_BOOTLOADER_MEMORY_WORDS: usize = USED_BOOTLOADER_MEMORY_BYTES / 32;
 
@@ -144,7 +144,8 @@ pub(crate) const MAX_TXS_IN_BLOCK: usize = 1024;
 // The first 32 slots are reserved for debugging purposes
 pub const DEBUG_SLOTS_OFFSET: usize = 8;
 pub const DEBUG_FIRST_SLOTS: usize = 32;
-// The next 33 slots are reserved for dealing with the paymaster context (1 slot for storing length + 32 slots for storing the actual context).
+// The next 33 slots are reserved for dealing with the paymaster context (1 slot for storing length
+// + 32 slots for storing the actual context).
 pub const PAYMASTER_CONTEXT_SLOTS: usize = 32 + 1;
 // The next PAYMASTER_CONTEXT_SLOTS + 7 slots free slots are needed before each tx, so that the
 // postOp operation could be encoded correctly.
@@ -181,8 +182,8 @@ pub(crate) const BOOTLOADER_TX_ENCODING_SPACE: u32 =
 // Size of the bootloader tx description in words
 pub const BOOTLOADER_TX_DESCRIPTION_SIZE: usize = 2;
 
-// The actual descriptions of transactions should start after the minor descriptions and a MAX_POSTOP_SLOTS
-// free slots to allow postOp encoding.
+// The actual descriptions of transactions should start after the minor descriptions and a
+// MAX_POSTOP_SLOTS free slots to allow postOp encoding.
 pub const TX_DESCRIPTION_OFFSET: usize = BOOTLOADER_TX_DESCRIPTION_OFFSET
     + BOOTLOADER_TX_DESCRIPTION_SIZE * MAX_TXS_IN_BLOCK
     + MAX_POSTOP_SLOTS;
@@ -196,8 +197,8 @@ const BOOTLOADER_CODE_PAGE: u32 = code_page_candidate_from_base(MemoryPage(INITI
 ///
 /// If `EthCall` mode is chosen, the bootloader will use `mimicCall` opcode
 /// to simulate the call instead of using the standard `execute` method of account.
-/// This is needed to be able to behave equivalently to Ethereum without much overhead for custom account builders.
-/// With `VerifyExecute` mode, transaction will be executed normally.
+/// This is needed to be able to behave equivalently to Ethereum without much overhead for custom
+/// account builders. With `VerifyExecute` mode, transaction will be executed normally.
 /// With `EstimateFee`, the bootloader will be used that has the same behavior
 /// as the full `VerifyExecute` block, but errors in the account validation will be ignored.
 #[derive(Debug, Clone, Copy)]
@@ -261,10 +262,12 @@ pub fn init_vm_with_gas_limit<S: Storage>(
 #[derive(Debug, Clone, Copy)]
 // The `block.number` / `block.timestamp` data are stored in the `CONTEXT_SYSTEM_CONTRACT`.
 // The bootloader can support execution in two modes:
-// - `NewBlock` when the new block is created. It is enforced that the block.number is incremented by 1
-//   and the timestamp is non-decreasing. Also, the L2->L1 message used to verify the correctness of the previous root hash is sent.
-//   This is the mode that should be used in the state keeper.
-// - `OverrideCurrent` when we need to provide custom `block.number` and `block.timestamp`. ONLY to be used in testing / `ethCalls`.
+// - `NewBlock` when the new block is created. It is enforced that the block.number is incremented
+//   by 1 and the timestamp is non-decreasing. Also, the L2->L1 message used to verify the
+//   correctness of the previous root hash is sent. This is the mode that should be used in the
+//   state keeper.
+// - `OverrideCurrent` when we need to provide custom `block.number` and `block.timestamp`. ONLY to
+//   be used in testing / `ethCalls`.
 pub enum BlockContextMode {
     NewBlock(DerivedBlockContext, U256),
     OverrideCurrent(DerivedBlockContext),
@@ -595,9 +598,9 @@ pub(crate) fn bytecode_to_factory_dep(bytecode: Vec<u8>) -> (U256, Vec<U256>) {
 ///
 /// # Current layout
 ///
-/// - 0 byte (MSB): server-side tx execution mode
-///     In the server, we may want to execute different parts of the transaction in the different context
-///     For example, when checking validity, we don't want to actually execute transaction and have side effects.
+/// - 0 byte (MSB): server-side tx execution mode In the server, we may want to execute different
+///   parts of the transaction in the different context For example, when checking validity, we
+///   don't want to actually execute transaction and have side effects.
 ///
 ///     Possible values:
 ///     - 0x00: validate & execute (normal mode)

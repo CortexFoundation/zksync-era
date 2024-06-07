@@ -52,7 +52,8 @@ impl EN {
             self.fetch_blocks(ctx, &mut payload_queue, Some(genesis.first_block))
                 .await?;
             // Monitor the genesis of the main node.
-            // If it changes, it means that a hard fork occurred and we need to reset the consensus state.
+            // If it changes, it means that a hard fork occurred and we need to reset the consensus
+            // state.
             s.spawn_bg::<()>(async {
                 let old = genesis;
                 loop {

@@ -27,8 +27,9 @@ pub(super) struct Runnables {
 
 impl fmt::Debug for Runnables {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        // Macro that iterates over a `Vec`, invokes `.id()` method and collects the results into a `Vec<String>`.
-        // Returns a reference to created `Vec` to satisfy the `.field` method signature.
+        // Macro that iterates over a `Vec`, invokes `.id()` method and collects the results into a
+        // `Vec<String>`. Returns a reference to created `Vec` to satisfy the `.field`
+        // method signature.
         macro_rules! ids {
             ($vec:expr) => {
                 &$vec.iter().map(|x| x.id()).collect::<Vec<_>>()

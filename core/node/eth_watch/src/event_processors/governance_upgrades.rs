@@ -11,7 +11,8 @@ use crate::{
     metrics::{PollStage, METRICS},
 };
 
-/// Listens to operation events coming from the governance contract and saves new protocol upgrade proposals to the database.
+/// Listens to operation events coming from the governance contract and saves new protocol upgrade
+/// proposals to the database.
 #[derive(Debug)]
 pub struct GovernanceUpgradesEventProcessor {
     // zkSync diamond proxy
@@ -67,7 +68,8 @@ impl EventProcessor for GovernanceUpgradesEventProcessor {
                     );
                     continue;
                 };
-                // Scheduler VK is not present in proposal event. It is hard coded in verifier contract.
+                // Scheduler VK is not present in proposal event. It is hard coded in verifier
+                // contract.
                 let scheduler_vk_hash = if let Some(address) = upgrade.verifier_address {
                     Some(client.scheduler_vk_hash(address).await?)
                 } else {

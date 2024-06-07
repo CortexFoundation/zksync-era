@@ -276,7 +276,8 @@ impl Memory for SimpleMemory {
     }
 }
 
-// It is expected that there is some intersection between `[word_number*32..word_number*32+31]` and `[start, end]`
+// It is expected that there is some intersection between `[word_number*32..word_number*32+31]` and
+// `[start, end]`
 fn extract_needed_bytes_from_word(
     word_value: Vec<u8>,
     word_number: usize,

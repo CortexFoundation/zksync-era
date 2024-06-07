@@ -3,11 +3,13 @@ use std::collections::{BTreeMap, BTreeSet};
 use secrecy::{ExposeSecret as _, Secret};
 use zksync_basic_types::L2ChainId;
 
-/// `zksync_consensus_crypto::TextFmt` representation of `zksync_consensus_roles::validator::PublicKey`.
+/// `zksync_consensus_crypto::TextFmt` representation of
+/// `zksync_consensus_roles::validator::PublicKey`.
 #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub struct ValidatorPublicKey(pub String);
 
-/// `zksync_consensus_crypto::TextFmt` representation of `zksync_consensus_roles::validator::SecretKey`.
+/// `zksync_consensus_crypto::TextFmt` representation of
+/// `zksync_consensus_roles::validator::SecretKey`.
 #[derive(Debug, Clone)]
 pub struct ValidatorSecretKey(pub Secret<String>);
 

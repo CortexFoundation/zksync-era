@@ -23,11 +23,7 @@ pub(super) enum RequestOutcome {
 
 impl RequestOutcome {
     pub fn from_hit(hit: bool) -> Self {
-        if hit {
-            Self::Hit
-        } else {
-            Self::Miss
-        }
+        if hit { Self::Hit } else { Self::Miss }
     }
 }
 

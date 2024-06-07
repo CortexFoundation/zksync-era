@@ -39,8 +39,8 @@ pub trait NamedColumnFamily: 'static + Copy {
     /// Names a column family to access it in `RocksDB`. Also used in metrics reporting.
     fn name(&self) -> &'static str;
 
-    /// Returns whether this CF is so large that it's likely to require special configuration in terms
-    /// of compaction / memtables.
+    /// Returns whether this CF is so large that it's likely to require special configuration in
+    /// terms of compaction / memtables.
     fn requires_tuning(&self) -> bool {
         false
     }
@@ -191,9 +191,9 @@ impl RocksDBInner {
         property
     }
 
-    /// Waits until writes are not stopped for any of the CFs. Writes can stop immediately on DB initialization
-    /// if there are too many level-0 SST files; in this case, it may help waiting several seconds until
-    /// these files are compacted.
+    /// Waits until writes are not stopped for any of the CFs. Writes can stop immediately on DB
+    /// initialization if there are too many level-0 SST files; in this case, it may help
+    /// waiting several seconds until these files are compacted.
     fn wait_for_writes_to_resume(&self, retries: &StalledWritesRetries) {
         for (retry_idx, retry_interval) in retries.intervals().enumerate() {
             let cfs_with_stopped_writes = self.cf_names.iter().copied().filter(|cf_name| {
@@ -281,17 +281,18 @@ impl StalledWritesRetries {
 /// [`RocksDB`] options.
 #[derive(Debug, Clone, Copy)]
 pub struct RocksDBOptions {
-    /// Byte capacity of the block cache (the main RocksDB cache for reads). If not set, default RocksDB
-    /// cache options will be used.
+    /// Byte capacity of the block cache (the main RocksDB cache for reads). If not set, default
+    /// RocksDB cache options will be used.
     pub block_cache_capacity: Option<usize>,
-    /// If specified, RocksDB indices and Bloom filters will be managed by the block cache, rather than
-    /// being loaded entirely into RAM on the RocksDB initialization. The block cache capacity should be increased
-    /// correspondingly; otherwise, RocksDB performance can significantly degrade.
+    /// If specified, RocksDB indices and Bloom filters will be managed by the block cache, rather
+    /// than being loaded entirely into RAM on the RocksDB initialization. The block cache
+    /// capacity should be increased correspondingly; otherwise, RocksDB performance can
+    /// significantly degrade.
     pub include_indices_and_filters_in_block_cache: bool,
     /// Byte capacity of memtables (recent, non-persisted changes to RocksDB) set for large CFs
     /// (as defined in [`NamedColumnFamily::requires_tuning()`]).
-    /// Setting this to a reasonably large value (order of 512 MiB) is helpful for large DBs that experience
-    /// write stalls. If not set, large CFs will not be configured specially.
+    /// Setting this to a reasonably large value (order of 512 MiB) is helpful for large DBs that
+    /// experience write stalls. If not set, large CFs will not be configured specially.
     pub large_memtable_capacity: Option<usize>,
     /// Timeout to wait for the database to run compaction on stalled writes during startup or
     /// when the corresponding RocksDB error is encountered.
@@ -586,10 +587,10 @@ impl<CF: NamedColumnFamily> RocksDB<CF> {
             .iterator_cf_opt(cf, options, IteratorMode::Start)
             .map(Result::unwrap)
             .fuse()
-        // ^ The RocksDB docs say that a raw iterator (which is used by the returned ordinary iterator)
-        // can become invalid "when it reaches the end of its defined range, or when it encounters an error."
-        // We panic on RocksDB errors elsewhere and fuse it to prevent polling after the end of the range.
-        // Thus, `unwrap()` should be safe.
+        // ^ The RocksDB docs say that a raw iterator (which is used by the returned ordinary
+        // iterator) can become invalid "when it reaches the end of its defined range, or
+        // when it encounters an error." We panic on RocksDB errors elsewhere and fuse it to
+        // prevent polling after the end of the range. Thus, `unwrap()` should be safe.
     }
 
     /// Iterates over key-value pairs in the specified column family `cf` in the lexical
@@ -633,7 +634,8 @@ impl<CF: NamedColumnFamily> RocksDB<CF> {
 impl RocksDB<()> {
     /// Awaits termination of all running RocksDB instances.
     ///
-    /// This method is blocking and should be wrapped in `spawn_blocking(_)` if run in the async context.
+    /// This method is blocking and should be wrapped in `spawn_blocking(_)` if run in the async
+    /// context.
     pub fn await_rocksdb_termination() {
         let (lock, cvar) = &ROCKSDB_INSTANCE_COUNTER;
         let mut num_instances = lock.lock().unwrap();
@@ -672,7 +674,8 @@ impl<CF: NamedColumnFamily> Clone for WeakRocksDB<CF> {
 }
 
 impl<CF: NamedColumnFamily> WeakRocksDB<CF> {
-    /// Tries to upgrade to a strong reference to RocksDB. If the RocksDB instance has been dropped, returns `None`.
+    /// Tries to upgrade to a strong reference to RocksDB. If the RocksDB instance has been dropped,
+    /// returns `None`.
     pub fn upgrade(&self) -> Option<RocksDB<CF>> {
         Some(RocksDB {
             inner: self.inner.upgrade()?,
@@ -708,8 +711,9 @@ pub struct ProfiledOperation {
 impl ProfiledOperation {
     /// Starts profiling RocksDB I/O operations until the returned guard is dropped.
     ///
-    /// Returns `None` if operations are already being profiled for this operation on the current thread.
-    /// Not checking this would lead to logical errors, like the same operations being profiled multiple times.
+    /// Returns `None` if operations are already being profiled for this operation on the current
+    /// thread. Not checking this would lead to logical errors, like the same operations being
+    /// profiled multiple times.
     pub fn start_profiling(self: &Arc<Self>) -> Option<ProfileGuard> {
         if self.is_profiling.get_or_default().replace(true) {
             // The profiling was already active on the current thread.
@@ -781,8 +785,8 @@ pub struct ProfileGuard {
 }
 
 impl ProfileGuard {
-    // Unfortunately, RocksDB doesn't expose all metrics via its C API, so we use this ugly hack to parse the missing metrics
-    // directly from the string representation.
+    // Unfortunately, RocksDB doesn't expose all metrics via its C API, so we use this ugly hack to
+    // parse the missing metrics directly from the string representation.
     fn parse_metrics_str(s: &str) -> HashMap<&str, u64> {
         let metrics = s.split(',').filter_map(|part| {
             let part = part.trim();

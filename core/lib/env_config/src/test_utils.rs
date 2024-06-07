@@ -15,8 +15,8 @@ use zksync_basic_types::{Address, H256};
 pub(crate) struct EnvMutex(Mutex<()>);
 
 impl EnvMutex {
-    /// Creates a new mutex. Separate mutexes can be used for changing env vars that do not intersect
-    /// (e.g., env vars for different configs).
+    /// Creates a new mutex. Separate mutexes can be used for changing env vars that do not
+    /// intersect (e.g., env vars for different configs).
     pub const fn new() -> Self {
         Self(Mutex::new(()))
     }

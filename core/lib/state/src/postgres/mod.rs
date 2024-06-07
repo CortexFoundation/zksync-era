@@ -54,10 +54,12 @@ impl CacheValue<StorageKey> for L1BatchNumber {
     }
 }
 
-/// [`StorageValue`] together with an L2 block "timestamp" starting from which it is known to be valid.
+/// [`StorageValue`] together with an L2 block "timestamp" starting from which it is known to be
+/// valid.
 ///
-/// Using timestamped values in [`ValuesCache`] enables using it for past L2 block states. As long as
-/// a cached value has a "timestamp" older or equal than the requested L2 block, the value can be used.
+/// Using timestamped values in [`ValuesCache`] enables using it for past L2 block states. As long
+/// as a cached value has a "timestamp" older or equal than the requested L2 block, the value can be
+/// used.
 ///
 /// Timestamp is assigned to equal the latest L2 block when a value is fetched from the storage.
 /// A value may be valid for earlier L2 blocks, but fetching the actual modification "timestamp"
@@ -90,8 +92,8 @@ struct ValuesCacheInner {
 /// Cache for the VM storage. Only caches values for a single VM storage snapshot, which logically
 /// corresponds to the latest sealed L2 block in Postgres.
 ///
-/// The cached snapshot can be updated, which will load changed storage keys from Postgres and remove
-/// the (potentially stale) cached values for these keys.
+/// The cached snapshot can be updated, which will load changed storage keys from Postgres and
+/// remove the (potentially stale) cached values for these keys.
 ///
 /// # Why wrap the cache in `RwLock`?
 ///
@@ -138,7 +140,8 @@ impl ValuesCache {
         }
     }
 
-    /// Caches `value` for `key`, but only if the cache currently holds values for `l2_block_number`.
+    /// Caches `value` for `key`, but only if the cache currently holds values for
+    /// `l2_block_number`.
     fn insert(&self, l2_block_number: L2BlockNumber, key: StorageKey, value: StorageValue) {
         let lock = self.0.read().expect("values cache is poisoned");
         if lock.valid_for == l2_block_number {
@@ -167,8 +170,9 @@ impl ValuesCache {
         );
 
         if to_l2_block.0 - from_l2_block.0 > MAX_L2_BLOCKS_LAG {
-            // We can spend too much time loading data from Postgres, so we opt for an easier "update" route:
-            // evict *everything* from cache and call it a day. This should not happen too often in practice.
+            // We can spend too much time loading data from Postgres, so we opt for an easier
+            // "update" route: evict *everything* from cache and call it a day. This
+            // should not happen too often in practice.
             tracing::info!(
                 "Storage values cache is too far behind (current L2 block is {from_l2_block}; \
                  requested update to {to_l2_block}); resetting the cache"
@@ -211,9 +215,10 @@ impl ValuesCache {
                 .0
                 .write()
                 .map_err(|_| anyhow::anyhow!("values cache is poisoned"))?;
-            // The code below holding onto the write `lock` is the only code that can theoretically poison the `RwLock`
-            // (other than emptying the cache above). Thus, it's kept as simple and tight as possible.
-            // E.g., we load data from Postgres beforehand.
+            // The code below holding onto the write `lock` is the only code that can theoretically
+            // poison the `RwLock` (other than emptying the cache above). Thus, it's
+            // kept as simple and tight as possible. E.g., we load data from Postgres
+            // beforehand.
             anyhow::ensure!(
                 lock.valid_for == from_l2_block,
                 "sanity check failed: values cache was expected to be valid for L2 block #{from_l2_block}, but it's actually \
@@ -255,12 +260,13 @@ pub struct PostgresStorageCaches {
     factory_deps: FactoryDepsCache,
     initial_writes: InitialWritesCache,
     // Besides L1 batch numbers for initial writes, we also cache information that a certain key
-    // was not written to before the certain L1 batch (i.e., this lower boundary is the cached value).
+    // was not written to before the certain L1 batch (i.e., this lower boundary is the cached
+    // value).
     //
-    // This is caused by the observation that a significant part of `is_write_initial()` queries returns `true`
-    // (i.e., the corresponding key was not written to).
-    // If we don't cache this information, we'll query Postgres multiple times for the same key even if we know
-    // it wasn't written to at the point that interests us.
+    // This is caused by the observation that a significant part of `is_write_initial()` queries
+    // returns `true` (i.e., the corresponding key was not written to).
+    // If we don't cache this information, we'll query Postgres multiple times for the same key
+    // even if we know it wasn't written to at the point that interests us.
     negative_initial_writes: InitialWritesCache,
     values: Option<ValuesCacheAndUpdater>,
 }
@@ -287,9 +293,9 @@ impl PostgresStorageCaches {
         }
     }
 
-    /// Configures the VM storage values cache. The returned closure is the background task that will update
-    /// the cache according to [`Self::schedule_values_update()`] calls. It should be spawned on a separate thread
-    /// or a blocking Tokio task.
+    /// Configures the VM storage values cache. The returned closure is the background task that
+    /// will update the cache according to [`Self::schedule_values_update()`] calls. It should
+    /// be spawned on a separate thread or a blocking Tokio task.
     ///
     /// # Panics
     ///
@@ -315,8 +321,9 @@ impl PostgresStorageCaches {
 
         // We want to run updates in a separate task in order to not block VM execution on update
         // and keep contention over the `ValuesCache` lock as low as possible. As a downside,
-        // `Self::schedule_values_update()` will produce some no-op update commands from concurrently
-        // executing VM instances. Due to built-in filtering, this seems manageable.
+        // `Self::schedule_values_update()` will produce some no-op update commands from
+        // concurrently executing VM instances. Due to built-in filtering, this seems
+        // manageable.
         PostgresStorageCachesTask {
             connection_pool,
             values_cache,
@@ -324,21 +331,22 @@ impl PostgresStorageCaches {
         }
     }
 
-    /// Schedules an update of the VM storage values cache to the specified L2 block. If the values cache is not configured,
-    /// this is a no-op.
+    /// Schedules an update of the VM storage values cache to the specified L2 block. If the values
+    /// cache is not configured, this is a no-op.
     ///
     /// # Panics
     ///
-    /// - Panics if the cache update task returned from `configure_storage_values_cache()` has panicked.
+    /// - Panics if the cache update task returned from `configure_storage_values_cache()` has
+    ///   panicked.
     pub fn schedule_values_update(&self, to_l2_block: L2BlockNumber) {
         let Some(values) = &self.values else {
             return;
         };
         if values.cache.valid_for() < to_l2_block {
             // Filter out no-op updates right away in order to not store lots of them in RAM.
-            // Since the task updating the values cache (`PostgresStorageCachesTask`) is cancel-aware,
-            // it can stop before some of `schedule_values_update()` calls; in this case, it's OK
-            // to ignore the updates.
+            // Since the task updating the values cache (`PostgresStorageCachesTask`) is
+            // cancel-aware, it can stop before some of `schedule_values_update()`
+            // calls; in this case, it's OK to ignore the updates.
             values.command_sender.send(to_l2_block).ok();
         }
     }
@@ -463,10 +471,11 @@ impl<'a> PostgresStorage<'a> {
         }
     }
 
-    /// This method is expected to be called for each write that was found in the database, and it decides
-    /// whether the change is initial or not. Even if a change is present in the DB, in some cases we would not consider it.
-    /// For example, in API we always represent the state at the beginning of an L1 batch, so we discard all the writes
-    /// that happened at the same batch or later (for historical `eth_call` requests).
+    /// This method is expected to be called for each write that was found in the database, and it
+    /// decides whether the change is initial or not. Even if a change is present in the DB, in
+    /// some cases we would not consider it. For example, in API we always represent the state
+    /// at the beginning of an L1 batch, so we discard all the writes that happened at the same
+    /// batch or later (for historical `eth_call` requests).
     fn write_counts(&self, write_l1_batch_number: L1BatchNumber) -> bool {
         if self.consider_new_l1_batch {
             self.l1_batch_number_for_l2_block >= write_l1_batch_number
@@ -511,10 +520,11 @@ impl ReadStorage for PostgresStorage<'_> {
             // Write is absent in positive cache, check whether it's present in the negative cache.
             let cached_value = caches.and_then(|caches| caches.negative_initial_writes.get(key));
             if let Some(min_l1_batch_for_initial_write) = cached_value {
-                // We know that this slot was certainly not touched before `min_l1_batch_for_initial_write`.
-                // Try to use this knowledge to decide if the change is certainly initial.
-                // This is based on the hypothetical worst-case scenario, in which the key was
-                // written to at the earliest possible L1 batch (i.e., `min_l1_batch_for_initial_write`).
+                // We know that this slot was certainly not touched before
+                // `min_l1_batch_for_initial_write`. Try to use this knowledge to
+                // decide if the change is certainly initial. This is based on the
+                // hypothetical worst-case scenario, in which the key was written to
+                // at the earliest possible L1 batch (i.e., `min_l1_batch_for_initial_write`).
                 if !self.write_counts(min_l1_batch_for_initial_write) {
                     CACHE_METRICS.effective_values.inc();
                     return true;
@@ -537,8 +547,9 @@ impl ReadStorage for PostgresStorage<'_> {
                     caches
                         .negative_initial_writes
                         .insert(*key, self.pending_l1_batch_number);
-                    // The pending L1 batch might have been sealed since its number was requested from Postgres
-                    // in `Self::new()`, so this is a somewhat conservative estimate.
+                    // The pending L1 batch might have been sealed since its number was requested
+                    // from Postgres in `Self::new()`, so this is a somewhat
+                    // conservative estimate.
                 }
             }
             value

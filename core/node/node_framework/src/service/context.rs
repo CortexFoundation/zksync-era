@@ -9,7 +9,8 @@ use crate::{
 };
 
 /// An interface to the service's resources provided to the tasks during initialization.
-/// Provides the ability to fetch required resources, and also gives access to the Tokio runtime handle.
+/// Provides the ability to fetch required resources, and also gives access to the Tokio runtime
+/// handle.
 #[derive(Debug)]
 pub struct ServiceContext<'a> {
     layer: &'a str,
@@ -23,8 +24,8 @@ impl<'a> ServiceContext<'a> {
 
     /// Provides access to the runtime used by the service.
     /// Can be used to spawn additional tasks within the same runtime.
-    /// If some tasks stores the handle to spawn additional tasks, it is expected to do all the required
-    /// cleanup.
+    /// If some tasks stores the handle to spawn additional tasks, it is expected to do all the
+    /// required cleanup.
     ///
     /// In most cases, however, it is recommended to use [`add_task`] method instead.
     pub fn runtime_handle(&self) -> &tokio::runtime::Handle {
@@ -36,8 +37,8 @@ impl<'a> ServiceContext<'a> {
     }
 
     /// Adds a task to the service.
-    /// Added tasks will be launched after the wiring process will be finished and all the preconditions
-    /// are met.
+    /// Added tasks will be launched after the wiring process will be finished and all the
+    /// preconditions are met.
     pub fn add_task(&mut self, task: Box<dyn Task>) -> &mut Self {
         tracing::info!("Layer {} has added a new task: {}", self.layer, task.id());
         self.service.runnables.tasks.push(task);
@@ -96,8 +97,8 @@ impl<'a> ServiceContext<'a> {
     }
 
     /// Attempts to retrieve the resource with the specified name.
-    /// Internally the resources are stored as [`std::any::Any`], and this method does the downcasting
-    /// on behalf of the caller.
+    /// Internally the resources are stored as [`std::any::Any`], and this method does the
+    /// downcasting on behalf of the caller.
     ///
     /// ## Panics
     ///

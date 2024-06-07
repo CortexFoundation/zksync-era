@@ -22,7 +22,8 @@ pub(super) enum EventProcessorError {
     },
     #[error("Eth client error: {0}")]
     Client(#[from] EthClientError),
-    /// Internal errors are considered fatal (i.e., they bubble up and lead to the watcher termination).
+    /// Internal errors are considered fatal (i.e., they bubble up and lead to the watcher
+    /// termination).
     #[error("internal processing error: {0:?}")]
     Internal(#[from] anyhow::Error),
 }

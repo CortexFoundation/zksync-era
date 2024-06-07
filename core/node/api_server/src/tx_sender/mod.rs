@@ -104,7 +104,8 @@ pub struct MultiVMBaseSystemContracts {
     pub(crate) post_1_4_1: BaseSystemContracts,
     /// Contracts to be used after the 1.4.2 upgrade
     pub(crate) post_1_4_2: BaseSystemContracts,
-    /// Contracts to be used during the `v23` upgrade. This upgrade was done on an internal staging environment only.
+    /// Contracts to be used during the `v23` upgrade. This upgrade was done on an internal staging
+    /// environment only.
     pub(crate) vm_1_5_0_small_memory: BaseSystemContracts,
     /// Contracts to be used after the 1.5.0 upgrade
     pub(crate) vm_1_5_0_increased_memory: BaseSystemContracts,
@@ -453,8 +454,9 @@ impl TxSender {
         }
     }
 
-    /// **Important.** For the main node, this method acquires a DB connection inside `get_batch_fee_input()`.
-    /// Thus, you shouldn't call it if you're holding a DB connection already.
+    /// **Important.** For the main node, this method acquires a DB connection inside
+    /// `get_batch_fee_input()`. Thus, you shouldn't call it if you're holding a DB connection
+    /// already.
     async fn shared_args(&self) -> anyhow::Result<TxSharedArgs> {
         let fee_input = self
             .0
@@ -481,7 +483,8 @@ impl TxSender {
         tx: &L2Tx,
         protocol_version: ProtocolVersionId,
     ) -> Result<(), SubmitTxError> {
-        // This check is intended to ensure that the gas-related values will be safe to convert to u64 in the future computations.
+        // This check is intended to ensure that the gas-related values will be safe to convert to
+        // u64 in the future computations.
         let max_gas = U256::from(u64::MAX);
         if tx.common_data.fee.gas_limit > max_gas
             || tx.common_data.fee.gas_per_pubdata_limit > max_gas
@@ -544,7 +547,8 @@ impl TxSender {
         }
 
         // We still double-check the nonce manually
-        // to make sure that only the correct nonce is submitted and the transaction's hashes never repeat
+        // to make sure that only the correct nonce is submitted and the transaction's hashes never
+        // repeat
         self.validate_account_nonce(tx).await?;
         // Even though without enough balance the tx will not pass anyway
         // we check the user for enough balance explicitly here for better DevEx.
@@ -605,7 +609,8 @@ impl TxSender {
 
     async fn validate_enough_balance(&self, tx: &L2Tx) -> Result<(), SubmitTxError> {
         let paymaster = tx.common_data.paymaster_params.paymaster;
-        // The paymaster is expected to pay for the tx; whatever balance the user has, we don't care.
+        // The paymaster is expected to pay for the tx; whatever balance the user has, we don't
+        // care.
         if paymaster != Address::default() {
             return Ok(());
         }
@@ -766,8 +771,8 @@ impl TxSender {
         }
 
         let hashed_key = get_code_key(&tx.initiator_account());
-        // If the default account does not have enough funds for transferring `tx.value`, without taking into account the fee,
-        // there is no sense to estimate the fee.
+        // If the default account does not have enough funds for transferring `tx.value`, without
+        // taking into account the fee, there is no sense to estimate the fee.
         let account_code_hash = self
             .acquire_replica_connection()
             .await?
@@ -805,22 +810,26 @@ impl TxSender {
         let vm_permit = self.0.vm_concurrency_limiter.acquire().await;
         let vm_permit = vm_permit.ok_or(SubmitTxError::ServerShuttingDown)?;
 
-        // When the pubdata cost grows very high, the total gas limit required may become very high as well. If
-        // we do binary search over any possible gas limit naively, we may end up with a very high number of iterations,
-        // which affects performance.
+        // When the pubdata cost grows very high, the total gas limit required may become very high
+        // as well. If we do binary search over any possible gas limit naively, we may end
+        // up with a very high number of iterations, which affects performance.
         //
-        // To optimize for this case, we first calculate the amount of gas needed to cover for the pubdata. After that, we
-        // need to do a smaller binary search that is focused on computational gas limit only.
+        // To optimize for this case, we first calculate the amount of gas needed to cover for the
+        // pubdata. After that, we need to do a smaller binary search that is focused on
+        // computational gas limit only.
         let additional_gas_for_pubdata = if tx.is_l1() {
             // For L1 transactions the pubdata priced in such a way that the maximal computational
-            // gas limit should be enough to cover for the pubdata as well, so no additional gas is provided there.
+            // gas limit should be enough to cover for the pubdata as well, so no additional gas is
+            // provided there.
             0u64
         } else {
-            // For L2 transactions, we estimate the amount of gas needed to cover for the pubdata by creating a transaction with infinite gas limit.
-            // And getting how much pubdata it used.
+            // For L2 transactions, we estimate the amount of gas needed to cover for the pubdata by
+            // creating a transaction with infinite gas limit. And getting how much
+            // pubdata it used.
 
-            // In theory, if the transaction has failed with such large gas limit, we could have returned an API error here right away,
-            // but doing it later on keeps the code more lean.
+            // In theory, if the transaction has failed with such large gas limit, we could have
+            // returned an API error here right away, but doing it later on keeps the
+            // code more lean.
             let (result, _) = self
                 .estimate_gas_step(
                     vm_permit.clone(),
@@ -1011,16 +1020,18 @@ impl TxSender {
         tx_metrics: &TransactionExecutionMetrics,
         log_message: bool,
     ) -> Result<(), SubmitTxError> {
-        // Hash is not computable for the provided `transaction` during gas estimation (it doesn't have
-        // its input data set). Since we don't log a hash in this case anyway, we just use a dummy value.
+        // Hash is not computable for the provided `transaction` during gas estimation (it doesn't
+        // have its input data set). Since we don't log a hash in this case anyway, we just
+        // use a dummy value.
         let tx_hash = if log_message {
             transaction.hash()
         } else {
             H256::zero()
         };
 
-        // Using `ProtocolVersionId::latest()` for a short period we might end up in a scenario where the StateKeeper is still pre-boojum
-        // but the API assumes we are post boojum. In this situation we will determine a tx as being executable but the StateKeeper will
+        // Using `ProtocolVersionId::latest()` for a short period we might end up in a scenario
+        // where the StateKeeper is still pre-boojum but the API assumes we are post boojum.
+        // In this situation we will determine a tx as being executable but the StateKeeper will
         // still reject them as it's not.
         let protocol_version = ProtocolVersionId::latest();
         let seal_data = SealData::for_transaction(transaction, tx_metrics, protocol_version);

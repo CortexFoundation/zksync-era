@@ -1,6 +1,7 @@
 //! Miscellaneous helper macros.
 
-/// Writes to a [`String`]. This is equivalent to `write!`, but without the need to `unwrap()` the result.
+/// Writes to a [`String`]. This is equivalent to `write!`, but without the need to `unwrap()` the
+/// result.
 #[macro_export]
 macro_rules! write_str {
     ($buffer:expr, $($args:tt)+) => {{
@@ -21,11 +22,12 @@ macro_rules! writeln_str {
     }};
 }
 
-/// Interpolates the provided DB query consisting of several or comma-separated parts, each of parts being a string literal
-/// or `_`. `_` parts are substituted with the provided variables in the order of appearance.
+/// Interpolates the provided DB query consisting of several or comma-separated parts, each of parts
+/// being a string literal or `_`. `_` parts are substituted with the provided variables in the
+/// order of appearance.
 ///
-/// We use tail recursion and accumulate (possibly substituted) parts in an accumulator. This is because `query_as!` would not
-/// work otherwise; its input must be fully expanded.
+/// We use tail recursion and accumulate (possibly substituted) parts in an accumulator. This is
+/// because `query_as!` would not work otherwise; its input must be fully expanded.
 #[macro_export]
 macro_rules! interpolate_query {
     // Terminal clause: we have a final substitution.
@@ -67,17 +69,21 @@ macro_rules! interpolate_query {
     };
 }
 
-/// Builds a set of statically compiled DB queries based on the provided condition. This allows to avoid copying similar queries
-/// or making them dynamic (i.e., using `sqlx::query()` function etc.).
+/// Builds a set of statically compiled DB queries based on the provided condition. This allows to
+/// avoid copying similar queries or making them dynamic (i.e., using `sqlx::query()` function
+/// etc.).
 ///
 /// The macro accepts 3 arguments:
 ///
 /// - Output type. Has same semantics as the type in `sqlx::query_as!` macro.
-/// - Query parts, enclosed in `[]` brackets. Each part must be either a string literal, or a `_` placeholder.
-/// - `match` expression. Each variant hand must return a `()`-enclosed comma-separated list of substitutions for the placeholder
-///   query parts (in the order of their appearance in the query parts), then a semicolon `;`, then a list of arguments
-///   for the query (may be empty; has same semantics as arguments for `sqlx::query!`). Each substitution must be a string literal.
-///   The number of arguments may differ across variants (e.g., one of variants may introduce one or more additional args).
+/// - Query parts, enclosed in `[]` brackets. Each part must be either a string literal, or a `_`
+///   placeholder.
+/// - `match` expression. Each variant hand must return a `()`-enclosed comma-separated list of
+///   substitutions for the placeholder query parts (in the order of their appearance in the query
+///   parts), then a semicolon `;`, then a list of arguments for the query (may be empty; has same
+///   semantics as arguments for `sqlx::query!`). Each substitution must be a string literal. The
+///   number of arguments may differ across variants (e.g., one of variants may introduce one or
+///   more additional args).
 ///
 /// See the crate code for examples of usage.
 #[macro_export]

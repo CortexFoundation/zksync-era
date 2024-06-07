@@ -6,9 +6,11 @@ use reqwest::{
 };
 use zksync_utils::http_with_retries::send_request_with_retries;
 
+// usually we can't get the region
 pub async fn get_zone(zone_url: &str) -> anyhow::Result<String> {
-    let data = fetch_from_url(zone_url).await.context("fetch_from_url()")?;
-    parse_zone(&data).context("parse_zone")
+    Ok("Cortex_TEST".to_string())
+    // let data = fetch_from_url(zone_url).await.context("fetch_from_url()")?;
+    // parse_zone(&data).context("parse_zone")
 }
 
 async fn fetch_from_url(url: &str) -> anyhow::Result<String> {

@@ -382,10 +382,12 @@ async fn recovery_workflow() {
         .await
         .unwrap()
         .expect("No snapshot metadata");
-    assert!(snapshot_metadata
-        .storage_logs_filepaths
-        .iter()
-        .all(Option::is_none));
+    assert!(
+        snapshot_metadata
+            .storage_logs_filepaths
+            .iter()
+            .all(Option::is_none)
+    );
 
     let object_store = object_store_factory.create_store().await;
     let SnapshotFactoryDependencies { factory_deps } =

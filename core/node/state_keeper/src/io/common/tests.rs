@@ -1,7 +1,7 @@
 //! Tests for the common I/O utils.
 //!
-//! `L1BatchParamsProvider` tests are (temporarily?) here because of `testonly` utils in this crate to create L1 batches,
-//! L2 blocks, transactions etc.
+//! `L1BatchParamsProvider` tests are (temporarily?) here because of `testonly` utils in this crate
+//! to create L1 batches, L2 blocks, transactions etc.
 
 use std::{collections::HashMap, ops};
 
@@ -150,10 +150,12 @@ async fn waiting_for_l1_batch_params_after_snapshot_recovery() {
     assert_eq!(timestamp, snapshot_recovery.l1_batch_timestamp);
 
     for pruned_l1_batch in [0, 1, snapshot_recovery.l1_batch_number.0 - 1] {
-        assert!(provider
-            .wait_for_l1_batch_params(&mut storage, L1BatchNumber(pruned_l1_batch))
-            .await
-            .is_err());
+        assert!(
+            provider
+                .wait_for_l1_batch_params(&mut storage, L1BatchNumber(pruned_l1_batch))
+                .await
+                .is_err()
+        );
     }
 
     let new_l1_batch = create_l1_batch(snapshot_recovery.l1_batch_number.0 + 1);
@@ -466,11 +468,13 @@ async fn getting_batch_version_with_genesis() {
         .unwrap();
     assert_eq!(version, Some(genesis_params.minor_protocol_version()));
 
-    assert!(provider
-        .load_l1_batch_protocol_version(&mut storage, L1BatchNumber(1))
-        .await
-        .unwrap()
-        .is_none());
+    assert!(
+        provider
+            .load_l1_batch_protocol_version(&mut storage, L1BatchNumber(1))
+            .await
+            .unwrap()
+            .is_none()
+    );
 
     storage
         .protocol_versions_dal()
@@ -505,15 +509,19 @@ async fn getting_batch_version_after_snapshot_recovery() {
         .unwrap();
     assert_eq!(version, Some(snapshot_recovery.protocol_version));
 
-    assert!(provider
-        .load_l1_batch_protocol_version(&mut storage, L1BatchNumber(1))
-        .await
-        .is_err());
-    assert!(provider
-        .load_l1_batch_protocol_version(&mut storage, snapshot_recovery.l1_batch_number + 1)
-        .await
-        .unwrap()
-        .is_none());
+    assert!(
+        provider
+            .load_l1_batch_protocol_version(&mut storage, L1BatchNumber(1))
+            .await
+            .is_err()
+    );
+    assert!(
+        provider
+            .load_l1_batch_protocol_version(&mut storage, snapshot_recovery.l1_batch_number + 1)
+            .await
+            .unwrap()
+            .is_none()
+    );
 
     storage
         .protocol_versions_dal()

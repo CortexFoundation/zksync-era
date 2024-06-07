@@ -127,7 +127,8 @@ impl PubSubNotifier {
     }
 
     fn send_pub_sub_results(&self, results: Vec<PubSubResult>, sub_type: SubscriptionType) {
-        // Errors only on 0 receivers, but we want to go on if we have 0 subscribers so ignore the error.
+        // Errors only on 0 receivers, but we want to go on if we have 0 subscribers so ignore the
+        // error.
         self.sender.send(results).ok();
         PUB_SUB_METRICS.broadcast_channel_len[&sub_type].set(self.sender.len());
     }

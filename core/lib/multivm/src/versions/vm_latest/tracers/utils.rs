@@ -177,8 +177,9 @@ pub(crate) fn computational_gas_price(
 ) -> u32 {
     // We calculate computational gas used as a raw price for opcode plus cost for precompiles.
     // This calculation is incomplete as it misses decommitment and memory growth costs.
-    // To calculate decommitment cost we need an access to decommitter oracle which is missing in tracer now.
-    // Memory growth calculation is complex and it will require different logic for different opcodes (`FarCall`, `Ret`, `UMA`).
+    // To calculate decommitment cost we need an access to decommitter oracle which is missing in
+    // tracer now. Memory growth calculation is complex and it will require different logic for
+    // different opcodes (`FarCall`, `Ret`, `UMA`).
     let base_price = data.opcode.inner.variant.ergs_price();
     let precompile_price = match data.opcode.variant.opcode {
         Opcode::Log(LogOpcode::PrecompileCall) => {

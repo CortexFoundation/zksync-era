@@ -55,7 +55,8 @@ impl<H: HistoryMode> InMemoryEventSink<H> {
         let events = self.frames_stack.forward().current_frame();
 
         // Select all of the last elements where `e.timestamp >= from_timestamp`.
-        // Note, that using binary search here is dangerous, because the logs are not sorted by timestamp.
+        // Note, that using binary search here is dangerous, because the logs are not sorted by
+        // timestamp.
         events
             .rsplit(|e| e.timestamp < from_timestamp)
             .next()
@@ -77,7 +78,8 @@ impl<H: HistoryMode> InMemoryEventSink<H> {
             .collect_vec();
 
         // Sort the events by timestamp and rollback flag, basically ensuring that
-        // if an event has been rolled back, the original event and its rollback will be put together
+        // if an event has been rolled back, the original event and its rollback will be put
+        // together
         events.sort_by_key(|log| (log.timestamp, log.rollback));
 
         let mut stack = Vec::<LogQuery>::new();
@@ -105,8 +107,8 @@ impl<H: HistoryMode> InMemoryEventSink<H> {
                     assert_eq!(previous.is_service, el.is_service);
                     continue;
                 } else {
-                    // The event on the stack has not been rolled back. It must be a different event,
-                    // with a different timestamp.
+                    // The event on the stack has not been rolled back. It must be a different
+                    // event, with a different timestamp.
                     assert!(!el.rollback);
                     stack.push(*el);
 

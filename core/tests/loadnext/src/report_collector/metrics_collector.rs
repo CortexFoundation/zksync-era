@@ -104,8 +104,8 @@ impl TimeHistogram {
 
 /// Collector for the execution time metrics.
 ///
-/// It builds a distribution histogram for each type of action, thus reported results are represented
-/// by a range window rather than a single concrete number.
+/// It builds a distribution histogram for each type of action, thus reported results are
+/// represented by a range window rather than a single concrete number.
 #[derive(Debug, Clone)]
 pub struct MetricsCollector {
     pub action_stats: HashMap<ActionType, TimeHistogram>,

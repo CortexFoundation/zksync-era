@@ -39,11 +39,12 @@ mod updater;
 
 #[derive(Debug, Clone)]
 pub struct MetadataCalculatorRecoveryConfig {
-    /// Approximate chunk size (measured in the number of entries) to recover on a single iteration.
-    /// Reasonable values are order of 100,000 (meaning an iteration takes several seconds).
+    /// Approximate chunk size (measured in the number of entries) to recover on a single
+    /// iteration. Reasonable values are order of 100,000 (meaning an iteration takes several
+    /// seconds).
     ///
-    /// **Important.** This value cannot be changed in the middle of tree recovery (i.e., if a node is stopped in the middle
-    /// of recovery and then restarted with a different config).
+    /// **Important.** This value cannot be changed in the middle of tree recovery (i.e., if a node
+    /// is stopped in the middle of recovery and then restarted with a different config).
     pub desired_chunk_size: u64,
 }
 
@@ -60,8 +61,8 @@ impl Default for MetadataCalculatorRecoveryConfig {
 pub struct MetadataCalculatorConfig {
     /// Filesystem path to the RocksDB instance that stores the tree.
     pub db_path: String,
-    /// Maximum number of files concurrently opened by RocksDB. Useful to fit into OS limits; can be used
-    /// as a rudimentary way to control RAM usage of the tree.
+    /// Maximum number of files concurrently opened by RocksDB. Useful to fit into OS limits; can
+    /// be used as a rudimentary way to control RAM usage of the tree.
     pub max_open_files: Option<NonZeroU32>,
     /// Configuration of the Merkle tree mode.
     pub mode: MerkleTreeMode,
@@ -69,14 +70,17 @@ pub struct MetadataCalculatorConfig {
     pub delay_interval: Duration,
     /// Maximum number of L1 batches to get from Postgres on a single update iteration.
     pub max_l1_batches_per_iter: usize,
-    /// Chunk size for multi-get operations. Can speed up loading data for the Merkle tree on some environments,
-    /// but the effects vary wildly depending on the setup (e.g., the filesystem used).
+    /// Chunk size for multi-get operations. Can speed up loading data for the Merkle tree on some
+    /// environments, but the effects vary wildly depending on the setup (e.g., the filesystem
+    /// used).
     pub multi_get_chunk_size: usize,
-    /// Capacity of RocksDB block cache in bytes. Reasonable values range from ~100 MiB to several GB.
+    /// Capacity of RocksDB block cache in bytes. Reasonable values range from ~100 MiB to several
+    /// GB.
     pub block_cache_capacity: usize,
-    /// If specified, RocksDB indices and Bloom filters will be managed by the block cache, rather than
-    /// being loaded entirely into RAM on the RocksDB initialization. The block cache capacity should be increased
-    /// correspondingly; otherwise, RocksDB performance can significantly degrade.
+    /// If specified, RocksDB indices and Bloom filters will be managed by the block cache, rather
+    /// than being loaded entirely into RAM on the RocksDB initialization. The block cache
+    /// capacity should be increased correspondingly; otherwise, RocksDB performance can
+    /// significantly degrade.
     pub include_indices_and_filters_in_block_cache: bool,
     /// Capacity of RocksDB memtables. Can be set to a reasonably large value (order of 512 MiB)
     /// to mitigate write stalls.
@@ -165,8 +169,8 @@ impl MetadataCalculator {
         })
     }
 
-    /// Sets a separate pool that will be used in case of snapshot recovery. It should have multiple connections
-    /// (e.g., 10) to speed up recovery.
+    /// Sets a separate pool that will be used in case of snapshot recovery. It should have multiple
+    /// connections (e.g., 10) to speed up recovery.
     pub fn with_recovery_pool(mut self, recovery_pool: ConnectionPool<Core>) -> Self {
         self.recovery_pool = recovery_pool;
         self
@@ -182,9 +186,9 @@ impl MetadataCalculator {
         LazyAsyncTreeReader(self.tree_reader.subscribe())
     }
 
-    /// Returns a task that can be used to prune the Merkle tree according to the pruning logs in Postgres.
-    /// This method should be called once; only the latest returned task will do any job, all previous ones
-    /// will terminate immediately.
+    /// Returns a task that can be used to prune the Merkle tree according to the pruning logs in
+    /// Postgres. This method should be called once; only the latest returned task will do any
+    /// job, all previous ones will terminate immediately.
     pub fn pruning_task(&mut self, poll_interval: Duration) -> MerkleTreePruningTask {
         let (pruning_handles_sender, pruning_handles) = oneshot::channel();
         self.pruning_handles_sender = pruning_handles_sender;

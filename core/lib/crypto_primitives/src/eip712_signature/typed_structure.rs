@@ -51,7 +51,8 @@ impl EncodedStructureMember {
         encoded_type
     }
 
-    /// Encodes the structure as json according to principle `{ member_type: [{"name": member_name₁, "type": member_type₁}, ...] }`.
+    /// Encodes the structure as json according to principle `{ member_type: [{"name": member_name₁,
+    /// "type": member_type₁}, ...] }`.
     pub fn get_json_types(&self) -> Value {
         let mut members = Vec::new();
         for member in &self.inner_members {
@@ -149,7 +150,8 @@ pub trait EIP712TypedStructure: Serialize {
 pub struct Eip712Domain {
     /// The user readable name of signing domain, i.e. the name of the DApp or the protocol.
     pub name: String,
-    /// The current major version of the signing domain. Signatures from different versions are not compatible.
+    /// The current major version of the signing domain. Signatures from different versions are not
+    /// compatible.
     pub version: String,
     /// The [EIP-155](https://eips.ethereum.org/EIPS/eip-155) chain id.
     pub chain_id: U256,
@@ -159,8 +161,8 @@ impl Eip712Domain {
     /// Name of the protocol.
     pub const NAME: &'static str = "zkSync";
     /// Version of the protocol. While there may be `2.x` releases, the minor release version bump
-    /// should not be breaking, meaning that clients from the `2.x-1` version should be able to communicate
-    /// with zkSync server. Thus `VERSION` corresponds to the major version only.
+    /// should not be breaking, meaning that clients from the `2.x-1` version should be able to
+    /// communicate with zkSync server. Thus `VERSION` corresponds to the major version only.
     pub const VERSION: &'static str = "2";
 
     pub fn new(chain_id: L2ChainId) -> Self {

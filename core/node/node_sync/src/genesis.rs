@@ -41,8 +41,8 @@ async fn create_genesis_params(
     }
 
     // Load the list of addresses that are known to contain system contracts at any point in time.
-    // Not every of these addresses is guaranteed to be present in the genesis state, but we'll iterate through
-    // them and try to fetch the contract bytecode for each of them.
+    // Not every of these addresses is guaranteed to be present in the genesis state, but we'll
+    // iterate through them and try to fetch the contract bytecode for each of them.
     let system_contract_addresses: Vec<_> = get_system_smart_contracts()
         .into_iter()
         .map(|contract| *contract.account_id.address())
@@ -56,8 +56,8 @@ async fn create_genesis_params(
 
     // In EN, we don't know what were the system contracts at the genesis state.
     // We know the list of addresses where these contracts *may have been* deployed.
-    // So, to collect the list of system contracts, we compute the corresponding storage slots and request
-    // the state at genesis block to fetch the hash of the corresponding contract.
+    // So, to collect the list of system contracts, we compute the corresponding storage slots and
+    // request the state at genesis block to fetch the hash of the corresponding contract.
     // Then, we can fetch the factory dependency bytecode to fully recover the contract.
     let mut system_contracts: Vec<DeployedContract> =
         Vec::with_capacity(system_contract_addresses.len());
@@ -69,7 +69,9 @@ async fn create_genesis_params(
         else {
             // It's OK for some of contracts to be absent.
             // If this is a bug, the genesis root hash won't match.
-            tracing::debug!("System contract with address {system_contract_address:?} is absent at genesis state");
+            tracing::debug!(
+                "System contract with address {system_contract_address:?} is absent at genesis state"
+            );
             continue;
         };
         let contract = DeployedContract::new(AccountTreeId::new(system_contract_address), bytecode);

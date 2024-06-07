@@ -481,8 +481,9 @@ impl JobProcessor for ContractVerifier {
         const TIME_OVERHEAD: Duration = Duration::from_secs(10);
 
         // Considering that jobs that reach compilation timeout will be executed in
-        // `compilation_timeout` + `non_compilation_time_overhead` (which is significantly less than `compilation_timeout`),
-        // we re-pick up jobs that are being executed for a bit more than `compilation_timeout`.
+        // `compilation_timeout` + `non_compilation_time_overhead` (which is significantly less than
+        // `compilation_timeout`), we re-pick up jobs that are being executed for a bit more
+        // than `compilation_timeout`.
         let job = connection
             .contract_verification_dal()
             .get_next_queued_verification_request(self.config.compilation_timeout() + TIME_OVERHEAD)

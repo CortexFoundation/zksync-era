@@ -27,8 +27,8 @@ mod tests;
 pub struct DbPrunerConfig {
     /// Delta between soft- and hard-removing data from Postgres.
     pub removal_delay: Duration,
-    /// Number of L1 batches pruned at a time. The pruner will do nothing if there is less than this number
-    /// of batches to prune.
+    /// Number of L1 batches pruned at a time. The pruner will do nothing if there is less than
+    /// this number of batches to prune.
     pub pruned_batch_chunk_size: u32,
     /// Minimum age of an L1 batch in order for it to be eligible for pruning. Setting this to zero
     /// will effectively disable this pruning criterion.
@@ -192,7 +192,11 @@ impl DbPruner {
             .blocks_dal()
             .get_l2_block_range_of_l1_batch(next_l1_batch_to_prune)
             .await?
-            .with_context(|| format!("L1 batch #{next_l1_batch_to_prune} is ready to be pruned, but has no L2 blocks"))?;
+            .with_context(|| {
+                format!(
+                    "L1 batch #{next_l1_batch_to_prune} is ready to be pruned, but has no L2 blocks"
+                )
+            })?;
         transaction
             .pruning_dal()
             .soft_prune_batches_range(next_l1_batch_to_prune, next_l2_block_to_prune)
@@ -306,7 +310,8 @@ impl DbPruner {
 
             let should_sleep = match self.run_single_iteration(&mut stop_receiver).await {
                 Err(err) => {
-                    // As this component is not really mission-critical, all errors are generally ignored
+                    // As this component is not really mission-critical, all errors are generally
+                    // ignored
                     tracing::warn!(
                         "Pruning error, retrying in {next_iteration_delay:?}, error was: {err:?}"
                     );
@@ -327,8 +332,8 @@ impl DbPruner {
                     .await
                     .is_ok()
             {
-                // The pruner either received a stop signal, or the stop receiver was dropped. In any case,
-                // the pruner should exit.
+                // The pruner either received a stop signal, or the stop receiver was dropped. In
+                // any case, the pruner should exit.
                 break;
             }
         }

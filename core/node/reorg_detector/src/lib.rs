@@ -26,7 +26,8 @@ pub enum MissingData {
     /// The main node lacks a requested L1 batch.
     #[error("no requested L1 batch")]
     Batch,
-    /// The main node lacks a root hash for a requested L1 batch; the batch itself is present on the node.
+    /// The main node lacks a root hash for a requested L1 batch; the batch itself is present on
+    /// the node.
     #[error("no root hash for L1 batch")]
     RootHash,
 }
@@ -378,8 +379,8 @@ impl ReorgDetector {
         known_valid_l1_batch: L1BatchNumber,
         diverged_l1_batch: L1BatchNumber,
     ) -> Result<L1BatchNumber, HashMatchError> {
-        // TODO (BFT-176, BFT-181): We have to look through the whole history, since batch status updater may mark
-        //   a block as executed even if the state diverges for it.
+        // TODO (BFT-176, BFT-181): We have to look through the whole history, since batch status
+        // updater may mark   a block as executed even if the state diverges for it.
         binary_search_with(
             known_valid_l1_batch.0,
             diverged_l1_batch.0,
@@ -405,8 +406,8 @@ impl ReorgDetector {
         self.run_inner(true, stop_receiver).await
     }
 
-    /// Runs this detector continuously checking for a reorg until a fatal error occurs (including if a reorg is detected),
-    /// or a stop signal is received.
+    /// Runs this detector continuously checking for a reorg until a fatal error occurs (including
+    /// if a reorg is detected), or a stop signal is received.
     pub async fn run(mut self, stop_receiver: watch::Receiver<bool>) -> Result<(), Error> {
         self.event_handler.initialize();
         self.run_inner(false, stop_receiver).await?;
@@ -423,7 +424,9 @@ impl ReorgDetector {
         while !*stop_receiver.borrow_and_update() {
             let sleep_interval = match self.check_consistency().await {
                 Err(Error::HashMatch(HashMatchError::MissingData(MissingData::RootHash))) => {
-                    tracing::debug!("Last L1 batch on the main node doesn't have a state root hash; waiting until it is computed");
+                    tracing::debug!(
+                        "Last L1 batch on the main node doesn't have a state root hash; waiting until it is computed"
+                    );
                     self.sleep_interval / 10
                 }
                 Err(err) if err.is_transient() => {
@@ -440,8 +443,8 @@ impl ReorgDetector {
                 .await
                 .is_ok()
             {
-                // Error here corresponds to a timeout w/o `stop_receiver` changed; we're OK with this.
-                // OTOH, an Ok(_) value always signals task termination.
+                // Error here corresponds to a timeout w/o `stop_receiver` changed; we're OK with
+                // this. OTOH, an Ok(_) value always signals task termination.
                 break;
             }
         }

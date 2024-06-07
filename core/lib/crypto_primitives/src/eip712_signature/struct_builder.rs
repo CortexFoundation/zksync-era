@@ -77,22 +77,26 @@ impl OuterTypeBuilder {
     }
 }
 
-// Builder that encodes type information and structure data for for hashing the structure according to the EIP-712 standard.
+// Builder that encodes type information and structure data for for hashing the structure according
+// to the EIP-712 standard.
 pub(crate) struct EncodeBuilder {
     members: Vec<(EncodedStructureMember, H256)>,
 }
 
 impl EncodeBuilder {
-    /// Returns the concatenation of the encoded member values in the order that they appear in the type.
+    /// Returns the concatenation of the encoded member values in the order that they appear in the
+    /// type.
     pub fn encode_data(&self) -> Vec<H256> {
         // `encodeData(s : 𝕊) = enc(value₁) ‖ enc(value₂) ‖ … ‖ enc(valueₙ).`
         self.members.iter().map(|(_, data)| *data).collect()
     }
 
-    /// Return the encoded structure type as `name ‖ "(" ‖ member₁ ‖ "," ‖ member₂ ‖ "," ‖ … ‖ memberₙ ")"`.
+    /// Return the encoded structure type as `name ‖ "(" ‖ member₁ ‖ "," ‖ member₂ ‖ "," ‖ … ‖
+    /// memberₙ ")"`.
     ///
-    /// If the struct type references other struct types (and these in turn reference even more struct types),
-    /// then the set of referenced struct types is collected, sorted by name and appended to the encoding.
+    /// If the struct type references other struct types (and these in turn reference even more
+    /// struct types), then the set of referenced struct types is collected, sorted by name and
+    /// appended to the encoding.
     pub fn encode_type(&self, type_name: &str) -> String {
         let mut result = String::new();
 
@@ -128,10 +132,12 @@ impl EncodeBuilder {
         result
     }
 
-    /// Return the encoded structure type as `{ member_type: [{"name": member_name₁, "type": member_type₁}, ...] }`.
+    /// Return the encoded structure type as `{ member_type: [{"name": member_name₁, "type":
+    /// member_type₁}, ...] }`.
     ///
-    /// If the struct type references other struct types (and these in turn reference even more struct types),
-    /// then the set of referenced struct types is collected, sorted by name and appended to the encoding.
+    /// If the struct type references other struct types (and these in turn reference even more
+    /// struct types), then the set of referenced struct types is collected, sorted by name and
+    /// appended to the encoding.
     pub fn get_json_types(&self, type_name: &str) -> Vec<Value> {
         let mut result = Vec::new();
 

@@ -34,7 +34,8 @@ impl StorageWeb3Dal<'_, '_> {
         Ok(decompose_full_nonce(full_nonce).0)
     }
 
-    /// Returns the current *stored* nonces (i.e., w/o accounting for pending transactions) for the specified accounts.
+    /// Returns the current *stored* nonces (i.e., w/o accounting for pending transactions) for the
+    /// specified accounts.
     pub async fn get_nonces_for_addresses(
         &mut self,
         addresses: &[Address],
@@ -89,9 +90,9 @@ impl StorageWeb3Dal<'_, '_> {
             .await
     }
 
-    /// Gets the current values for the specified `hashed_keys`. The returned map has requested hashed keys as keys
-    /// and current storage values as values. Uses state of the latest sealed L2 block.
-    /// Returns error if there is no sealed L2 blocks.
+    /// Gets the current values for the specified `hashed_keys`. The returned map has requested
+    /// hashed keys as keys and current storage values as values. Uses state of the latest
+    /// sealed L2 block. Returns error if there is no sealed L2 blocks.
     pub async fn get_values(&mut self, hashed_keys: &[H256]) -> DalResult<HashMap<H256, H256>> {
         let Some(l2_block_number) = self
             .storage

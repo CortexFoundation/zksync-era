@@ -58,8 +58,8 @@ impl TxExecutionArgs {
         base_fee: u64,
     ) -> Self {
         let missed_storage_invocation_limit = vm_execution_cache_misses_limit.unwrap_or(usize::MAX);
-        // For L2 transactions we need to explicitly put enough balance into the account of the users
-        // while for L1->L2 transactions the `to_mint` field plays this role
+        // For L2 transactions we need to explicitly put enough balance into the account of the
+        // users while for L1->L2 transactions the `to_mint` field plays this role
         let added_balance = match &tx.common_data {
             ExecuteTransactionCommon::L2(data) => data.fee.gas_limit * data.fee.max_fee_per_gas,
             ExecuteTransactionCommon::L1(_) => U256::zero(),
@@ -96,15 +96,17 @@ pub(crate) enum TransactionExecutor {
 
 impl TransactionExecutor {
     /// This method assumes that (block with number `resolved_block_number` is present in DB)
-    /// or (`block_id` is `pending` and block with number `resolved_block_number - 1` is present in DB)
+    /// or (`block_id` is `pending` and block with number `resolved_block_number - 1` is present in
+    /// DB)
     #[allow(clippy::too_many_arguments)]
     #[tracing::instrument(skip_all)]
     pub async fn execute_tx_in_sandbox(
         &self,
         vm_permit: VmPermit,
         shared_args: TxSharedArgs,
-        // If `true`, then the batch's L1/pubdata gas price will be adjusted so that the transaction's gas per pubdata limit is <=
-        // to the one in the block. This is often helpful in case we want the transaction validation to work regardless of the
+        // If `true`, then the batch's L1/pubdata gas price will be adjusted so that the
+        // transaction's gas per pubdata limit is <= to the one in the block. This is often
+        // helpful in case we want the transaction validation to work regardless of the
         // current L1 prices for gas or pubdata.
         adjust_pubdata_price: bool,
         execution_args: TxExecutionArgs,

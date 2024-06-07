@@ -121,7 +121,8 @@ impl StateKeeperIO for MempoolIO {
             pending_l2_blocks,
         } = pending_batch_data;
         // Initialize the filter for the transactions that come after the pending batch.
-        // We use values from the pending block to match the filter with one used before the restart.
+        // We use values from the pending block to match the filter with one used before the
+        // restart.
         let (base_fee, gas_per_pubdata) =
             derive_base_fee_and_gas_per_pubdata(l1_batch_env.fee_input, system_env.version.into());
         self.filter = L2TxFilter {
@@ -147,12 +148,13 @@ impl StateKeeperIO for MempoolIO {
     ) -> anyhow::Result<Option<L1BatchParams>> {
         let deadline = Instant::now() + max_wait;
 
-        // Block until at least one transaction in the mempool can match the filter (or timeout happens).
-        // This is needed to ensure that block timestamp is not too old.
+        // Block until at least one transaction in the mempool can match the filter (or timeout
+        // happens). This is needed to ensure that block timestamp is not too old.
         for _ in 0..poll_iters(self.delay_interval, max_wait) {
-            // We cannot create two L1 batches or L2 blocks with the same timestamp (forbidden by the bootloader).
-            // Hence, we wait until the current timestamp is larger than the timestamp of the previous L2 block.
-            // We can use `timeout_at` since `sleep_past` is cancel-safe; it only uses `sleep()` async calls.
+            // We cannot create two L1 batches or L2 blocks with the same timestamp (forbidden by
+            // the bootloader). Hence, we wait until the current timestamp is larger
+            // than the timestamp of the previous L2 block. We can use `timeout_at`
+            // since `sleep_past` is cancel-safe; it only uses `sleep()` async calls.
             let timestamp = tokio::time::timeout_at(
                 deadline.into(),
                 sleep_past(cursor.prev_l2_block_timestamp, cursor.next_l2_block),
@@ -209,7 +211,8 @@ impl StateKeeperIO for MempoolIO {
         max_wait: Duration,
     ) -> anyhow::Result<Option<L2BlockParams>> {
         // We must provide different timestamps for each L2 block.
-        // If L2 block sealing interval is greater than 1 second then `sleep_past` won't actually sleep.
+        // If L2 block sealing interval is greater than 1 second then `sleep_past` won't actually
+        // sleep.
         let timeout_result = tokio::time::timeout(
             max_wait,
             sleep_past(cursor.prev_l2_block_timestamp, cursor.next_l2_block),
@@ -237,8 +240,9 @@ impl StateKeeperIO for MempoolIO {
             get_latency.observe();
 
             if let Some(tx) = maybe_tx {
-                // Reject transactions with too big gas limit. They are also rejected on the API level, but
-                // we need to secure ourselves in case some tx will somehow get into mempool.
+                // Reject transactions with too big gas limit. They are also rejected on the API
+                // level, but we need to secure ourselves in case some tx will
+                // somehow get into mempool.
                 if tx.gas_limit() > self.max_allowed_tx_gas_limit {
                     tracing::warn!(
                         "Found tx with too big gas limit in state keeper, hash: {:?}, gas_limit: {}",
@@ -366,9 +370,9 @@ async fn sleep_past(timestamp: u64, l2_block: L2BlockNumber) -> u64 {
             );
         }
         cmp::Ordering::Greater => {
-            // This situation can be triggered if the system keeper is started on a pod with a different
-            // system time, or if it is buggy. Thus, a one-time error could require no actions if L1 batches
-            // are expected to be generated frequently.
+            // This situation can be triggered if the system keeper is started on a pod with a
+            // different system time, or if it is buggy. Thus, a one-time error could
+            // require no actions if L1 batches are expected to be generated frequently.
             tracing::error!(
                 "Previous L2 block timestamp {} is larger than the current timestamp {} for L2 block #{l2_block}",
                 display_timestamp(timestamp),
@@ -377,8 +381,9 @@ async fn sleep_past(timestamp: u64, l2_block: L2BlockNumber) -> u64 {
         }
     }
 
-    // This loop should normally run once, since `tokio::time::sleep` sleeps *at least* the specified duration.
-    // The logic is organized in a loop for marginal cases, such as the system time getting changed during `sleep()`.
+    // This loop should normally run once, since `tokio::time::sleep` sleeps *at least* the
+    // specified duration. The logic is organized in a loop for marginal cases, such as the
+    // system time getting changed during `sleep()`.
     loop {
         // Time to catch up to `timestamp`; panic / underflow on subtraction is never triggered
         // since we've ensured that `timestamp >= current_timestamp`.
@@ -446,7 +451,8 @@ mod tests {
 
     use super::*;
 
-    // This test defensively uses large deadlines in order to account for tests running in parallel etc.
+    // This test defensively uses large deadlines in order to account for tests running in parallel
+    // etc.
     #[tokio::test]
     async fn sleeping_past_timestamp() {
         let past_timestamps = [0, 1_000, 1_000_000_000, seconds_since_epoch() - 10];

@@ -1,7 +1,6 @@
 //!
 //! Tests for the bootloader
 //! The description for each of the tests can be found in the corresponding `.yul` file.
-//!
 
 use zk_evm_1_5_0::aux_structures::Timestamp;
 use zksync_state::WriteStorage;
@@ -51,8 +50,8 @@ fn get_l1_noop() -> Transaction {
 #[test]
 fn test_l2_block_initialization_timestamp() {
     // This test checks that the L2 block initialization works correctly.
-    // Here we check that that the first block must have timestamp that is greater or equal to the timestamp
-    // of the current batch.
+    // Here we check that that the first block must have timestamp that is greater or equal to the
+    // timestamp of the current batch.
 
     let mut vm = VmTesterBuilder::new(HistoryEnabled)
         .with_empty_in_memory_storage()
@@ -164,7 +163,8 @@ fn test_same_l2_block(
 
 #[test]
 fn test_l2_block_same_l2_block() {
-    // This test aims to test the case when there are multiple transactions inside the same L2 block.
+    // This test aims to test the case when there are multiple transactions inside the same L2
+    // block.
 
     // Case 1: Incorrect timestamp
     test_same_l2_block(
@@ -343,8 +343,8 @@ fn test_first_in_batch(
         L2BlockHasher::legacy_hash(L2BlockNumber(miniblock_number - 1)),
     );
 
-    // In order to skip checks from the Rust side of the VM, we firstly use some definitely correct L2 block info.
-    // And then override it with the user-provided value
+    // In order to skip checks from the Rust side of the VM, we firstly use some definitely correct
+    // L2 block info. And then override it with the user-provided value
 
     let last_l2_block = vm.vm.bootloader_state.last_l2_block();
     let new_l2_block = L2BlockEnv {

@@ -23,8 +23,8 @@ pub const PACKED_SEMVER_MINOR_MASK: u32 = 0xFFFF;
 /// `ProtocolVersionId` is a unique identifier of the protocol version.
 /// Note, that it is an identifier of the `minor` semver version of the protocol, with
 /// the `major` version being `0`. Also, the protocol version on the contracts may contain
-/// potential minor versions, that may have different contract behavior (e.g. Verifier), but it should not
-/// impact the users.
+/// potential minor versions, that may have different contract behavior (e.g. Verifier), but it
+/// should not impact the users.
 #[repr(u16)]
 #[derive(
     Debug,
@@ -124,7 +124,8 @@ impl ProtocolVersionId {
     }
 
     // It is possible that some external nodes do not store protocol versions for versions below 9.
-    // That's why we assume that whenever a protocol version is not present, version 9 is to be used.
+    // That's why we assume that whenever a protocol version is not present, version 9 is to be
+    // used.
     pub fn last_potentially_undefined() -> Self {
         Self::Version9
     }
@@ -220,7 +221,7 @@ impl Detokenize for VerifierParams {
             other => {
                 return Err(Error::InvalidOutputType(format!(
                     "expected a tuple, got {other:?}"
-                )))
+                )));
             }
         };
 

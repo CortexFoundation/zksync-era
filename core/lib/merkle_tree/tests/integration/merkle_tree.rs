@@ -137,10 +137,12 @@ fn proofs_are_computed_correctly_for_mixed_instructions() {
 
     let output = tree.extend_with_proofs(instructions.clone()).unwrap();
     // Check that there are some read ops recorded.
-    assert!(output
-        .logs
-        .iter()
-        .any(|op| matches!(op.base, TreeLogEntry::Read { .. })));
+    assert!(
+        output
+            .logs
+            .iter()
+            .any(|op| matches!(op.base, TreeLogEntry::Read { .. }))
+    );
 
     output
         .verify_proofs(&Blake2Hasher, old_root_hash, &instructions)

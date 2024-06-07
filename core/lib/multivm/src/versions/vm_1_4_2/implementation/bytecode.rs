@@ -9,7 +9,8 @@ use zksync_utils::{
 use crate::{interface::VmInterface, vm_1_4_2::Vm, HistoryMode};
 
 impl<S: WriteStorage, H: HistoryMode> Vm<S, H> {
-    /// Checks the last transaction has successfully published compressed bytecodes and returns `true` if there is at least one is still unknown.
+    /// Checks the last transaction has successfully published compressed bytecodes and returns
+    /// `true` if there is at least one is still unknown.
     pub(crate) fn has_unpublished_bytecodes(&mut self) -> bool {
         self.get_last_tx_compressed_bytecodes().iter().any(|info| {
             !self

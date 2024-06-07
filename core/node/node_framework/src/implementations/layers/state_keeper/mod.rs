@@ -29,7 +29,6 @@ use crate::{
 /// - `StateKeeperIOResource`
 /// - `BatchExecutorResource`
 /// - `ConditionalSealerResource`
-///
 #[derive(Debug)]
 pub struct StateKeeperLayer {
     db_config: DBConfig,

@@ -214,7 +214,8 @@ async fn sealed_by_gas() {
     let sealer = SequencerSealer::with_sealers(config, vec![Box::new(GasCriterion)]);
 
     let l1_gas_per_tx = BlockGasCount {
-        commit: 1, // Both txs together with `block_base_cost` would bring it over the block `31_001` commit bound.
+        commit: 1, /* Both txs together with `block_base_cost` would bring it over the block
+                    * `31_001` commit bound. */
         prove: 0,
         execute: 0,
     };
@@ -299,7 +300,8 @@ async fn batch_sealed_before_l2_block_does() {
     };
     let sealer = SequencerSealer::with_sealers(config, vec![Box::new(SlotsCriterion)]);
 
-    // L2 block sealer will not return true before the batch is sealed because the batch only has 2 txs.
+    // L2 block sealer will not return true before the batch is sealed because the batch only has 2
+    // txs.
     TestScenario::new()
         .seal_l2_block_when(|updates| updates.l2_block.executed_transactions.len() == 3)
         .next_tx("First tx", random_tx(1), successful_exec())
@@ -403,7 +405,8 @@ async fn pending_batch_is_applied() {
         },
     ]);
 
-    // We configured state keeper to use different system contract hashes, so it must seal the pending batch immediately.
+    // We configured state keeper to use different system contract hashes, so it must seal the
+    // pending batch immediately.
     TestScenario::new()
         .seal_l2_block_when(|updates| updates.l2_block.executed_transactions.len() == 1)
         .load_pending_batch(pending_batch)
@@ -546,8 +549,8 @@ async fn l2_block_timestamp_after_pending_batch() {
 
 /// Makes sure that the timestamp doesn't decrease in consequent L2 blocks.
 ///
-/// Timestamps are faked in the IO layer, so this test mostly makes sure that the state keeper doesn't substitute
-/// any unexpected value on its own.
+/// Timestamps are faked in the IO layer, so this test mostly makes sure that the state keeper
+/// doesn't substitute any unexpected value on its own.
 #[tokio::test]
 async fn time_is_monotonic() {
     let timestamp_first_l2_block = Arc::new(AtomicU64::new(0u64)); // Time is faked in tests.

@@ -7,9 +7,9 @@ use crate::panic_extractor::try_extract_panic_message;
 
 /// Container for fallible Tokio tasks with ability to track their shutdown.
 ///
-/// The intended usage is [first waiting for a single task](Self::wait_single()) (perhaps in a `select!`
-/// with other futures, e.g. a termination signal listener), and then [completing](Self::complete())
-/// the remaining tasks.
+/// The intended usage is [first waiting for a single task](Self::wait_single()) (perhaps in a
+/// `select!` with other futures, e.g. a termination signal listener), and then
+/// [completing](Self::complete()) the remaining tasks.
 #[must_use = "Tasks should be `complete()`d"]
 #[derive(Debug)]
 pub struct ManagedTasks {
@@ -26,8 +26,8 @@ impl ManagedTasks {
         }
     }
 
-    /// Specifies that the wrapped tasks can finish (by default, they are expected to run indefinitely).
-    /// This influences logging when a task finishes.
+    /// Specifies that the wrapped tasks can finish (by default, they are expected to run
+    /// indefinitely). This influences logging when a task finishes.
     pub fn allow_tasks_to_finish(mut self) -> Self {
         self.tasks_allowed_to_finish = true;
         self
@@ -36,7 +36,8 @@ impl ManagedTasks {
     /// Waits until a single managed task terminates, no matter the outcome.
     pub async fn wait_single(&mut self) {
         let (result, completed_index, _) = future::select_all(&mut self.task_handles).await;
-        // Remove the completed task so that it doesn't panic when polling tasks in `Self::complete()`.
+        // Remove the completed task so that it doesn't panic when polling tasks in
+        // `Self::complete()`.
         self.task_handles.swap_remove(completed_index);
 
         match result {

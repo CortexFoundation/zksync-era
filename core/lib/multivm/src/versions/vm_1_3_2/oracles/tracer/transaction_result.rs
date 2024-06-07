@@ -105,7 +105,8 @@ impl<H: HistoryMode> Tracer for TransactionResultTracer<H> {
 }
 
 impl<H: HistoryMode> ExecutionEndTracer<H> for TransactionResultTracer<H> {
-    // If we reach the limit of memory invocations, we stop the execution and return the error to user
+    // If we reach the limit of memory invocations, we stop the execution and return the error to
+    // user
     fn should_stop_execution(&self) -> bool {
         self.is_limit_reached()
     }

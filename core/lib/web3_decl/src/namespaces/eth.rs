@@ -62,7 +62,7 @@ pub trait EthNamespace {
 
     #[method(name = "getBalance")]
     async fn get_balance(&self, address: Address, block: Option<BlockIdVariant>)
-        -> RpcResult<U256>;
+    -> RpcResult<U256>;
 
     #[method(name = "getBlockByNumber")]
     async fn get_block_by_number(
@@ -160,7 +160,7 @@ pub trait EthNamespace {
 
     #[method(name = "getUncleCountByBlockNumber")]
     async fn get_uncle_count_by_block_number(&self, number: BlockNumber)
-        -> RpcResult<Option<U256>>;
+    -> RpcResult<Option<U256>>;
 
     #[method(name = "mining")]
     async fn mining(&self) -> RpcResult<bool>;

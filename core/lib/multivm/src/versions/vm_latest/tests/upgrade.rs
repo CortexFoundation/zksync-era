@@ -27,7 +27,8 @@ use crate::{
     },
 };
 
-/// In this test we ensure that the requirements for protocol upgrade transactions are enforced by the bootloader:
+/// In this test we ensure that the requirements for protocol upgrade transactions are enforced by
+/// the bootloader:
 /// - This transaction must be the only one in block
 /// - If present, this transaction must be the first one in block
 #[test]
@@ -120,7 +121,8 @@ fn test_protocol_upgrade_is_first() {
     assert!(!result.result.is_failed());
 }
 
-/// In this test we try to test how force deployments could be done via protocol upgrade transactions.
+/// In this test we try to test how force deployments could be done via protocol upgrade
+/// transactions.
 #[test]
 fn test_force_deploy_upgrade() {
     let mut vm = VmTesterBuilder::new(HistoryEnabled)
@@ -133,7 +135,8 @@ fn test_force_deploy_upgrade() {
     let bytecode_hash = hash_bytecode(&read_test_contract());
 
     let known_code_key = get_known_code_key(&bytecode_hash);
-    // It is generally expected that all the keys will be set as known prior to the protocol upgrade.
+    // It is generally expected that all the keys will be set as known prior to the protocol
+    // upgrade.
     storage_view
         .borrow_mut()
         .set_value(known_code_key, u256_to_h256(1.into()));
@@ -347,7 +350,9 @@ fn get_complex_upgrade_tx(
 }
 
 fn read_msg_sender_test() -> Vec<u8> {
-    read_bytecode("etc/contracts-test-data/artifacts-zk/contracts/complex-upgrade/msg-sender.sol/MsgSenderTest.json")
+    read_bytecode(
+        "etc/contracts-test-data/artifacts-zk/contracts/complex-upgrade/msg-sender.sol/MsgSenderTest.json",
+    )
 }
 
 fn get_complex_upgrader_abi() -> Contract {

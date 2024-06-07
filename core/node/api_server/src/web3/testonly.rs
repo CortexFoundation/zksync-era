@@ -52,7 +52,8 @@ pub(crate) async fn create_test_tx_sender(
 }
 
 impl ApiServerHandles {
-    /// Waits until the server health check reports the ready state. Must be called once per server instance.
+    /// Waits until the server health check reports the ready state. Must be called once per server
+    /// instance.
     pub async fn wait_until_ready(&mut self) -> SocketAddr {
         let started_at = Instant::now();
         loop {
@@ -81,8 +82,8 @@ impl ApiServerHandles {
                 match task.await {
                     Ok(Ok(())) => { /* Task successfully completed */ }
                     Err(err) if err.is_cancelled() => {
-                        // Task was canceled since the server runtime which runs the task was dropped.
-                        // This is fine.
+                        // Task was canceled since the server runtime which runs the task was
+                        // dropped. This is fine.
                     }
                     Err(err) => panic!("Server task panicked: {err:?}"),
                     Ok(Err(err)) => panic!("Server task failed: {err:?}"),

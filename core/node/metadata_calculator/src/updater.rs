@@ -71,17 +71,17 @@ impl TreeUpdater {
         Ok((l1_batch_header, metadata, object_key))
     }
 
-    /// Processes a range of L1 batches with a single flushing of the tree updates to RocksDB at the end.
-    /// This allows to save on RocksDB I/O ops.
+    /// Processes a range of L1 batches with a single flushing of the tree updates to RocksDB at the
+    /// end. This allows to save on RocksDB I/O ops.
     ///
     /// Returns the number of the next L1 batch to be processed by the tree.
     ///
     /// # Implementation details
     ///
-    /// We load L1 batch data from Postgres in parallel with updating the tree. (Naturally, we need to load
-    /// the first L1 batch data beforehand.) This allows saving some time if we actually process
-    /// multiple L1 batches at once (e.g., during the initial tree syncing), and if loading data from Postgres
-    /// is slow for whatever reason.
+    /// We load L1 batch data from Postgres in parallel with updating the tree. (Naturally, we need
+    /// to load the first L1 batch data beforehand.) This allows saving some time if we actually
+    /// process multiple L1 batches at once (e.g., during the initial tree syncing), and if
+    /// loading data from Postgres is slow for whatever reason.
     async fn process_multiple_batches(
         &mut self,
         storage: &mut Connection<'_, Core>,
@@ -135,10 +135,11 @@ impl TreeUpdater {
                 .save_l1_batch_tree_data(l1_batch_number, &tree_data)
                 .await
                 .context("failed saving tree data")?;
-            // ^ Note that `save_l1_batch_tree_data()` will not blindly overwrite changes if L1 batch
-            // metadata already exists; instead, it'll check that the old and new metadata match.
-            // That is, if we run multiple tree instances, we'll get metadata correspondence
-            // right away without having to implement dedicated code.
+            // ^ Note that `save_l1_batch_tree_data()` will not blindly overwrite changes if L1
+            // batch metadata already exists; instead, it'll check that the old and new
+            // metadata match. That is, if we run multiple tree instances, we'll get
+            // metadata correspondence right away without having to implement dedicated
+            // code.
 
             if let Some(object_key) = &object_key {
                 storage
@@ -244,9 +245,10 @@ impl TreeUpdater {
             max_batches_per_iter = self.max_l1_batches_per_iter
         );
 
-        // It may be the case that we don't have any L1 batches with metadata in Postgres, e.g. after
-        // recovering from a snapshot. We cannot wait for such a batch to appear (*this* is the component
-        // responsible for their appearance!), but fortunately most of the updater doesn't depend on it.
+        // It may be the case that we don't have any L1 batches with metadata in Postgres, e.g.
+        // after recovering from a snapshot. We cannot wait for such a batch to appear
+        // (*this* is the component responsible for their appearance!), but fortunately most
+        // of the updater doesn't depend on it.
         if let Some(last_l1_batch_with_tree_data) = last_l1_batch_with_tree_data {
             let backup_lag =
                 (last_l1_batch_with_tree_data.0 + 1).saturating_sub(next_l1_batch_to_seal.0);

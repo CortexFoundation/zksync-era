@@ -528,7 +528,8 @@ fn test_values_cache(pool: &ConnectionPool<Core>, rt_handle: Handle) {
             (non_existing_key, Some(H256::repeat_byte(2))),
             (unmodified_key, Some(unmodified_value)),
         ]);
-        // Check that the value for `unmodified_key` (and only for it) is used for `L2BlockNumber(0)`.
+        // Check that the value for `unmodified_key` (and only for it) is used for
+        // `L2BlockNumber(0)`.
         old_l2_block_assertions.assert_entries(&[
             (existing_key, None),
             (non_existing_key, None),
@@ -571,8 +572,8 @@ async fn using_values_cache() {
         .unwrap();
 }
 
-/// (Sort of) fuzzes [`ValuesCache`] by comparing outputs of [`PostgresStorage`] with and without caching
-/// on randomly generated `read_value()` queries.
+/// (Sort of) fuzzes [`ValuesCache`] by comparing outputs of [`PostgresStorage`] with and without
+/// caching on randomly generated `read_value()` queries.
 fn mini_fuzz_values_cache_inner(
     rng: &mut impl Rng,
     pool: &ConnectionPool<Core>,
@@ -643,7 +644,8 @@ fn mini_fuzz_values_cache_inner(
         }
 
         let next_block_number = L2BlockNumber(latest_block_number) + 1;
-        // Choose logs so that there's a chance that some of them are new and some overwrite previous values.
+        // Choose logs so that there's a chance that some of them are new and some overwrite
+        // previous values.
         let logs = queried_keys
             .iter()
             .choose_multiple(rng, 20)

@@ -56,7 +56,7 @@ pub struct LoadtestConfig {
     /// .
     /// ├── bytecode
     /// └── abi.json
-    ///```
+    /// ```
     /// Contract folder names names are not restricted.
     ///
     /// An example:
@@ -68,7 +68,7 @@ pub struct LoadtestConfig {
     /// └── simple-contract
     ///     ├── bytecode
     ///     └── abi.json
-    ///```
+    /// ```
     #[serde(default = "default_test_contracts_path")]
     pub test_contracts_path: PathBuf,
     /// Limits the number of simultaneous API requests being performed at any moment of time.
@@ -86,7 +86,8 @@ pub struct LoadtestConfig {
     #[serde(default = "default_sync_pubsub_subscriptions_limit")]
     pub sync_pubsub_subscriptions_limit: usize,
 
-    /// Time in seconds for a subscription to be active. Subscription will be closed after that time.
+    /// Time in seconds for a subscription to be active. Subscription will be closed after that
+    /// time.
     #[serde(default = "default_single_subscription_time_secs")]
     pub single_subscription_time_secs: u64,
 
@@ -94,8 +95,8 @@ pub struct LoadtestConfig {
     /// but you can re-use seed from previous run to reproduce the sequence of operations locally.
     /// Seed must be represented as a hexadecimal string.
     ///
-    /// Using the same seed doesn't guarantee reproducibility of API requests: unlike operations, these
-    /// are generated in flight by multiple accounts in parallel.
+    /// Using the same seed doesn't guarantee reproducibility of API requests: unlike operations,
+    /// these are generated in flight by multiple accounts in parallel.
     #[serde(default = "default_seed")]
     pub seed: Option<String>,
 
@@ -111,8 +112,8 @@ pub struct LoadtestConfig {
     #[serde(default = "default_l2_ws_rpc_address")]
     pub l2_ws_rpc_address: String,
 
-    /// The maximum number of transactions per account that can be sent without waiting for confirmation.
-    /// Should not exceed the corresponding value in the L2 node configuration.
+    /// The maximum number of transactions per account that can be sent without waiting for
+    /// confirmation. Should not exceed the corresponding value in the L2 node configuration.
     #[serde(default = "default_max_inflight_txs")]
     pub max_inflight_txs: usize,
 
@@ -267,10 +268,11 @@ impl LoadtestConfig {
 }
 
 /// Configuration for the weights of loadtest operations
-/// We use a random selection based on weight of operations. To perform some operations frequently, the developer must set the weight higher.
+/// We use a random selection based on weight of operations. To perform some operations frequently,
+/// the developer must set the weight higher.
 ///
-/// This configuration is independent from the main config for preserving simplicity of the main config
-/// and do not break the backward compatibility
+/// This configuration is independent from the main config for preserving simplicity of the main
+/// config and do not break the backward compatibility
 #[derive(Debug)]
 pub struct ExecutionConfig {
     pub transaction_weights: TransactionWeights,

@@ -14,7 +14,8 @@ mod singleton;
 /// Abstraction that provides parameters to set the fee for an L1 transaction, taking the desired
 /// mining time into account.
 ///
-/// This trait, as a bound, should only be used in components that actually sign and send transactions.
+/// This trait, as a bound, should only be used in components that actually sign and send
+/// transactions.
 pub trait L1TxParamsProvider: fmt::Debug + 'static + Send + Sync {
     /// Returns the recommended `max_fee_per_gas` value (EIP1559).
     fn get_base_fee(&self, time_in_mempool: u32) -> u64;

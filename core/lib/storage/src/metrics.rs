@@ -61,12 +61,13 @@ pub(crate) struct RocksdbMetrics {
     #[metrics(buckets = BYTE_SIZE_BUCKETS)]
     write_batch_size: Family<DbLabel, Histogram<usize>>,
     /// Number of independent stalled writes for a RocksDB instance.
-    // The counter is similar for the counter in `stalled_write_duration` histogram, but is reported earlier
-    // (immediately when stalled write is encountered, rather than when it's resolved).
+    // The counter is similar for the counter in `stalled_write_duration` histogram, but is
+    // reported earlier (immediately when stalled write is encountered, rather than when it's
+    // resolved).
     write_stalled: Family<DbLabel, Counter>,
-    /// Total duration of a stalled writes instance for a RocksDB instance. Naturally, this only reports
-    /// stalled writes that were resolved in time (otherwise, the stall error is propagated, which
-    /// leads to a panic).
+    /// Total duration of a stalled writes instance for a RocksDB instance. Naturally, this only
+    /// reports stalled writes that were resolved in time (otherwise, the stall error is
+    /// propagated, which leads to a panic).
     #[metrics(buckets = Buckets::LATENCIES, unit = Unit::Seconds)]
     stalled_write_duration: Family<DbLabel, Histogram<Duration>>,
 }
@@ -137,7 +138,8 @@ impl RocksdbSizeMetrics {
             .lock()
             .expect("instances are poisoned")
             .insert(db_name, instance);
-        // Set up the collector. This will return an error on subsequent calls, but we're OK with it.
+        // Set up the collector. This will return an error on subsequent calls, but we're OK with
+        // it.
         COLLECTOR.before_scrape(Self::scrape).ok();
     }
 

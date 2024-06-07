@@ -1,8 +1,8 @@
 use circuit_sequencer_api_1_4_1::{geometry_config::get_geometry_config, toolset::GeometryConfig};
 use zksync_types::circuit::{CircuitCycleStatistic, CircuitStatistic};
 
-// "Rich addressing" opcodes are opcodes that can write their return value/read the input onto the stack
-// and so take 1-2 RAM permutations more than an average opcode.
+// "Rich addressing" opcodes are opcodes that can write their return value/read the input onto the
+// stack and so take 1-2 RAM permutations more than an average opcode.
 // In the worst case, a rich addressing may take 3 ram permutations
 // (1 for reading the opcode, 1 for writing input value, 1 for writing output value).
 pub(crate) const RICH_ADDRESSING_OPCODE_RAM_CYCLES: u32 = 3;

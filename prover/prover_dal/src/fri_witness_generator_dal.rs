@@ -316,7 +316,8 @@ impl FriWitnessGeneratorDal<'_, '_> {
     /// - all node aggregation jobs at depth 0 for the batch
     /// - the recursion tip witness job
     /// - the scheduler witness job
-    /// NOTE: Not all batches have all circuits, so it's possible we'll be missing some aggregation jobs (for circuits not present in the batch).
+    /// NOTE: Not all batches have all circuits, so it's possible we'll be missing some aggregation
+    /// jobs (for circuits not present in the batch).
     pub async fn create_aggregation_jobs(
         &mut self,
         block_number: L1BatchNumber,
@@ -1541,7 +1542,8 @@ impl FriWitnessGeneratorDal<'_, '_> {
         .map(|row| NodeWitnessGeneratorJobInfo {
             id: row.id as u32,
             l1_batch_number,
-            // It is necessary to correct the circuit IDs due to the discrepancy between different aggregation rounds.
+            // It is necessary to correct the circuit IDs due to the discrepancy between different
+            // aggregation rounds.
             circuit_id: correct_circuit_id(row.circuit_id, AggregationRound::NodeAggregation),
             depth: row.depth as u32,
             status: WitnessJobStatus::from_str(&row.status).unwrap(),

@@ -23,10 +23,11 @@ pub(crate) struct RequestMetrics {
 #[vise::register]
 pub(crate) static REQUEST_METRICS: vise::Global<RequestMetrics> = vise::Global::new();
 
-/// Reporter of latency for DAL methods consisting of multiple DB queries. If there's a single query,
-/// use `.instrument().report_latency()` on it instead.
+/// Reporter of latency for DAL methods consisting of multiple DB queries. If there's a single
+/// query, use `.instrument().report_latency()` on it instead.
 ///
-/// Should be created at the start of the relevant method and dropped when the latency needs to be reported.
+/// Should be created at the start of the relevant method and dropped when the latency needs to be
+/// reported.
 #[derive(Debug)]
 pub struct MethodLatency(Option<LatencyObserver<'static>>);
 

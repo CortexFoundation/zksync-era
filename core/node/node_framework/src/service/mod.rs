@@ -40,9 +40,9 @@ impl ZkStackServiceBuilder {
     /// `wire` method of every layer in the order they were added.
     ///
     /// This method may be invoked multiple times with the same layer type, but the
-    /// layer will only be stored once (meaning that 2nd attempt to add the same layer will be ignored).
-    /// This may be useful if the same layer is a prerequisite for multiple other layers: it is safe
-    /// to add it multiple times, and it will only be wired once.
+    /// layer will only be stored once (meaning that 2nd attempt to add the same layer will be
+    /// ignored). This may be useful if the same layer is a prerequisite for multiple other
+    /// layers: it is safe to add it multiple times, and it will only be wired once.
     pub fn add_layer<T: WiringLayer>(&mut self, layer: T) -> &mut Self {
         if !self
             .layers
@@ -108,8 +108,8 @@ impl ZkStackService {
                 runtime_handle.block_on(layer.wire(ServiceContext::new(&name, &mut self)));
             if let Err(err) = task_result {
                 // We don't want to bail on the first error, since it'll provide worse DevEx:
-                // People likely want to fix as much problems as they can in one go, rather than have
-                // to fix them one by one.
+                // People likely want to fix as much problems as they can in one go, rather than
+                // have to fix them one by one.
                 errors.push((name, err));
                 continue;
             };
@@ -130,7 +130,8 @@ impl ZkStackService {
         let only_oneshot_tasks = self.runnables.is_oneshot_only();
 
         // Barrier that will only be lifted once all the preconditions are met.
-        // It will be awaited by the tasks before they start running and by the preconditions once they are fulfilled.
+        // It will be awaited by the tasks before they start running and by the preconditions once
+        // they are fulfilled.
         let task_barrier = self.runnables.task_barrier();
 
         // Collect long-running tasks.
@@ -149,8 +150,8 @@ impl ZkStackService {
         drop(self.resources); // Decrement reference counters for resources.
         tracing::info!("Wiring complete");
 
-        // Create a system task that is cancellation-aware and will only exit on either oneshot task failure or
-        // stop signal.
+        // Create a system task that is cancellation-aware and will only exit on either oneshot task
+        // failure or stop signal.
         let oneshot_runner_system_task =
             oneshot_runner_task(oneshot_tasks, stop_receiver, only_oneshot_tasks);
         long_running_tasks.push(oneshot_runner_system_task);

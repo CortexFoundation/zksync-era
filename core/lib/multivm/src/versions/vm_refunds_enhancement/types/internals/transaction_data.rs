@@ -62,9 +62,10 @@ impl From<Transaction> for TransactionData {
                     U256::zero()
                 };
 
-                // Ethereum transactions do not sign gas per pubdata limit, and so for them we need to use
-                // some default value. We use the maximum possible value that is allowed by the bootloader
-                // (i.e. we can not use u64::MAX, because the bootloader requires gas per pubdata for such
+                // Ethereum transactions do not sign gas per pubdata limit, and so for them we need
+                // to use some default value. We use the maximum possible value that
+                // is allowed by the bootloader (i.e. we can not use u64::MAX,
+                // because the bootloader requires gas per pubdata for such
                 // transactions to be higher than `MAX_GAS_PER_PUBDATA_BYTE`).
                 let gas_per_pubdata_limit = if common_data.transaction_type.is_ethereum_type() {
                     MAX_GAS_PER_PUBDATA_BYTE.into()
@@ -203,8 +204,8 @@ impl TransactionData {
     }
 
     pub(crate) fn effective_gas_price_per_pubdata(&self, block_gas_price_per_pubdata: u32) -> u32 {
-        // It is enforced by the protocol that the L1 transactions always pay the exact amount of gas per pubdata
-        // as was supplied in the transaction.
+        // It is enforced by the protocol that the L1 transactions always pay the exact amount of
+        // gas per pubdata as was supplied in the transaction.
         if is_l1_tx_type(self.tx_type) {
             self.pubdata_price_limit.as_u32()
         } else {
@@ -247,7 +248,8 @@ impl TransactionData {
         let l2_tx: L2Tx = self.clone().try_into().unwrap();
         let transaction_request: TransactionRequest = l2_tx.into();
 
-        // It is assumed that the `TransactionData` always has all the necessary components to recover the hash.
+        // It is assumed that the `TransactionData` always has all the necessary components to
+        // recover the hash.
         transaction_request
             .get_tx_hash(chain_id)
             .expect("Could not recover L2 transaction hash")

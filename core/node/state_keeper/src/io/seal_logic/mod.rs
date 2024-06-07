@@ -1,5 +1,6 @@
 //! This module is a source-of-truth on what is expected to be done when sealing a block.
-//! It contains the logic of the block sealing, which is used by both the mempool-based and external node IO.
+//! It contains the logic of the block sealing, which is used by both the mempool-based and external
+//! node IO.
 
 use std::{
     ops,
@@ -42,7 +43,8 @@ pub mod l2_block_seal_subtasks;
 impl UpdatesManager {
     /// Persists an L1 batch in the storage.
     /// This action includes a creation of an empty "fictive" L2 block that contains
-    /// the events generated during the bootloader "tip phase". Returns updates for this fictive L2 block.
+    /// the events generated during the bootloader "tip phase". Returns updates for this fictive L2
+    /// block.
     pub(super) async fn seal_l1_batch(
         &self,
         pool: ConnectionPool<Core>,
@@ -66,7 +68,8 @@ impl UpdatesManager {
         let mut connection = pool.connection_tagged("state_keeper").await?;
         let transaction = connection.start_transaction().await?;
 
-        // We rely on the fact that fictive L2 block and L1 batch data is saved in the same transaction.
+        // We rely on the fact that fictive L2 block and L1 batch data is saved in the same
+        // transaction.
         let mut strategy = SealStrategy::Sequential(transaction);
         l2_block_command
             .seal_inner(&mut strategy, true)
@@ -337,11 +340,11 @@ impl L2BlockSealCommand {
 
     /// Seals an L2 block with the given number.
     ///
-    /// If `is_fictive` flag is set to true, then it is assumed that we should seal a fictive L2 block
-    /// with no transactions in it. It is needed because there might be some storage logs / events
-    /// that are created after the last processed tx in the L1 batch: after the last transaction is processed,
-    /// the bootloader enters the "tip" phase in which it can still generate events (e.g.,
-    /// one for sending fees to the operator).
+    /// If `is_fictive` flag is set to true, then it is assumed that we should seal a fictive L2
+    /// block with no transactions in it. It is needed because there might be some storage logs
+    /// / events that are created after the last processed tx in the L1 batch: after the last
+    /// transaction is processed, the bootloader enters the "tip" phase in which it can still
+    /// generate events (e.g., one for sending fees to the operator).
     ///
     /// `l2_shared_bridge_addr` is required to extract the information on newly added tokens.
     async fn seal_inner(
@@ -535,12 +538,15 @@ impl L2BlockSealCommand {
         const SLOW_INCLUSION_DELAY: Duration = Duration::from_secs(600);
 
         if self.pre_insert_txs {
-            // This I/O logic is running on the EN. The reported metrics / logs would be meaningless:
+            // This I/O logic is running on the EN. The reported metrics / logs would be
+            // meaningless:
             //
-            // - If `received_timestamp_ms` are copied from the main node, they can be far in the past (especially during the initial EN sync).
-            //   We would falsely classify a lot of transactions as slow.
-            // - If `received_timestamp_ms` are overridden with the current timestamp as when persisting transactions,
-            //   the observed transaction latencies would always be extremely close to zero.
+            // - If `received_timestamp_ms` are copied from the main node, they can be far in the
+            //   past (especially during the initial EN sync). We would falsely classify a lot of
+            //   transactions as slow.
+            // - If `received_timestamp_ms` are overridden with the current timestamp as when
+            //   persisting transactions, the observed transaction latencies would always be
+            //   extremely close to zero.
             return;
         }
 

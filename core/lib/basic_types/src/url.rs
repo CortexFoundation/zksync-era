@@ -111,7 +111,10 @@ mod tests {
         let url_debug = format!("{url:?}");
         assert_eq!(
             url_debug,
-            format!("{:?}", "postgres://localhost/dev?application_name=app&user=***&password=***&options=-c+synchronous_commit%3Doff")
+            format!(
+                "{:?}",
+                "postgres://localhost/dev?application_name=app&user=***&password=***&options=-c+synchronous_commit%3Doff"
+            )
         );
     }
 }

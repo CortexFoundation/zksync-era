@@ -125,8 +125,9 @@ pub fn generate_l2_contracts_system_config(gas_constants: &IntrinsicSystemGasCon
     serde_json::to_string_pretty(&l2_contracts_config).unwrap()
 }
 
-// We allow L1 transactions to have only a fraction of the maximum gas limit/pubdata for L2 transactions
-// Even though the transactions under L2 gas limit should never get out of the bounds for single-instance circuits
+// We allow L1 transactions to have only a fraction of the maximum gas limit/pubdata for L2
+// transactions Even though the transactions under L2 gas limit should never get out of the bounds
+// for single-instance circuits
 const L1_TX_DECREASE: f64 = 0.9;
 
 fn generate_rust_fee_constants(intrinsic_gas_constants: &IntrinsicSystemGasConstants) -> String {

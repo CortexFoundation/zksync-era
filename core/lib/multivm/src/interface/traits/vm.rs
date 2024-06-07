@@ -1,15 +1,16 @@
 //! This module contains traits for the VM interface.
 //! All VMs should implement these traits to be used in our system.
-//! The trait is generic over the storage type, allowing it to be used with any storage implementation.
-//! Additionally, this trait is generic over HistoryMode, allowing it to be used with or without history.
+//! The trait is generic over the storage type, allowing it to be used with any storage
+//! implementation. Additionally, this trait is generic over HistoryMode, allowing it to be used
+//! with or without history.
 //!
 //! `TracerDispatcher` is an associated type used to dispatch tracers in VMs.
 //! It manages tracers across different VM versions.
 //! Even though we use the same interface for all VM versions,
 //! we can now specify only the necessary trait bounds for each VM version.
 //!
-//! Generally speaking, in most cases, the tracer dispatcher is a wrapper around `Vec<Box<dyn VmTracer>>`,
-//! where `VmTracer` is a trait implemented for a specific VM version.
+//! Generally speaking, in most cases, the tracer dispatcher is a wrapper around `Vec<Box<dyn
+//! VmTracer>>`, where `VmTracer` is a trait implemented for a specific VM version.
 //!
 //! Example usage:
 //! ```

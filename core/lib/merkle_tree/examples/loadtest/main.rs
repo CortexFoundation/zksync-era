@@ -67,8 +67,8 @@ struct Cli {
     /// Block cache capacity for RocksDB in bytes.
     #[arg(long = "block-cache", conflicts_with = "in_memory")]
     block_cache: Option<usize>,
-    /// If specified, RocksDB indices and Bloom filters will be managed by the block cache rather than
-    /// being loaded entirely into RAM.
+    /// If specified, RocksDB indices and Bloom filters will be managed by the block cache rather
+    /// than being loaded entirely into RAM.
     #[arg(long = "cache-indices", conflicts_with = "in_memory")]
     cache_indices: bool,
     /// Chunk size for RocksDB multi-get operations.
@@ -157,7 +157,8 @@ impl Cli {
                 .chain(updated_keys)
                 .zip(next_value_idx..);
             let kvs = kvs.map(|(key, idx)| {
-                // The assigned leaf indices here are not always correct, but it's OK for load test purposes.
+                // The assigned leaf indices here are not always correct, but it's OK for load test
+                // purposes.
                 TreeEntry::new(key, idx, H256::from_low_u64_be(idx))
             });
 

@@ -21,8 +21,9 @@ static METRICS: vise::Global<ShadowStorageMetrics> = vise::Global::new();
 
 /// [`ReadStorage`] implementation backed by 2 different backends:
 /// source_storage -- backend that will return values for function calls and be the source of truth
-/// to_check_storage -- secondary storage, which will verify it's own return values against source_storage
-/// Note that if to_check_storage value is different than source value, execution continues and metrics/ logs are emitted.
+/// to_check_storage -- secondary storage, which will verify it's own return values against
+/// source_storage Note that if to_check_storage value is different than source value, execution
+/// continues and metrics/ logs are emitted.
 #[derive(Debug)]
 pub struct ShadowStorage<'a> {
     source_storage: Box<dyn ReadStorage + 'a>,
@@ -32,8 +33,8 @@ pub struct ShadowStorage<'a> {
 }
 
 impl<'a> ShadowStorage<'a> {
-    /// Creates a new storage using the 2 underlying [`ReadStorage`]s, first as source, the second to be checked
-    /// against the source.
+    /// Creates a new storage using the 2 underlying [`ReadStorage`]s, first as source, the second
+    /// to be checked against the source.
     pub fn new(
         source_storage: Box<dyn ReadStorage + 'a>,
         to_check_storage: Box<dyn ReadStorage + 'a>,
@@ -85,7 +86,7 @@ impl ReadStorage for ShadowStorage<'_> {
             tracing::error!(
                 "load_factory_dep({hash:?}) -- l1_batch_number={:?} -- expected source={source_value:?} \
                  to be equal to to_check={expected_value:?}",
-                 self.l1_batch_number
+                self.l1_batch_number
             );
         }
         source_value
@@ -97,7 +98,11 @@ impl ReadStorage for ShadowStorage<'_> {
         if source_value != expected_value {
             tracing::error!(
                 "get_enumeration_index({:?}) -- l1_batch_number={:?} -- expected source={:?} to be equal to \
-                to_check={:?}", key, self.l1_batch_number, source_value, expected_value
+                to_check={:?}",
+                key,
+                self.l1_batch_number,
+                source_value,
+                expected_value
             );
 
             self.metrics.get_enumeration_index_mismatch.inc();

@@ -28,7 +28,8 @@ use crate::{
 };
 
 /// The default implementation of [`BatchExecutor`].
-/// Creates a "real" batch executor which maintains the VM (as opposed to the test builder which doesn't use the VM).
+/// Creates a "real" batch executor which maintains the VM (as opposed to the test builder which
+/// doesn't use the VM).
 #[derive(Debug, Clone)]
 pub struct MainBatchExecutor {
     save_call_traces: bool,
@@ -81,11 +82,11 @@ impl BatchExecutor for MainBatchExecutor {
 }
 
 /// Implementation of the "primary" (non-test) batch executor.
-/// Upon launch, it initializes the VM object with provided block context and properties, and keeps invoking the commands
-/// sent to it one by one until the batch is finished.
+/// Upon launch, it initializes the VM object with provided block context and properties, and keeps
+/// invoking the commands sent to it one by one until the batch is finished.
 ///
-/// One `CommandReceiver` can execute exactly one batch, so once the batch is sealed, a new `CommandReceiver` object must
-/// be constructed.
+/// One `CommandReceiver` can execute exactly one batch, so once the batch is sealed, a new
+/// `CommandReceiver` object must be constructed.
 #[derive(Debug)]
 struct CommandReceiver {
     save_call_traces: bool,
@@ -205,7 +206,8 @@ impl CommandReceiver {
         vm: &mut VmInstance<S, HistoryEnabled>,
     ) -> FinishedL1Batch {
         // The vm execution was paused right after the last transaction was executed.
-        // There is some post-processing work that the VM needs to do before the block is fully processed.
+        // There is some post-processing work that the VM needs to do before the block is fully
+        // processed.
         let result = vm.finish_batch();
         if result.block_tip_execution_result.result.is_failed() {
             panic!(

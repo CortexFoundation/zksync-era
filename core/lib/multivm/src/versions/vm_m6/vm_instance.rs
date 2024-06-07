@@ -122,10 +122,11 @@ pub struct VmExecutionResult {
     /// To understand, which value does `gas_used` represent, see the documentation for the method
     /// that you use to get `VmExecutionResult` object.
     ///
-    /// Side note: this may sound confusing, but this arises from the nature of the bootloader: for it,
-    /// processing multiple transactions is a single action. We *may* intrude and stop VM once transaction
-    /// is executed, but it's not enforced. So best we can do is to calculate the amount of gas before and
-    /// after the invocation, leaving the interpretation of this value to the user.
+    /// Side note: this may sound confusing, but this arises from the nature of the bootloader: for
+    /// it, processing multiple transactions is a single action. We *may* intrude and stop VM
+    /// once transaction is executed, but it's not enforced. So best we can do is to calculate
+    /// the amount of gas before and after the invocation, leaving the interpretation of this
+    /// value to the user.
     pub gas_used: u32,
     pub gas_remaining: u32,
     /// This value also depends on the context, the same as `gas_used`.
@@ -243,7 +244,8 @@ fn vm_may_have_ended<H: HistoryMode, S: Storage>(
                 return_data: data,
                 gas_used,
                 gas_remaining,
-                // The correct `computational_gas_used` value for this field should be set separately later.
+                // The correct `computational_gas_used` value for this field should be set
+                // separately later.
                 computational_gas_used: 0,
                 contracts_used: vm
                     .state
@@ -284,7 +286,8 @@ fn vm_may_have_ended<H: HistoryMode, S: Storage>(
                 return_data: vec![],
                 gas_used,
                 gas_remaining,
-                // The correct `computational_gas_used` value for this field should be set separately later.
+                // The correct `computational_gas_used` value for this field should be set
+                // separately later.
                 computational_gas_used: 0,
                 contracts_used: vm
                     .state
@@ -308,7 +311,8 @@ fn vm_may_have_ended<H: HistoryMode, S: Storage>(
             return_data: vec![],
             gas_used,
             gas_remaining,
-            // The correct `computational_gas_used` value for this field should be set separately later.
+            // The correct `computational_gas_used` value for this field should be set separately
+            // later.
             computational_gas_used: 0,
             contracts_used: vm
                 .state
@@ -403,12 +407,13 @@ impl<H: HistoryMode, S: Storage> VmInstance<S, H> {
 
     /// Returns the amount of gas remaining to the VM.
     /// Note that this *does not* correspond to the gas limit of a transaction.
-    /// To calculate the amount of gas spent by transaction, you should call this method before and after
-    /// the execution, and subtract these values.
+    /// To calculate the amount of gas spent by transaction, you should call this method before and
+    /// after the execution, and subtract these values.
     ///
-    /// Note: this method should only be called when either transaction is fully completed or VM completed
-    /// its execution. Remaining gas value is read from the current stack frame, so if you'll attempt to
-    /// read it during the transaction execution, you may receive invalid value.
+    /// Note: this method should only be called when either transaction is fully completed or VM
+    /// completed its execution. Remaining gas value is read from the current stack frame, so if
+    /// you'll attempt to read it during the transaction execution, you may receive invalid
+    /// value.
     pub(crate) fn gas_remaining(&self) -> u32 {
         self.state.local_state.callstack.current.ergs_remaining
     }
@@ -416,9 +421,10 @@ impl<H: HistoryMode, S: Storage> VmInstance<S, H> {
     /// Returns the amount of gas consumed by the VM so far (based on the `gas_limit` provided
     /// to initiate the virtual machine).
     ///
-    /// Note: this method should only be called when either transaction is fully completed or VM completed
-    /// its execution. Remaining gas value is read from the current stack frame, so if you'll attempt to
-    /// read it during the transaction execution, you may receive invalid value.
+    /// Note: this method should only be called when either transaction is fully completed or VM
+    /// completed its execution. Remaining gas value is read from the current stack frame, so if
+    /// you'll attempt to read it during the transaction execution, you may receive invalid
+    /// value.
     pub fn gas_consumed(&self) -> u32 {
         self.gas_limit
             .checked_sub(self.gas_remaining())
@@ -474,7 +480,8 @@ impl<H: HistoryMode, S: Storage> VmInstance<S, H> {
     }
 
     /// Executes VM until the end or tracer says to stop.
-    /// Returns a tuple of `VmExecutionStopReason` and the size of the refund proposed by the operator
+    /// Returns a tuple of `VmExecutionStopReason` and the size of the refund proposed by the
+    /// operator
     fn execute_with_custom_tracer_and_refunds<
         T: ExecutionEndTracer<H>
             + PendingRefundTracer<H>
@@ -490,7 +497,8 @@ impl<H: HistoryMode, S: Storage> VmInstance<S, H> {
         let spent_pubdata_counter_before = self.state.local_state.spent_pubdata_counter;
 
         loop {
-            // Sanity check: we should never reach the maximum value, because then we won't be able to process the next cycle.
+            // Sanity check: we should never reach the maximum value, because then we won't be able
+            // to process the next cycle.
             assert_ne!(
                 self.state.local_state.monotonic_cycle_counter,
                 u32::MAX,
@@ -508,8 +516,9 @@ impl<H: HistoryMode, S: Storage> VmInstance<S, H> {
                 );
             }
 
-            // This means that the bootloader has informed the system (usually via `VMHooks`) - that some gas
-            // should be refunded back (see `askOperatorForRefund` in `bootloader.yul` for details).
+            // This means that the bootloader has informed the system (usually via `VMHooks`) - that
+            // some gas should be refunded back (see `askOperatorForRefund` in
+            // `bootloader.yul` for details).
             if let Some(bootloader_refund) = tracer.requested_refund() {
                 assert!(
                     operator_refund.is_none(),
@@ -603,7 +612,8 @@ impl<H: HistoryMode, S: Storage> VmInstance<S, H> {
 
     /// Executes the VM until the end of the next transaction.
     /// Panics if there are no new transactions in bootloader.
-    /// Internally uses the OneTxTracer to stop the VM when the last opcode from the transaction is reached.
+    /// Internally uses the OneTxTracer to stop the VM when the last opcode from the transaction is
+    /// reached.
     // Err when transaction is rejected.
     // `Ok(status: TxExecutionStatus::Success)` when the transaction succeeded
     // `Ok(status: TxExecutionStatus::Failure)` when the transaction failed.
@@ -627,8 +637,9 @@ impl<H: HistoryMode, S: Storage> VmInstance<S, H> {
             self.execute_with_custom_tracer_and_refunds(&mut tx_tracer);
         match stop_reason {
             VmExecutionStopReason::VmFinished => {
-                // Bootloader resulted in panic or revert, this means either the transaction is rejected
-                // (e.g. not enough fee or incorrect signature) or bootloader is out of gas.
+                // Bootloader resulted in panic or revert, this means either the transaction is
+                // rejected (e.g. not enough fee or incorrect signature) or
+                // bootloader is out of gas.
 
                 // Collect generated events to show bootloader debug logs.
                 let _ = self.collect_events_and_l1_logs_after_timestamp(timestamp_initial);
@@ -666,8 +677,9 @@ impl<H: HistoryMode, S: Storage> VmInstance<S, H> {
                             revert_reason: None,
                             // getting contracts used during this transaction
                             // at least for now the number returned here is always <= to the number
-                            // of the code hashes actually used by the transaction, since it might have
-                            // reused bytecode hashes from some of the previous ones.
+                            // of the code hashes actually used by the transaction, since it might
+                            // have reused bytecode hashes from some of
+                            // the previous ones.
                             contracts_used: self
                                 .state
                                 .decommittment_processor
@@ -688,10 +700,14 @@ impl<H: HistoryMode, S: Storage> VmInstance<S, H> {
                     }))
                 } else {
                     // VM ended up in state
-                    // `stop_reason == VmExecutionStopReason::TracerRequestedStop && !tx_tracer.tx_has_been_processed() && !tx_tracer.validation_run_out_of_gas()`.
-                    // It means that bootloader successfully finished its execution without executing the transaction.
-                    // It is an unexpected situation.
-                    panic!("VM successfully finished executing bootloader but transaction wasn't executed");
+                    // `stop_reason == VmExecutionStopReason::TracerRequestedStop &&
+                    // !tx_tracer.tx_has_been_processed() &&
+                    // !tx_tracer.validation_run_out_of_gas()`. It means that
+                    // bootloader successfully finished its execution without executing the
+                    // transaction. It is an unexpected situation.
+                    panic!(
+                        "VM successfully finished executing bootloader but transaction wasn't executed"
+                    );
                 }
             }
         }
@@ -779,8 +795,8 @@ impl<H: HistoryMode, S: Storage> VmInstance<S, H> {
                     computational_gas_used,
                 };
 
-                // Collecting `block_tip_result` needs logs with timestamp, so we drain events for the `full_result`
-                // after because draining will drop timestamps.
+                // Collecting `block_tip_result` needs logs with timestamp, so we drain events for
+                // the `full_result` after because draining will drop timestamps.
                 let (_full_history, raw_events, l1_messages) = self.state.event_sink.flatten();
                 full_result.events = merge_events(raw_events)
                     .into_iter()
@@ -799,8 +815,9 @@ impl<H: HistoryMode, S: Storage> VmInstance<S, H> {
             VmExecutionStopReason::TracerRequestedStop => {
                 if tx_result_tracer.is_limit_reached() {
                     VmBlockResult {
-                        // Normally tracer should never stop, but if it's transaction call and it consumes
-                        // too much requests to memory, we stop execution and return error.
+                        // Normally tracer should never stop, but if it's transaction call and it
+                        // consumes too much requests to memory, we stop
+                        // execution and return error.
                         full_result: VmExecutionResult {
                             events: vec![],
                             storage_log_queries: vec![],

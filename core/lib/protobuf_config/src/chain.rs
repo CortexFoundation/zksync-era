@@ -79,8 +79,8 @@ impl ProtoRepr for proto::StateKeeper {
                 .and_then(|x| Ok((*x).try_into()?))
                 .context("max_circuits_per_batch")?,
 
-            // We need these values only for instantiating configs from environmental variables, so it's not
-            // needed during the initialization from files
+            // We need these values only for instantiating configs from environmental variables, so
+            // it's not needed during the initialization from files
             bootloader_hash: None,
             default_aa_hash: None,
             fee_account_addr: None,

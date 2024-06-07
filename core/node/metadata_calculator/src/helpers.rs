@@ -177,9 +177,9 @@ fn create_db_sync(config: &MetadataCalculatorConfig) -> anyhow::Result<RocksDBWr
 ///
 /// Async methods provided by this wrapper are not cancel-safe! This is probably not an issue;
 /// `ZkSyncTree` is only indirectly available via `MetadataCalculator::run()` entrypoint
-/// which consumes `self`. That is, if `MetadataCalculator::run()` is canceled (which we don't currently do,
-/// at least not explicitly), all `MetadataCalculator` data including `ZkSyncTree` is discarded.
-/// In the unlikely case you get a "`ZkSyncTree` is in inconsistent state" panic,
+/// which consumes `self`. That is, if `MetadataCalculator::run()` is canceled (which we don't
+/// currently do, at least not explicitly), all `MetadataCalculator` data including `ZkSyncTree` is
+/// discarded. In the unlikely case you get a "`ZkSyncTree` is in inconsistent state" panic,
 /// cancellation is most probably the reason.
 #[derive(Debug)]
 pub(super) struct AsyncTree {
@@ -188,8 +188,7 @@ pub(super) struct AsyncTree {
 }
 
 impl AsyncTree {
-    const INCONSISTENT_MSG: &'static str =
-        "`AsyncTree` is in inconsistent state, which could occur after one of its async methods was cancelled or returned an error";
+    const INCONSISTENT_MSG: &'static str = "`AsyncTree` is in inconsistent state, which could occur after one of its async methods was cancelled or returned an error";
 
     pub fn new(db: RocksDBWrapper, mode: MerkleTreeMode) -> anyhow::Result<Self> {
         let tree = match mode {
@@ -353,7 +352,8 @@ impl AsyncTreeReader {
     }
 }
 
-/// Version of async tree reader that holds a weak reference to RocksDB. Used in [`MerkleTreeHealthCheck`].
+/// Version of async tree reader that holds a weak reference to RocksDB. Used in
+/// [`MerkleTreeHealthCheck`].
 #[derive(Debug)]
 struct WeakAsyncTreeReader {
     db: WeakRocksDB<MerkleTreeColumnFamily>,
@@ -401,8 +401,7 @@ pub(super) struct AsyncTreeRecovery {
 }
 
 impl AsyncTreeRecovery {
-    const INCONSISTENT_MSG: &'static str =
-        "`AsyncTreeRecovery` is in inconsistent state, which could occur after one of its async methods was cancelled";
+    const INCONSISTENT_MSG: &'static str = "`AsyncTreeRecovery` is in inconsistent state, which could occur after one of its async methods was cancelled";
 
     pub fn new(
         db: RocksDBWrapper,
@@ -621,8 +620,9 @@ impl L1BatchWithLogs {
             .get_tree_writes(l1_batch_number)
             .await?;
         if tree_writes.is_none() && l1_batch_number.0 > 0 {
-            // If `tree_writes` are present for the previous L1 batch, then it is expected them to be eventually present for the current batch as well.
-            // Waiting for tree writes should be faster then constructing them, so we wait with a reasonable timeout.
+            // If `tree_writes` are present for the previous L1 batch, then it is expected them to
+            // be eventually present for the current batch as well. Waiting for tree
+            // writes should be faster then constructing them, so we wait with a reasonable timeout.
             let tree_writes_present_for_previous_batch = storage
                 .blocks_dal()
                 .check_tree_writes_presence(l1_batch_number - 1)
@@ -712,10 +712,11 @@ impl L1BatchWithLogs {
         for storage_key in protective_reads {
             touched_slots.remove(&storage_key);
             // ^ As per deduplication rules, all keys in `protective_reads` haven't *really* changed
-            // in the considered L1 batch. Thus, we can remove them from `touched_slots` in order to simplify
-            // their further processing. This is not a required step; the logic below works fine without it.
-            // Indeed, extra no-op updates that could be added to `storage_logs` as a consequence of no filtering,
-            // are removed on the Merkle tree level (see the tree domain wrapper).
+            // in the considered L1 batch. Thus, we can remove them from `touched_slots` in order to
+            // simplify their further processing. This is not a required step; the logic
+            // below works fine without it. Indeed, extra no-op updates that could be
+            // added to `storage_logs` as a consequence of no filtering, are removed on
+            // the Merkle tree level (see the tree domain wrapper).
             let log = TreeInstruction::Read(storage_key);
             storage_logs.insert(storage_key, log);
         }
@@ -754,7 +755,8 @@ mod tests {
     use crate::tests::{extend_db_state, gen_storage_logs, mock_config, reset_db_state};
 
     impl L1BatchWithLogs {
-        /// Old, slower method of loading storage logs. We want to test its equivalence to the new implementation.
+        /// Old, slower method of loading storage logs. We want to test its equivalence to the new
+        /// implementation.
         async fn slow(
             storage: &mut Connection<'_, Core>,
             l1_batch_number: L1BatchNumber,
@@ -1074,11 +1076,14 @@ mod tests {
                 .await
                 .unwrap()
                 .expect("no L1 batch");
-        assert!(light_l1_batch_with_logs
-            .storage_logs
-            .iter()
-            .all(|log| matches!(log, TreeInstruction::Write(_))));
-        // Check that write instructions are equivalent for the full and light L1 batches (light logs may include extra no-op writes).
+        assert!(
+            light_l1_batch_with_logs
+                .storage_logs
+                .iter()
+                .all(|log| matches!(log, TreeInstruction::Write(_)))
+        );
+        // Check that write instructions are equivalent for the full and light L1 batches (light
+        // logs may include extra no-op writes).
         let write_logs: HashSet<_> = l1_batch_with_logs
             .storage_logs
             .into_iter()

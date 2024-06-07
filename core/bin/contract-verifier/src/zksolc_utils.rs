@@ -38,8 +38,9 @@ pub struct Source {
 }
 
 /// Compiler settings.
-/// There are fields like `output_selection`, `is_system`, `force_evmla` which are accessed by contract verifier explicitly.
-/// Other fields are accumulated in `other`, this way every field that was in the original request will be passed to a compiler.
+/// There are fields like `output_selection`, `is_system`, `force_evmla` which are accessed by
+/// contract verifier explicitly. Other fields are accumulated in `other`, this way every field that
+/// was in the original request will be passed to a compiler.
 #[derive(Debug, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct Settings {
@@ -77,7 +78,6 @@ impl Default for Optimizer {
 impl Optimizer {
     ///
     /// A shortcut constructor.
-    ///
     pub fn new(enabled: bool) -> Self {
         Self {
             enabled,

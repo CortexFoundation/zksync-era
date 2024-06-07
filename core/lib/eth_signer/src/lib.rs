@@ -22,7 +22,7 @@ pub trait EthereumSigner: 'static + Send + Sync + Clone {
     ) -> Result<PackedEthSignature, SignerError>;
 
     async fn sign_transaction(&self, raw_tx: TransactionParameters)
-        -> Result<Vec<u8>, SignerError>;
+    -> Result<Vec<u8>, SignerError>;
 
     async fn get_address(&self) -> Result<Address, SignerError>;
 }

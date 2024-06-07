@@ -58,8 +58,8 @@ pub struct StorageOracle<S: WriteStorage, H: HistoryMode> {
     pub(crate) paid_changes: HistoryRecorder<HashMap<StorageKey, u32>, H>,
 
     // The map that contains all the first values read from storage for each slot.
-    // While formally it does not have to be capable of rolling back, we still do it to avoid memory bloat
-    // for unused slots.
+    // While formally it does not have to be capable of rolling back, we still do it to avoid
+    // memory bloat for unused slots.
     pub(crate) initial_values: HistoryRecorder<HashMap<StorageKey, U256>, H>,
 
     // Storage refunds that oracle has returned in `estimate_refunds_for_write`.
@@ -217,8 +217,9 @@ impl<S: WriteStorage, H: HistoryMode> StorageOracle<S, H> {
             let required_pubdata =
                 self.base_price_for_write(&key, first_slot_value, current_slot_value);
 
-            // We assume that `prepaid_for_slot` represents both the number of pubdata published and the number of bytes paid by the previous transactions
-            // as they should be identical.
+            // We assume that `prepaid_for_slot` represents both the number of pubdata published and
+            // the number of bytes paid by the previous transactions as they should be
+            // identical.
             let prepaid_for_slot = self
                 .pre_paid_changes
                 .inner()
@@ -290,7 +291,8 @@ impl<S: WriteStorage, H: HistoryMode> StorageOracle<S, H> {
         }
     }
 
-    /// Returns storage log queries from current frame where `log.log_query.timestamp >= from_timestamp`.
+    /// Returns storage log queries from current frame where `log.log_query.timestamp >=
+    /// from_timestamp`.
     pub(crate) fn storage_log_queries_after_timestamp(
         &self,
         from_timestamp: Timestamp,
@@ -298,7 +300,8 @@ impl<S: WriteStorage, H: HistoryMode> StorageOracle<S, H> {
         let logs = self.frames_stack.forward().current_frame();
 
         // Select all of the last elements where `l.log_query.timestamp >= from_timestamp`.
-        // Note, that using binary search here is dangerous, because the logs are not sorted by timestamp.
+        // Note, that using binary search here is dangerous, because the logs are not sorted by
+        // timestamp.
         logs.rsplit(|l| l.log_query.timestamp < from_timestamp.glue_into())
             .next()
             .unwrap_or(&[])
@@ -401,7 +404,8 @@ impl<S: WriteStorage, H: HistoryMode> VmStorageOracle for StorageOracle<S, H> {
 
         let refund = RefundType::RepeatedWrite(RefundedAmounts {
             ergs: 0,
-            // `INITIAL_STORAGE_WRITE_PUBDATA_BYTES` is the default amount of pubdata bytes the user pays for.
+            // `INITIAL_STORAGE_WRITE_PUBDATA_BYTES` is the default amount of pubdata bytes the user
+            // pays for.
             pubdata_bytes: (INITIAL_STORAGE_WRITE_PUBDATA_BYTES as u32) - price_to_pay,
         });
         self.returned_refunds.apply_historic_record(
@@ -450,8 +454,8 @@ impl<S: WriteStorage, H: HistoryMode> VmStorageOracle for StorageOracle<S, H> {
                 );
 
                 // Additional validation that the current value was correct
-                // Unwrap is safe because the return value from `write_inner` is the previous value in this leaf.
-                // It is impossible to set leaf value to `None`
+                // Unwrap is safe because the return value from `write_inner` is the previous value
+                // in this leaf. It is impossible to set leaf value to `None`
                 assert_eq!(current_value, written_value);
             }
 
@@ -466,16 +470,17 @@ impl<S: WriteStorage, H: HistoryMode> VmStorageOracle for StorageOracle<S, H> {
 // Since we need to publish the state diffs onchain, for each of the updated storage slot
 // we basically need to publish the following pair: `(<storage_key, compressed_new_value>)`.
 // For key we use the following optimization:
-//   - The first time we publish it, we use 32 bytes.
-//         Then, we remember a 8-byte id for this slot and assign it to it. We call this initial write.
-//   - The second time we publish it, we will use the 4/5 byte representation of this 8-byte instead of the 32
-//     bytes of the entire key.
-// For value compression, we use a metadata byte which holds the length of the value and the operation from the
-// previous state to the new state, and the compressed value. The maximum for this is 33 bytes.
-// Total bytes for initial writes then becomes 65 bytes and repeated writes becomes 38 bytes.
+//   - The first time we publish it, we use 32 bytes. Then, we remember a 8-byte id for this slot
+//     and assign it to it. We call this initial write.
+//   - The second time we publish it, we will use the 4/5 byte representation of this 8-byte instead
+//     of the 32 bytes of the entire key.
+// For value compression, we use a metadata byte which holds the length of the value and the
+// operation from the previous state to the new state, and the compressed value. The maximum for
+// this is 33 bytes. Total bytes for initial writes then becomes 65 bytes and repeated writes
+// becomes 38 bytes.
 fn get_pubdata_price_bytes(initial_value: U256, final_value: U256, is_initial: bool) -> u32 {
-    // TODO (SMA-1702): take into account the content of the log query, i.e. values that contain mostly zeroes
-    // should cost less.
+    // TODO (SMA-1702): take into account the content of the log query, i.e. values that contain
+    // mostly zeroes should cost less.
 
     let compressed_value_size =
         compress_with_best_strategy(initial_value, final_value).len() as u32;

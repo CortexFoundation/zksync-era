@@ -23,4 +23,4 @@ rm ../etc/env/base/fri_proof_compressor.toml.backup
 zk config compile dev
 
 # Update setup keys (only if they are not present)
-zk f cargo run $GPU_FLAG --release --bin key_generator -- $GENERATE_SK_COMMAND all --recompute-if-missing
+zk f cargo run $GPU_FLAG --release --bin key_generator -- $GENERATE_SK_COMMAND all

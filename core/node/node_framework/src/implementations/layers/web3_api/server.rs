@@ -186,15 +186,17 @@ impl WiringLayer for Web3ServerLayer {
 }
 
 /// Wrapper for the Web3 API.
-/// Internal design note: API infrastructure was already established and consists of a dynamic set of tasks,
-/// and it proven to work well enough. It doesn't seem to be reasonable to refactor it to expose raw futures instead
-/// of tokio tasks, since it'll require a lot of effort. So instead, we spawn all the tasks in this wrapper,
-/// wait for the first one to finish, and then send the rest of the tasks to a special "garbage collector" task
-/// which will wait for remaining tasks to finish.
-/// All of this relies on the fact that the existing internal API tasks are aware of stop receiver: when we'll exit
-/// this task on first API task completion, the rest of the tasks will be stopped as well.
-// TODO (QIT-26): Once we switch the codebase to only use the framework, we need to properly refactor the API to only
-// use abstractions provided by this framework and not spawn any tasks on its own.
+/// Internal design note: API infrastructure was already established and consists of a dynamic set
+/// of tasks, and it proven to work well enough. It doesn't seem to be reasonable to refactor it to
+/// expose raw futures instead of tokio tasks, since it'll require a lot of effort. So instead, we
+/// spawn all the tasks in this wrapper, wait for the first one to finish, and then send the rest of
+/// the tasks to a special "garbage collector" task which will wait for remaining tasks to finish.
+/// All of this relies on the fact that the existing internal API tasks are aware of stop receiver:
+/// when we'll exit this task on first API task completion, the rest of the tasks will be stopped as
+/// well.
+// TODO (QIT-26): Once we switch the codebase to only use the framework, we need to properly
+// refactor the API to only use abstractions provided by this framework and not spawn any tasks on
+// its own.
 #[derive(Debug)]
 struct Web3ApiTask {
     transport: Transport,
@@ -237,9 +239,10 @@ impl Task for ApiTaskGarbageCollector {
     }
 
     async fn run(self: Box<Self>, _stop_receiver: StopReceiver) -> anyhow::Result<()> {
-        // We can ignore the stop signal here, since we're tied to the main API task through the channel:
-        // it'll either get dropped if API cannot be built or will send something through the channel.
-        // The tasks it sends are aware of the stop receiver themselves.
+        // We can ignore the stop signal here, since we're tied to the main API task through the
+        // channel: it'll either get dropped if API cannot be built or will send something
+        // through the channel. The tasks it sends are aware of the stop receiver
+        // themselves.
         let tasks = self.task_receiver.await?;
         let _ = futures::future::join_all(tasks).await;
         Ok(())

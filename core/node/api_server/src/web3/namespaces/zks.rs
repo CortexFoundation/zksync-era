@@ -508,7 +508,8 @@ impl ZksNamespace {
             }
             Err(TreeApiError::Internal(err)) => return Err(Web3Error::InternalError(err)),
             Err(_) => {
-                // This branch is not expected to be executed, but has to be provided since the error is non-exhaustive.
+                // This branch is not expected to be executed, but has to be provided since the
+                // error is non-exhaustive.
                 return Err(Web3Error::InternalError(anyhow::anyhow!(
                     "Unspecified tree API error"
                 )));

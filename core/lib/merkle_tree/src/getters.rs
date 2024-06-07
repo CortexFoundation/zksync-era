@@ -9,9 +9,9 @@ use crate::{
 };
 
 impl<DB: Database, H: HashTree> MerkleTree<DB, H> {
-    /// Reads entries with the specified keys from the tree. The entries are returned in the same order
-    /// as requested. If a certain key is not present in the tree, the corresponding returned entry
-    /// will be [empty](TreeEntry::is_empty()).
+    /// Reads entries with the specified keys from the tree. The entries are returned in the same
+    /// order as requested. If a certain key is not present in the tree, the corresponding
+    /// returned entry will be [empty](TreeEntry::is_empty()).
     ///
     /// # Errors
     ///
@@ -25,8 +25,8 @@ impl<DB: Database, H: HashTree> MerkleTree<DB, H> {
         load_and_transform_entries(&self.db, version, leaf_keys, extract_entry)
     }
 
-    /// Reads entries together with Merkle proofs with the specified keys from the tree. The entries are returned
-    /// in the same order as requested.
+    /// Reads entries together with Merkle proofs with the specified keys from the tree. The entries
+    /// are returned in the same order as requested.
     ///
     /// # Errors
     ///
@@ -100,9 +100,9 @@ fn extract_entry(
 }
 
 impl<DB: PruneDatabase, H: HashTree> MerkleTreeRecovery<DB, H> {
-    /// Reads entries with the specified keys from the tree. The entries are returned in the same order
-    /// as requested. If a certain key is not present in the tree, the corresponding returned entry
-    /// will be [empty](TreeEntry::is_empty()).
+    /// Reads entries with the specified keys from the tree. The entries are returned in the same
+    /// order as requested. If a certain key is not present in the tree, the corresponding
+    /// returned entry will be [empty](TreeEntry::is_empty()).
     #[allow(clippy::missing_panics_doc)]
     pub fn entries(&self, leaf_keys: &[Key]) -> Vec<TreeEntry> {
         load_and_transform_entries(&self.db, self.recovered_version(), leaf_keys, extract_entry)

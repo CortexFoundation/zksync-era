@@ -1,8 +1,9 @@
-//! This module contains "glue" code that allows to operate with multiple versions of the VM crate families (i.e.
-//! `vm` crate and its dependencies that are used in the crate API).
+//! This module contains "glue" code that allows to operate with multiple versions of the VM crate
+//! families (i.e. `vm` crate and its dependencies that are used in the crate API).
 //!
 //! Glue generally comes in two flavors:
-//! - "Public glue", aka types that are used externally to instantiate the MultiVM (like `OracleTools` and `init_vm`).
+//! - "Public glue", aka types that are used externally to instantiate the MultiVM (like
+//!   `OracleTools` and `init_vm`).
 //! - "Private glue", aka type conversions from current to the "past" and vice versa.
 //!
 //! The "private glue" lies in the `types` module.

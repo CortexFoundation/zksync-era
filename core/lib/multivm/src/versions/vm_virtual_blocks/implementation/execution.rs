@@ -99,7 +99,8 @@ impl<S: WriteStorage, H: HistoryMode> Vm<S, H> {
     ) -> VmExecutionStopReason {
         tracer.initialize_tracer(&mut self.state);
         let result = loop {
-            // Sanity check: we should never reach the maximum value, because then we won't be able to process the next cycle.
+            // Sanity check: we should never reach the maximum value, because then we won't be able
+            // to process the next cycle.
             assert_ne!(
                 self.state.local_state.monotonic_cycle_counter,
                 u32::MAX,

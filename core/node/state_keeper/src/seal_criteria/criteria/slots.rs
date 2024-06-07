@@ -21,7 +21,9 @@ impl SealCriterion for SlotsCriterion {
         assert!(
             config.transaction_slots <= max_txs_in_batch,
             "Configured transaction_slots ({}) must be lower than the bootloader constant MAX_TXS_IN_BLOCK={} for protocol version {}",
-            config.transaction_slots, max_txs_in_batch, protocol_version as u16
+            config.transaction_slots,
+            max_txs_in_batch,
+            protocol_version as u16
         );
 
         if tx_count >= config.transaction_slots {

@@ -130,7 +130,8 @@ pub trait EthInterface: Sync + Send {
     /// Returns the ETH balance of the specified token for the specified address.
     async fn eth_balance(&self, address: Address) -> Result<U256, Error>;
 
-    /// Invokes a function on a contract specified by `contract_address` / `contract_abi` using `eth_call`.
+    /// Invokes a function on a contract specified by `contract_address` / `contract_abi` using
+    /// `eth_call`.
     async fn call_contract_function(
         &self,
         request: web3::CallRequest,
@@ -162,8 +163,9 @@ pub trait BoundEthInterface: AsRef<DynClient<L1>> + 'static + Sync + Send + fmt:
     /// Clones this client.
     fn clone_boxed(&self) -> Box<dyn BoundEthInterface>;
 
-    /// Tags this client as working for a specific component. The component name can be used in logging,
-    /// metrics etc. The component name should be copied to the clones of this client, but should not be passed upstream.
+    /// Tags this client as working for a specific component. The component name can be used in
+    /// logging, metrics etc. The component name should be copied to the clones of this client,
+    /// but should not be passed upstream.
     fn for_component(self: Box<Self>, component_name: &'static str) -> Box<dyn BoundEthInterface>;
 
     /// ABI of the contract that is used by the implementer.
@@ -181,7 +183,8 @@ pub trait BoundEthInterface: AsRef<DynClient<L1>> + 'static + Sync + Send + fmt:
     /// Address of the account associated with the object implementing the trait.
     fn sender_account(&self) -> Address;
 
-    /// Returns the certain ERC20 token allowance for the pair (`Self::sender_account()`, `address`).
+    /// Returns the certain ERC20 token allowance for the pair (`Self::sender_account()`,
+    /// `address`).
     async fn allowance_on_account(
         &self,
         token_address: Address,
@@ -223,7 +226,8 @@ impl dyn BoundEthInterface {
         self.nonce_at(BlockNumber::Pending).await
     }
 
-    /// Similar to [`EthInterface::sign_prepared_tx_for_addr`], but is fixed over `Self::contract_addr()`.
+    /// Similar to [`EthInterface::sign_prepared_tx_for_addr`], but is fixed over
+    /// `Self::contract_addr()`.
     pub async fn sign_prepared_tx(
         &self,
         data: Vec<u8>,

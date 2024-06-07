@@ -183,7 +183,8 @@ impl BootloaderState {
             .expect("There are no current tx to execute")
     }
 
-    /// Returns the ID of the next transaction to be executed and increments the local transaction counter.
+    /// Returns the ID of the next transaction to be executed and increments the local transaction
+    /// counter.
     pub(crate) fn move_tx_to_execute_pointer(&mut self) -> usize {
         assert!(
             self.tx_to_execute < self.free_tx_index(),

@@ -36,7 +36,8 @@ pub trait JobProcessor: Sync + Send {
 
     /// Returns None when there is no pending job
     /// Otherwise, returns Some(job_id, job)
-    /// Note: must be concurrency-safe - that is, one job must not be returned in two parallel processes
+    /// Note: must be concurrency-safe - that is, one job must not be returned in two parallel
+    /// processes
     async fn get_next_job(&self) -> anyhow::Result<Option<(Self::JobId, Self::Job)>>;
 
     /// Invoked when `process_job` panics

@@ -55,7 +55,9 @@ pub async fn sync_versions(
     let right_bound_remote_version =
         get_l1_batch_remote_protocol_version(main_node_client.as_ref(), right_bound).await?;
     if right_bound_remote_version != Some(ProtocolVersionId::Version22) {
-        anyhow::bail!("Remote protocol versions should be v22 for the first local v22 batch, got {right_bound_remote_version:?}");
+        anyhow::bail!(
+            "Remote protocol versions should be v22 for the first local v22 batch, got {right_bound_remote_version:?}"
+        );
     }
 
     while left_bound < right_bound {
@@ -81,7 +83,9 @@ pub async fn sync_versions(
                 right_bound = mid_batch;
             }
             Ordering::Greater => {
-                anyhow::bail!("Unexpected remote protocol version: {mid_protocol_version:?} for miniblock #{mid_miniblock}");
+                anyhow::bail!(
+                    "Unexpected remote protocol version: {mid_protocol_version:?} for miniblock #{mid_miniblock}"
+                );
             }
         }
     }
@@ -116,7 +120,9 @@ pub async fn sync_versions(
             format!("Postgres is inconsistent: missing miniblocks for L1 batch #{local_first_v22_l1_batch}")
         })?;
 
-    tracing::info!("Setting version 22 for miniblocks {remote_first_v22_miniblock}..={local_first_v22_miniblock}");
+    tracing::info!(
+        "Setting version 22 for miniblocks {remote_first_v22_miniblock}..={local_first_v22_miniblock}"
+    );
     transaction
         .blocks_dal()
         .reset_protocol_version_for_l2_blocks(

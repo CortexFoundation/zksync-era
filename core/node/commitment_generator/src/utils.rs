@@ -21,7 +21,8 @@ use zksync_utils::expand_memory_contents;
 /// Encapsulates computations of commitment components.
 ///
 /// - All methods are considered to be blocking.
-/// - Returned errors are considered unrecoverable (i.e., they bubble up and lead to commitment generator termination).
+/// - Returned errors are considered unrecoverable (i.e., they bubble up and lead to commitment
+///   generator termination).
 pub(crate) trait CommitmentComputer: fmt::Debug + Send + Sync + 'static {
     fn events_queue_commitment(
         &self,

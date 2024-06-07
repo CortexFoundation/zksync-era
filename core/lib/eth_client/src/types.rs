@@ -57,8 +57,8 @@ impl CallFunctionArgs {
     }
 }
 
-/// Information sufficient for calling a function in a specific Ethereum smart contract. Instantiated
-/// using [`CallFunctionArgs::for_contract()`].
+/// Information sufficient for calling a function in a specific Ethereum smart contract.
+/// Instantiated using [`CallFunctionArgs::for_contract()`].
 #[derive(Debug)]
 pub struct ContractCall<'a> {
     pub(crate) contract_address: Address,
@@ -258,14 +258,12 @@ pub fn encode_blob_tx_with_sidecar(raw_tx: &[u8], sidecar: &EthTxBlobSidecar) ->
     //
     // If you look into the specs what this means for us here is the following:
     //
-    // 1. The `0x03` byte signaling the type of the blob transaction has
-    //    to be removed from the head of received payload body
+    // 1. The `0x03` byte signaling the type of the blob transaction has to be removed from the head
+    //    of received payload body
     // 2. The above four-element RLP list has to be constructed.
-    // 3. The `0x03` byte has to be concatenated with the RLP-encoded list from
-    //    the previous step
-    // 4. The result of this concatenation has to be again RLP-encoded into
-    //    what constitutes the final form of a blob transaction with the sidecar
-    //    as it is sent to the network.
+    // 3. The `0x03` byte has to be concatenated with the RLP-encoded list from the previous step
+    // 4. The result of this concatenation has to be again RLP-encoded into what constitutes the
+    //    final form of a blob transaction with the sidecar as it is sent to the network.
     stream_outer.append_raw(&raw_tx[1..], 1);
 
     let mut blob_stream = RlpStream::new_list(blobs_count);

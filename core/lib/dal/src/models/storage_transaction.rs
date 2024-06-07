@@ -366,7 +366,8 @@ impl From<StorageTransactionReceipt> for TransactionReceipt {
                 })
                 // For better compatibility with various clients, we never return null.
                 .or_else(|| Some(Address::default())),
-            cumulative_gas_used: Default::default(), // TODO: Should be actually calculated (SMA-1183).
+            cumulative_gas_used: Default::default(), /* TODO: Should be actually calculated
+                                                      * (SMA-1183). */
             gas_used: {
                 let refunded_gas: U256 = storage_receipt.refunded_gas.into();
                 storage_receipt.gas_limit.map(|val| {

@@ -91,8 +91,8 @@ impl MerkleTreePruningTask {
         self.health_updater.update(health.into());
         tracing::info!("Obtained pruning handles; starting Merkle tree pruning");
 
-        // Pruner is not allocated a managed task because it is blocking; its cancellation awareness inherently
-        // depends on the pruner handle (i.e., this task).
+        // Pruner is not allocated a managed task because it is blocking; its cancellation awareness
+        // inherently depends on the pruner handle (i.e., this task).
         pruner.set_poll_interval(self.poll_interval);
         let pruner_task_handle = tokio::task::spawn_blocking(|| pruner.run());
 
@@ -120,7 +120,9 @@ impl MerkleTreePruningTask {
                         target_retained_l1_batch_number: Some(target_retained_l1_batch_number),
                     };
                     self.health_updater.update(health.into());
-                    tracing::info!("Set target retained tree version from {prev_target_version} to {target_retained_version}");
+                    tracing::info!(
+                        "Set target retained tree version from {prev_target_version} to {target_retained_version}"
+                    );
                 }
             }
 

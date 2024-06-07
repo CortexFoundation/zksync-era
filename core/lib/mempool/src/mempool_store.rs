@@ -51,7 +51,8 @@ impl MempoolStore {
     /// Inserts batch of new transactions to mempool
     /// `initial_nonces` provides current committed nonce information to mempool
     /// variable is used only if account is not present in mempool yet and we have to bootstrap it
-    /// in other cases mempool relies on state keeper and its internal state to keep that info up to date
+    /// in other cases mempool relies on state keeper and its internal state to keep that info up to
+    /// date
     pub fn insert(
         &mut self,
         transactions: Vec<Transaction>,

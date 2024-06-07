@@ -57,15 +57,17 @@ impl CommitmentGenerator {
         }
     }
 
-    /// Returns default parallelism for commitment generation based on the number of CPU cores available.
+    /// Returns default parallelism for commitment generation based on the number of CPU cores
+    /// available.
     pub fn default_parallelism() -> NonZeroU32 {
-        // Leave at least one core free to handle other blocking tasks. `unwrap()`s are safe by design.
+        // Leave at least one core free to handle other blocking tasks. `unwrap()`s are safe by
+        // design.
         let cpus = u32::try_from(num_cpus::get().saturating_sub(1).clamp(1, 16)).unwrap();
         NonZeroU32::new(cpus).unwrap()
     }
 
-    /// Sets the degree of parallelism to be used by this generator. A reasonable value can be obtained
-    /// using [`Self::default_parallelism()`].
+    /// Sets the degree of parallelism to be used by this generator. A reasonable value can be
+    /// obtained using [`Self::default_parallelism()`].
     pub fn set_max_parallelism(&mut self, parallelism: NonZeroU32) {
         self.parallelism = parallelism;
     }
@@ -326,8 +328,9 @@ impl CommitmentGenerator {
             .connection_pool
             .connection_tagged("commitment_generator")
             .await?;
-        // Saving changes atomically is not required here; since we save batches in order, if we encounter a DB error,
-        // the commitment generator will be able to recover gracefully.
+        // Saving changes atomically is not required here; since we save batches in order, if we
+        // encounter a DB error, the commitment generator will be able to recover
+        // gracefully.
         for (l1_batch_number, artifacts) in artifacts {
             let latency =
                 METRICS.generate_commitment_latency_stage[&CommitmentStage::SaveResults].start();
@@ -414,8 +417,9 @@ impl CommitmentGenerator {
         Ok(Some(next_batch_number..=last_batch_number))
     }
 
-    /// Runs this commitment generator indefinitely. It will process L1 batches added to the database
-    /// processed by the Merkle tree (or a tree fetcher), with a previously configured max parallelism.
+    /// Runs this commitment generator indefinitely. It will process L1 batches added to the
+    /// database processed by the Merkle tree (or a tree fetcher), with a previously configured
+    /// max parallelism.
     pub async fn run(self, stop_receiver: watch::Receiver<bool>) -> anyhow::Result<()> {
         tracing::info!(
             "Starting commitment generator with mode {:?} and parallelism {}",
@@ -449,7 +453,10 @@ impl CommitmentGenerator {
             let step_latency = step_latency.observe();
             let batch_count = l1_batch_numbers.end().0 - l1_batch_numbers.start().0 + 1;
             METRICS.step_batch_count.observe(batch_count.into());
-            tracing::info!("Finished commitment generation for L1 batches #{l1_batch_numbers:?} in {step_latency:?} ({:?} per batch)", step_latency / batch_count);
+            tracing::info!(
+                "Finished commitment generation for L1 batches #{l1_batch_numbers:?} in {step_latency:?} ({:?} per batch)",
+                step_latency / batch_count
+            );
         }
         Ok(())
     }

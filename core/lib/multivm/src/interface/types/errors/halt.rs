@@ -65,8 +65,9 @@ impl Display for Halt {
             }
             Halt::Unknown(reason) => write!(f, "Unknown reason: {}", reason),
             Halt::UnexpectedVMBehavior(problem) => {
-                write!(f,
-                       "virtual machine entered unexpected state. Please contact developers and provide transaction details \
+                write!(
+                    f,
+                    "virtual machine entered unexpected state. Please contact developers and provide transaction details \
                     that caused this error. Error description: {problem}"
                 )
             }

@@ -21,7 +21,8 @@ pub(crate) enum StorageChunkStage {
 #[derive(Debug, Metrics)]
 #[metrics(prefix = "snapshots_creator")]
 pub(crate) struct SnapshotsCreatorMetrics {
-    /// Number of chunks in the most recently generated snapshot. Set when a snapshot generation starts.
+    /// Number of chunks in the most recently generated snapshot. Set when a snapshot generation
+    /// starts.
     pub storage_logs_chunks_count: Gauge<u64>,
     /// Number of chunks left to process for the snapshot being currently generated.
     pub storage_logs_chunks_left_to_process: Gauge<usize>,

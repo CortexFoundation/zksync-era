@@ -54,8 +54,8 @@ impl<T: Resource> StoredResource for T {
 impl dyn StoredResource {
     /// Reimplementation of `Any::downcast_ref`.
     /// Returns `Some` if the type is correct, and `None` otherwise.
-    // Note: This method is required as we cannot store objects as, for example, `dyn StoredResource + Any`,
-    // so we don't have access to `Any::downcast_ref` within the node.
+    // Note: This method is required as we cannot store objects as, for example, `dyn StoredResource
+    // + Any`, so we don't have access to `Any::downcast_ref` within the node.
     pub(crate) fn downcast_ref<T: Resource>(&self) -> Option<&T> {
         if self.type_id() == TypeId::of::<T>() {
             // SAFETY: We just checked that the type is correct.

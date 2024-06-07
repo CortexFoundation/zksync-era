@@ -340,8 +340,10 @@ mod tests {
                     .get_group_id_for_circuit_id_and_aggregation_round(test.1, test.2)
             );
         }
-        assert!(fri_prover_group_config
-            .get_group_id_for_circuit_id_and_aggregation_round(19, 0)
-            .is_none());
+        assert!(
+            fri_prover_group_config
+                .get_group_id_for_circuit_id_and_aggregation_round(19, 0)
+                .is_none()
+        );
     }
 }

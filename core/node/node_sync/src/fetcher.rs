@@ -11,15 +11,17 @@ use super::{
     sync_action::SyncAction,
 };
 
-/// Same as [`zksync_types::Transaction`], just with additional guarantees that the "received at" timestamp was set locally.
-/// We cannot transfer `Transaction`s without these timestamps, because this would break backward compatibility.
+/// Same as [`zksync_types::Transaction`], just with additional guarantees that the "received at"
+/// timestamp was set locally. We cannot transfer `Transaction`s without these timestamps, because
+/// this would break backward compatibility.
 #[derive(Debug, Clone)]
 pub struct FetchedTransaction(zksync_types::Transaction);
 
 impl FetchedTransaction {
     pub fn new(mut tx: zksync_types::Transaction) -> Self {
-        // Override the "received at" timestamp for the transaction so that they are causally ordered (i.e., transactions
-        // with an earlier timestamp are persisted earlier). Without this property, code relying on causal ordering may work incorrectly;
+        // Override the "received at" timestamp for the transaction so that they are causally
+        // ordered (i.e., transactions with an earlier timestamp are persisted earlier).
+        // Without this property, code relying on causal ordering may work incorrectly;
         // e.g., `pendingTransactions` subscriptions notifier can skip transactions.
         tx.received_timestamp_ms = unix_timestamp_ms();
         Self(tx)
@@ -100,11 +102,12 @@ impl TryFrom<SyncBlock> for FetchedBlock {
 /// Helper method for `IoCursor` for needs of sync layer.
 #[async_trait::async_trait]
 pub trait IoCursorExt: Sized {
-    /// Loads this cursor from storage and modifies it to account for the pending L1 batch if necessary.
+    /// Loads this cursor from storage and modifies it to account for the pending L1 batch if
+    /// necessary.
     async fn for_fetcher(storage: &mut Connection<'_, Core>) -> anyhow::Result<Self>;
 
-    /// Advances the cursor according to the provided fetched block and returns a sequence of `SyncAction`
-    /// objects to process.
+    /// Advances the cursor according to the provided fetched block and returns a sequence of
+    /// `SyncAction` objects to process.
     fn advance(&mut self, block: FetchedBlock) -> Vec<SyncAction>;
 }
 
@@ -112,8 +115,9 @@ pub trait IoCursorExt: Sized {
 impl IoCursorExt for IoCursor {
     async fn for_fetcher(storage: &mut Connection<'_, Core>) -> anyhow::Result<Self> {
         let mut this = Self::new(storage).await?;
-        // It's important to know whether we have opened a new batch already or just sealed the previous one.
-        // Depending on it, we must either insert `OpenBatch` item into the queue, or not.
+        // It's important to know whether we have opened a new batch already or just sealed the
+        // previous one. Depending on it, we must either insert `OpenBatch` item into the
+        // queue, or not.
         let was_new_batch_open = storage.blocks_dal().pending_batch_exists().await?;
         if !was_new_batch_open {
             this.l1_batch -= 1; // Should continue from the last L1 batch present in the storage
@@ -126,8 +130,9 @@ impl IoCursorExt for IoCursor {
         let local_block_hash = block.compute_hash(self.prev_l2_block_hash);
         if let Some(reference_hash) = block.reference_hash {
             if local_block_hash != reference_hash {
-                // This is a warning, not an assertion because hash mismatch may occur after a reorg.
-                // Indeed, `self.prev_l2_block_hash` may differ from the hash of the updated previous L2 block.
+                // This is a warning, not an assertion because hash mismatch may occur after a
+                // reorg. Indeed, `self.prev_l2_block_hash` may differ from the hash
+                // of the updated previous L2 block.
                 tracing::warn!(
                     "Mismatch between the locally computed and received L2 block hash for {block:?}; \
                      local_block_hash = {local_block_hash:?}, prev_l2_block_hash = {:?}",
@@ -172,8 +177,8 @@ impl IoCursorExt for IoCursor {
             FETCHER_METRICS.l1_batch[&L1BatchStage::Open].set(block.l1_batch_number.0.into());
             self.l1_batch += 1;
         } else {
-            // New batch implicitly means a new L2 block, so we only need to push the L2 block action
-            // if it's not a new batch.
+            // New batch implicitly means a new L2 block, so we only need to push the L2 block
+            // action if it's not a new batch.
             new_actions.push(SyncAction::L2Block {
                 params: L2BlockParams {
                     timestamp: block.timestamp,
@@ -189,7 +194,8 @@ impl IoCursorExt for IoCursor {
         new_actions.extend(block.transactions.into_iter().map(Into::into));
 
         // Last L2 block of the batch is a "fictive" L2 block and would be replicated locally.
-        // We don't need to seal it explicitly, so we only put the seal L2 block command if it's not the last L2 block.
+        // We don't need to seal it explicitly, so we only put the seal L2 block command if it's not
+        // the last L2 block.
         if block.last_in_batch {
             new_actions.push(SyncAction::SealBatch);
         } else {

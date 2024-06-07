@@ -51,7 +51,7 @@ pub trait Database: Send + Sync {
     ///
     /// Returns a deserialization error if any.
     fn try_tree_node(&self, key: &NodeKey, is_leaf: bool)
-        -> Result<Option<Node>, DeserializeError>;
+    -> Result<Option<Node>, DeserializeError>;
     /// Obtains a node with the specified key from the tree storage.
     ///
     /// # Panics
@@ -77,7 +77,8 @@ pub trait Database: Send + Sync {
             .unwrap_or_else(|err| panic!("{err}"))
     }
 
-    /// Starts profiling I/O operations and returns a thread-local guard to be dropped when profiling should be finished.
+    /// Starts profiling I/O operations and returns a thread-local guard to be dropped when
+    /// profiling should be finished.
     fn start_profiling(&self, operation: ProfiledTreeOperation) -> Box<dyn Any>;
 
     /// Applies changes in the `patch` to this database. This operation should be atomic.
@@ -168,7 +169,9 @@ impl Database for PatchSet {
                 patch.merge(other_patch);
             } else {
                 anyhow::ensure!(
-                    self.patches_by_version.keys().all(|&ver| ver > other_updated_version),
+                    self.patches_by_version
+                        .keys()
+                        .all(|&ver| ver > other_updated_version),
                     "Cannot update {self:?} from {other:?}; this would break the update version invariant \
                      (the update version being lesser than all inserted versions)"
                 );
@@ -230,7 +233,8 @@ impl<DB: Database> Patched<DB> {
         }
         let could_be_in_updated_patch = patch.updated_version == Some(key.version);
         if could_be_in_updated_patch {
-            // Unlike with new versions, we must look both in the update patch and in the original DB.
+            // Unlike with new versions, we must look both in the update patch and in the original
+            // DB.
             if let Some(node) = patch.tree_node(key, is_leaf) {
                 return (Some(node), true);
             }

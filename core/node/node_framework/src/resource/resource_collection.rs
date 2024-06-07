@@ -8,19 +8,19 @@ use tokio::sync::watch;
 
 use super::Resource;
 
-/// Collection of resources that can be extended during the initialization phase, and then resolved once
-/// the wiring is complete.
+/// Collection of resources that can be extended during the initialization phase, and then resolved
+/// once the wiring is complete.
 ///
-/// During component initialization, resource collections can be requested by the components in order to push new
-/// elements there. Once the initialization is complete, it is no longer possible to push new elements, and the
-/// collection can be resolved into a vector of resources.
+/// During component initialization, resource collections can be requested by the components in
+/// order to push new elements there. Once the initialization is complete, it is no longer possible
+/// to push new elements, and the collection can be resolved into a vector of resources.
 ///
-/// Collections implement `Clone`, so they can be consumed by several tasks. Every task that resolves the collection
-/// is guaranteed to have the same set of resources.
+/// Collections implement `Clone`, so they can be consumed by several tasks. Every task that
+/// resolves the collection is guaranteed to have the same set of resources.
 ///
-/// The purpose of this container is to allow different tasks to register their resource in a single place for some
-/// other task to consume. For example, tasks may register their healthchecks, and then healthcheck task will observe
-/// all the provided healthchecks.
+/// The purpose of this container is to allow different tasks to register their resource in a single
+/// place for some other task to consume. For example, tasks may register their healthchecks, and
+/// then healthcheck task will observe all the provided healthchecks.
 pub struct ResourceCollection<T> {
     /// Collection of the resources.
     resources: Arc<Mutex<Vec<T>>>,
@@ -83,7 +83,8 @@ impl<T: Resource + Clone> ResourceCollection<T> {
     /// Adds a new element to the resource collection.
     /// Returns an error if the wiring is already complete.
     pub fn push(&self, resource: T) -> Result<(), ResourceCollectionError> {
-        // This check is sufficient, since no task is guaranteed to be running when the value changes.
+        // This check is sufficient, since no task is guaranteed to be running when the value
+        // changes.
         if *self.wired.borrow() {
             return Err(ResourceCollectionError::AlreadyWired);
         }
@@ -99,9 +100,10 @@ impl<T: Resource + Clone> ResourceCollection<T> {
 
     /// Waits until the wiring is complete, and resolves the collection into a vector of resources.
     pub async fn resolve(mut self) -> Vec<T> {
-        // Guaranteed not to hang on server shutdown, since the node will invoke the `on_wiring_complete` before any task
-        // is actually spawned (per framework rules). For most cases, this check will resolve immediately, unless
-        // some tasks would spawn something from the `IntoZkSyncTask` impl.
+        // Guaranteed not to hang on server shutdown, since the node will invoke the
+        // `on_wiring_complete` before any task is actually spawned (per framework rules).
+        // For most cases, this check will resolve immediately, unless some tasks would
+        // spawn something from the `IntoZkSyncTask` impl.
         self.wired.changed().await.expect("Sender can't be dropped");
 
         tracing::info!("Resource collection {} has been resolved", Self::name());

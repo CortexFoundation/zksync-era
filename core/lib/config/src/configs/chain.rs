@@ -29,12 +29,14 @@ impl NetworkConfig {
 }
 
 /// An enum that represents the version of the fee model to use.
-///  - `V1`, the first model that was used in zkSync Era. In this fee model, the pubdata price must be pegged to the L1 gas price.
-///  Also, the fair L2 gas price is expected to only include the proving/computation price for the operator and not the costs that come from
-///  processing the batch on L1.
-///  - `V2`, the second model that was used in zkSync Era. There the pubdata price might be independent from the L1 gas price. Also,
-///  The fair L2 gas price is expected to both the proving/computation price for the operator and the costs that come from
-///  processing the batch on L1.
+///  - `V1`, the first model that was used in zkSync Era. In this fee model, the pubdata price must
+///    be pegged to the L1 gas price.
+///  Also, the fair L2 gas price is expected to only include the proving/computation price for the
+/// operator and not the costs that come from  processing the batch on L1.
+///  - `V2`, the second model that was used in zkSync Era. There the pubdata price might be
+///    independent from the L1 gas price. Also,
+///  The fair L2 gas price is expected to both the proving/computation price for the operator and
+/// the costs that come from  processing the batch on L1.
 #[derive(Debug, Clone, Copy, Deserialize, PartialEq, Eq)]
 pub enum FeeModelVersion {
     V1,
@@ -58,16 +60,18 @@ pub struct StateKeeperConfig {
     #[serde(alias = "miniblock_commit_deadline_ms")]
     // legacy naming; since we don't serialize this struct, we use "alias" rather than "rename"
     pub l2_block_commit_deadline_ms: u64,
-    /// Capacity of the queue for asynchronous L2 block sealing. Once this many L2 blocks are queued,
-    /// sealing will block until some of the L2 blocks from the queue are processed.
-    /// 0 means that sealing is synchronous; this is mostly useful for performance comparison, testing etc.
+    /// Capacity of the queue for asynchronous L2 block sealing. Once this many L2 blocks are
+    /// queued, sealing will block until some of the L2 blocks from the queue are processed.
+    /// 0 means that sealing is synchronous; this is mostly useful for performance comparison,
+    /// testing etc.
     #[serde(alias = "miniblock_seal_queue_capacity")]
     pub l2_block_seal_queue_capacity: usize,
     /// The max payload size threshold (in bytes) that triggers sealing of an L2 block.
     #[serde(alias = "miniblock_max_payload_size")]
     pub l2_block_max_payload_size: usize,
 
-    /// The max number of gas to spend on an L1 tx before its batch should be sealed by the gas sealer.
+    /// The max number of gas to spend on an L1 tx before its batch should be sealed by the gas
+    /// sealer.
     pub max_single_tx_gas: u32,
 
     pub max_allowed_l2_tx_gas_limit: u64,
@@ -90,22 +94,27 @@ pub struct StateKeeperConfig {
     /// Fee account address. Value is deprecated and it's used only for generating wallets struct
     #[deprecated(note = "Use Wallets::fee_account::address instead")]
     pub fee_account_addr: Option<Address>,
-    /// The minimal acceptable L2 gas price, i.e. the price that should include the cost of computation/proving as well
-    /// as potentially premium for congestion.
+    /// The minimal acceptable L2 gas price, i.e. the price that should include the cost of
+    /// computation/proving as well as potentially premium for congestion.
     pub minimal_l2_gas_price: u64,
-    /// The constant that represents the possibility that a batch can be sealed because of overuse of computation resources.
-    /// It has range from 0 to 1. If it is 0, the compute will not depend on the cost for closing the batch.
-    /// If it is 1, the gas limit per batch will have to cover the entire cost of closing the batch.
+    /// The constant that represents the possibility that a batch can be sealed because of overuse
+    /// of computation resources. It has range from 0 to 1. If it is 0, the compute will not
+    /// depend on the cost for closing the batch. If it is 1, the gas limit per batch will have
+    /// to cover the entire cost of closing the batch.
     pub compute_overhead_part: f64,
-    /// The constant that represents the possibility that a batch can be sealed because of overuse of pubdata.
-    /// It has range from 0 to 1. If it is 0, the pubdata will not depend on the cost for closing the batch.
-    /// If it is 1, the pubdata limit per batch will have to cover the entire cost of closing the batch.
+    /// The constant that represents the possibility that a batch can be sealed because of overuse
+    /// of pubdata. It has range from 0 to 1. If it is 0, the pubdata will not depend on the
+    /// cost for closing the batch. If it is 1, the pubdata limit per batch will have to cover
+    /// the entire cost of closing the batch.
     pub pubdata_overhead_part: f64,
-    /// The constant amount of L1 gas that is used as the overhead for the batch. It includes the price for batch verification, etc.
+    /// The constant amount of L1 gas that is used as the overhead for the batch. It includes the
+    /// price for batch verification, etc.
     pub batch_overhead_l1_gas: u64,
-    /// The maximum amount of gas that can be used by the batch. This value is derived from the circuits limitation per batch.
+    /// The maximum amount of gas that can be used by the batch. This value is derived from the
+    /// circuits limitation per batch.
     pub max_gas_per_batch: u64,
-    /// The maximum amount of pubdata that can be used by the batch. Note that if the calldata is used as pubdata, this variable should not exceed 128kb.
+    /// The maximum amount of pubdata that can be used by the batch. Note that if the calldata is
+    /// used as pubdata, this variable should not exceed 128kb.
     pub max_pubdata_per_batch: u64,
 
     /// The version of the fee model to use.

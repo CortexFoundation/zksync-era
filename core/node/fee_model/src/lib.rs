@@ -18,8 +18,9 @@ pub mod l1_gas_price;
 /// Trait responsible for providing fee info for a batch
 #[async_trait::async_trait]
 pub trait BatchFeeModelInputProvider: fmt::Debug + 'static + Send + Sync {
-    /// Returns the batch fee with scaling applied. This may be used to account for the fact that the L1 gas and pubdata prices may fluctuate, esp.
-    /// in API methods that should return values that are valid for some period of time after the estimation was done.
+    /// Returns the batch fee with scaling applied. This may be used to account for the fact that
+    /// the L1 gas and pubdata prices may fluctuate, esp. in API methods that should return
+    /// values that are valid for some period of time after the estimation was done.
     async fn get_batch_fee_input_scaled(
         &self,
         l1_gas_price_scale_factor: f64,
@@ -47,15 +48,16 @@ pub trait BatchFeeModelInputProvider: fmt::Debug + 'static + Send + Sync {
 }
 
 impl dyn BatchFeeModelInputProvider {
-    /// Returns the batch fee input as-is, i.e. without any scaling for the L1 gas and pubdata prices.
+    /// Returns the batch fee input as-is, i.e. without any scaling for the L1 gas and pubdata
+    /// prices.
     pub async fn get_batch_fee_input(&self) -> anyhow::Result<BatchFeeInput> {
         self.get_batch_fee_input_scaled(1.0, 1.0).await
     }
 }
 
-/// The struct that represents the batch fee input provider to be used in the main node of the server, i.e.
-/// it explicitly gets the L1 gas price from the provider and uses it to calculate the batch fee input instead of getting
-/// it from other node.
+/// The struct that represents the batch fee input provider to be used in the main node of the
+/// server, i.e. it explicitly gets the L1 gas price from the provider and uses it to calculate the
+/// batch fee input instead of getting it from other node.
 #[derive(Debug)]
 pub struct MainNodeFeeInputProvider {
     provider: Arc<GasAdjuster>,
@@ -84,8 +86,8 @@ impl MainNodeFeeInputProvider {
     }
 }
 
-/// The fee model provider to be used in the API. It returns the maximum batch fee input between the projected main node one and
-/// the one from the last sealed L2 block.
+/// The fee model provider to be used in the API. It returns the maximum batch fee input between the
+/// projected main node one and the one from the last sealed L2 block.
 #[derive(Debug)]
 pub struct ApiFeeInputProvider {
     inner: Arc<dyn BatchFeeModelInputProvider>,
@@ -136,7 +138,8 @@ impl BatchFeeModelInputProvider for ApiFeeInputProvider {
 }
 
 /// Calculates the batch fee input based on the main node parameters.
-/// This function uses the `V1` fee model, i.e. where the pubdata price does not include the proving costs.
+/// This function uses the `V1` fee model, i.e. where the pubdata price does not include the proving
+/// costs.
 fn compute_batch_fee_model_input_v1(
     params: FeeParamsV1,
     l1_gas_price_scale_factor: f64,
@@ -150,7 +153,8 @@ fn compute_batch_fee_model_input_v1(
 }
 
 /// Calculates the batch fee input based on the main node parameters.
-/// This function uses the `V2` fee model, i.e. where the pubdata price does not include the proving costs.
+/// This function uses the `V2` fee model, i.e. where the pubdata price does not include the proving
+/// costs.
 fn compute_batch_fee_model_input_v2(
     params: FeeParamsV2,
     l1_gas_price_scale_factor: f64,
@@ -175,37 +179,43 @@ fn compute_batch_fee_model_input_v2(
     let l1_gas_price = (l1_gas_price as f64 * l1_gas_price_scale_factor) as u64;
     let l1_pubdata_price = (l1_pubdata_price as f64 * l1_pubdata_price_scale_factor) as u64;
 
-    // While the final results of the calculations are not expected to have any overflows, the intermediate computations
-    // might, so we use U256 for them.
+    // While the final results of the calculations are not expected to have any overflows, the
+    // intermediate computations might, so we use U256 for them.
     let l1_batch_overhead_wei = U256::from(l1_gas_price) * U256::from(batch_overhead_l1_gas);
 
     let fair_l2_gas_price = {
-        // Firstly, we calculate which part of the overall overhead overhead each unit of L2 gas should cover.
+        // Firstly, we calculate which part of the overall overhead overhead each unit of L2 gas
+        // should cover.
         let l1_batch_overhead_per_gas =
             ceil_div_u256(l1_batch_overhead_wei, U256::from(max_gas_per_batch));
 
-        // Then, we multiply by the `compute_overhead_part` to get the overhead for the computation for each gas.
-        // Also, this means that if we almost never close batches because of compute, the `compute_overhead_part` should be zero and so
-        // it is possible that the computation costs include for no overhead.
+        // Then, we multiply by the `compute_overhead_part` to get the overhead for the computation
+        // for each gas. Also, this means that if we almost never close batches because of
+        // compute, the `compute_overhead_part` should be zero and so it is possible that
+        // the computation costs include for no overhead.
         let gas_overhead_wei =
             (l1_batch_overhead_per_gas.as_u64() as f64 * compute_overhead_part) as u64;
 
-        // We sum up the minimal L2 gas price (i.e. the raw prover/compute cost of a single L2 gas) and the overhead for batch being closed.
+        // We sum up the minimal L2 gas price (i.e. the raw prover/compute cost of a single L2 gas)
+        // and the overhead for batch being closed.
         minimal_l2_gas_price + gas_overhead_wei
     };
 
     let fair_pubdata_price = {
-        // Firstly, we calculate which part of the overall overhead overhead each pubdata byte should cover.
+        // Firstly, we calculate which part of the overall overhead overhead each pubdata byte
+        // should cover.
         let l1_batch_overhead_per_pubdata =
             ceil_div_u256(l1_batch_overhead_wei, U256::from(max_pubdata_per_batch));
 
-        // Then, we multiply by the `pubdata_overhead_part` to get the overhead for each pubdata byte.
-        // Also, this means that if we almost never close batches because of pubdata, the `pubdata_overhead_part` should be zero and so
-        // it is possible that the pubdata costs include no overhead.
+        // Then, we multiply by the `pubdata_overhead_part` to get the overhead for each pubdata
+        // byte. Also, this means that if we almost never close batches because of pubdata,
+        // the `pubdata_overhead_part` should be zero and so it is possible that the pubdata
+        // costs include no overhead.
         let pubdata_overhead_wei =
             (l1_batch_overhead_per_pubdata.as_u64() as f64 * pubdata_overhead_part) as u64;
 
-        // We sum up the raw L1 pubdata price (i.e. the expected price of publishing a single pubdata byte) and the overhead for batch being closed.
+        // We sum up the raw L1 pubdata price (i.e. the expected price of publishing a single
+        // pubdata byte) and the overhead for batch being closed.
         l1_pubdata_price + pubdata_overhead_wei
     };
 
@@ -249,8 +259,8 @@ mod tests {
     fn test_compute_batch_fee_model_input_v2_giant_numbers() {
         let config = FeeModelConfigV2 {
             minimal_l2_gas_price: GIANT_L1_GAS_PRICE,
-            // We generally don't expect those values to be larger than 1. Still, in theory the operator
-            // may need to set higher values in extreme cases.
+            // We generally don't expect those values to be larger than 1. Still, in theory the
+            // operator may need to set higher values in extreme cases.
             compute_overhead_part: 5.0,
             pubdata_overhead_part: 5.0,
             // The batch overhead would likely never grow beyond that

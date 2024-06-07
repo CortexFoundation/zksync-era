@@ -247,8 +247,8 @@ pub struct ValidationTracerParams {
     /// Trusted addresses (the user can access any slots on these addresses).
     pub trusted_addresses: HashSet<Address>,
     /// Slots, that are trusted and the value of them is the new trusted address.
-    /// They are needed to work correctly with beacon proxy, where the address of the implementation is
-    /// stored in the beacon.
+    /// They are needed to work correctly with beacon proxy, where the address of the
+    /// implementation is stored in the beacon.
     pub trusted_address_slots: HashSet<(Address, U256)>,
 }
 
@@ -303,8 +303,8 @@ impl<S: Storage> ValidationTracer<S> {
             return true;
         }
 
-        // The pair of `MSG_VALUE_SIMULATOR_ADDRESS` & `L2_ETH_TOKEN_ADDRESS` simulates the behavior of transferring ETH
-        // that is safe for the DDoS protection rules.
+        // The pair of `MSG_VALUE_SIMULATOR_ADDRESS` & `L2_ETH_TOKEN_ADDRESS` simulates the behavior
+        // of transferring ETH that is safe for the DDoS protection rules.
         if valid_eth_token_call(address, msg_sender) {
             return true;
         }
@@ -350,8 +350,8 @@ impl<S: Storage> ValidationTracer<S> {
         // If the `validation_address` is equal to the `potential_address`,
         // then it is a request that could be used for mapping of kind `mapping(address => ...)`.
         //
-        // If the `potential_position_bytes` were already allowed before, then this keccak might be used
-        // for ERC-20 allowance or any other of `mapping(address => mapping(...))`
+        // If the `potential_position_bytes` were already allowed before, then this keccak might be
+        // used for ERC-20 allowance or any other of `mapping(address => mapping(...))`
         if potential_address == Some(validated_address)
             || self
                 .auxilary_allowed_slots
@@ -426,7 +426,8 @@ impl<S: Storage> ValidationTracer<S> {
                         return Err(ViolatedValidationRule::TouchedUnallowedContext);
                     }
                     ContextOpcode::ErgsLeft => {
-                        // TODO (SMA-1168): implement the correct restrictions for the gas left opcode.
+                        // TODO (SMA-1168): implement the correct restrictions for the gas left
+                        // opcode.
                     }
                     _ => {}
                 }
@@ -492,11 +493,13 @@ impl<S: Storage> Tracer for ValidationTracer<S> {
         let current_mode = self.validation_mode;
         match (current_mode, hook) {
             (ValidationTracerMode::NoValidation, VmHook::AccountValidationEntered) => {
-                // Account validation can be entered when there is no prior validation (i.e. "nested" validations are not allowed)
+                // Account validation can be entered when there is no prior validation (i.e.
+                // "nested" validations are not allowed)
                 self.validation_mode = ValidationTracerMode::UserTxValidation;
             }
             (ValidationTracerMode::NoValidation, VmHook::PaymasterValidationEntered) => {
-                // Paymaster validation can be entered when there is no prior validation (i.e. "nested" validations are not allowed)
+                // Paymaster validation can be entered when there is no prior validation (i.e.
+                // "nested" validations are not allowed)
                 self.validation_mode = ValidationTracerMode::PaymasterTxValidation;
             }
             (_, VmHook::AccountValidationEntered | VmHook::PaymasterValidationEntered) => {
@@ -595,8 +598,9 @@ impl Tracer for OneTxTracer {
 
         if data.opcode.variant.opcode == Opcode::Log(LogOpcode::PrecompileCall) {
             let current_stack = state.vm_local_state.callstack.get_current_stack();
-            // Trace for precompile calls from `KNOWN_CODES_STORAGE_ADDRESS` and `L1_MESSENGER_ADDRESS` that burn some gas.
-            // Note, that if there is less gas left than requested to burn it will be burnt anyway.
+            // Trace for precompile calls from `KNOWN_CODES_STORAGE_ADDRESS` and
+            // `L1_MESSENGER_ADDRESS` that burn some gas. Note, that if there is less
+            // gas left than requested to burn it will be burnt anyway.
             if current_stack.this_address == KNOWN_CODES_STORAGE_ADDRESS
                 || current_stack.this_address == L1_MESSENGER_ADDRESS
             {
@@ -648,8 +652,8 @@ impl OneTxTracer {
     }
 }
 
-/// Tells the VM to end the execution before `ret` from the bootloader if there is no panic or revert.
-/// Also, saves the information if this `ret` was caused by "out of gas" panic.
+/// Tells the VM to end the execution before `ret` from the bootloader if there is no panic or
+/// revert. Also, saves the information if this `ret` was caused by "out of gas" panic.
 #[derive(Debug, Clone, Default)]
 pub struct BootloaderTracer {
     is_bootloader_out_of_gas: bool,
@@ -668,7 +672,8 @@ impl Tracer for BootloaderTracer {
         data: AfterDecodingData,
         _memory: &Self::SupportedMemory,
     ) {
-        // We should check not only for the `NOT_ENOUGH_ERGS` flag but if the current frame is bootloader too.
+        // We should check not only for the `NOT_ENOUGH_ERGS` flag but if the current frame is
+        // bootloader too.
         if Self::current_frame_is_bootloader(state.vm_local_state)
             && data
                 .error_flags_accumulated
@@ -693,7 +698,8 @@ impl Tracer for BootloaderTracer {
         memory: &Self::SupportedMemory,
     ) {
         // Decodes next opcode.
-        // `self` is passed as `tracer`, so `self.after_decoding` will be called and it will catch "out of gas".
+        // `self` is passed as `tracer`, so `self.after_decoding` will be called and it will catch
+        // "out of gas".
         let (next_opcode, _, _) = zk_evm_1_3_1::vm_state::read_and_decode(
             state.vm_local_state,
             memory,
@@ -720,8 +726,8 @@ impl PubdataSpentTracer for BootloaderTracer {}
 impl BootloaderTracer {
     fn current_frame_is_bootloader(local_state: &VmLocalState) -> bool {
         // The current frame is bootloader if the call stack depth is 1.
-        // Some of the near calls inside the bootloader can be out of gas, which is totally normal behavior
-        // and it shouldn't result in `is_bootloader_out_of_gas` becoming true.
+        // Some of the near calls inside the bootloader can be out of gas, which is totally normal
+        // behavior and it shouldn't result in `is_bootloader_out_of_gas` becoming true.
         local_state.callstack.inner.len() == 1
     }
 

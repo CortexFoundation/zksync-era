@@ -105,8 +105,8 @@ impl ProtoRepr for proto::Config {
                 .gossip_static_outbound
                 .iter()
                 .map(|x| proto::NodeAddr {
-                    key: Some(x.0 .0.clone()),
-                    addr: Some(x.1 .0.clone()),
+                    key: Some(x.0.0.clone()),
+                    addr: Some(x.1.0.clone()),
                 })
                 .collect(),
             genesis_spec: this.genesis_spec.as_ref().map(ProtoRepr::build),

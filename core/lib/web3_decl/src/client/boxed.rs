@@ -26,13 +26,14 @@ impl ToRpcParams for RawParams {
     }
 }
 
-/// Object-safe version of [`ClientT`] + [`Clone`]. Should generally be used via [`DynClient`] type alias.
+/// Object-safe version of [`ClientT`] + [`Clone`]. Should generally be used via [`DynClient`] type
+/// alias.
 // The implementation is fairly straightforward: [`RawParams`] is used as a catch-all params type,
 // and `serde_json::Value` is used as a catch-all response type.
 #[async_trait]
 pub trait ObjectSafeClient: 'static + Send + Sync + fmt::Debug + ForNetwork {
-    /// Tags this client as working for a specific component. The component name can be used in logging,
-    /// metrics etc.
+    /// Tags this client as working for a specific component. The component name can be used in
+    /// logging, metrics etc.
     fn for_component(self: Box<Self>, component_name: &'static str) -> Box<DynClient<Self::Net>>;
 
     #[doc(hidden)] // implementation detail

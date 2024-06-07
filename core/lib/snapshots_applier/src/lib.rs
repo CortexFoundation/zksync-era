@@ -78,13 +78,10 @@ enum SnapshotsApplierError {
 
 impl SnapshotsApplierError {
     fn object_store(err: ObjectStoreError, context: String) -> Self {
-        match err {
-            ObjectStoreError::KeyNotFound(_) | ObjectStoreError::Serialization(_) => {
-                Self::Fatal(anyhow::Error::from(err).context(context))
-            }
-            ObjectStoreError::Other(_) => {
-                Self::Retryable(anyhow::Error::from(err).context(context))
-            }
+        if err.is_transient() {
+            Self::Retryable(anyhow::Error::from(err).context(context))
+        } else {
+            Self::Fatal(anyhow::Error::from(err).context(context))
         }
     }
 }
@@ -184,15 +181,15 @@ impl SnapshotsApplierMainNodeClient for Box<DynClient<L2>> {
 /// Snapshot applier configuration options.
 #[derive(Debug)]
 pub struct SnapshotsApplierConfig {
-    /// Number of retries for transient errors before giving up on recovery (i.e., returning an error
-    /// from [`Self::run()`]).
+    /// Number of retries for transient errors before giving up on recovery (i.e., returning an
+    /// error from [`Self::run()`]).
     pub retry_count: usize,
-    /// Initial back-off interval when retrying recovery on a transient error. Each subsequent retry interval
-    /// will be multiplied by [`Self.retry_backoff_multiplier`].
+    /// Initial back-off interval when retrying recovery on a transient error. Each subsequent
+    /// retry interval will be multiplied by [`Self.retry_backoff_multiplier`].
     pub initial_retry_backoff: Duration,
     pub retry_backoff_multiplier: f32,
-    /// Maximum concurrency factor when performing concurrent operations (for now, the only such operation
-    /// is recovering chunks of storage logs).
+    /// Maximum concurrency factor when performing concurrent operations (for now, the only such
+    /// operation is recovering chunks of storage logs).
     pub max_concurrency: NonZeroUsize,
 }
 
@@ -258,8 +255,8 @@ impl SnapshotsApplierTask {
     ///
     /// # Errors
     ///
-    /// This method will return an error if a fatal error occurs during recovery (e.g., the DB is unreachable),
-    /// or under any of the following conditions:
+    /// This method will return an error if a fatal error occurs during recovery (e.g., the DB is
+    /// unreachable), or under any of the following conditions:
     ///
     /// - There are no snapshots on the main node
     pub async fn run(self) -> anyhow::Result<SnapshotApplierTaskStats> {
@@ -282,8 +279,9 @@ impl SnapshotsApplierTask {
                     let health_details = SnapshotsApplierHealthDetails::done(&final_status)?;
                     self.health_updater
                         .update(Health::from(HealthStatus::Ready).with_details(health_details));
-                    // Freeze the health check in the "ready" status, so that the snapshot recovery isn't marked
-                    // as "shut down", which would lead to the app considered unhealthy.
+                    // Freeze the health check in the "ready" status, so that the snapshot recovery
+                    // isn't marked as "shut down", which would lead to the app
+                    // considered unhealthy.
                     self.health_updater.freeze();
                     return Ok(SnapshotApplierTaskStats {
                         done_work: !matches!(strategy, SnapshotRecoveryStrategy::Completed),
@@ -477,7 +475,9 @@ impl<'a> SnapshotsApplier<'a> {
 
         let (strategy, applied_snapshot_status) =
             SnapshotRecoveryStrategy::new(&mut storage_transaction, main_node_client).await?;
-        tracing::info!("Chosen snapshot recovery strategy: {strategy:?} with status: {applied_snapshot_status:?}");
+        tracing::info!(
+            "Chosen snapshot recovery strategy: {strategy:?} with status: {applied_snapshot_status:?}"
+        );
         let created_from_scratch = match strategy {
             SnapshotRecoveryStrategy::Completed => return Ok((strategy, applied_snapshot_status)),
             SnapshotRecoveryStrategy::New => true,
@@ -513,8 +513,9 @@ impl<'a> SnapshotsApplier<'a> {
                 .insert_initial_recovery_status(&this.applied_snapshot_status)
                 .await?;
 
-            // Insert artificial entries into the pruning log so that it's guaranteed to match the snapshot recovery metadata.
-            // This allows to not deal with the corner cases when a node was recovered from a snapshot, but its pruning log is empty.
+            // Insert artificial entries into the pruning log so that it's guaranteed to match the
+            // snapshot recovery metadata. This allows to not deal with the corner cases
+            // when a node was recovered from a snapshot, but its pruning log is empty.
             storage_transaction
                 .pruning_dal()
                 .soft_prune_batches_range(
@@ -556,7 +557,8 @@ impl<'a> SnapshotsApplier<'a> {
                 .applied_snapshot_status
                 .storage_logs_chunks_processed
                 .len(),
-            // We don't use `self.applied_snapshot_status` here because it's not updated during recovery
+            // We don't use `self.applied_snapshot_status` here because it's not updated during
+            // recovery
             storage_logs_chunks_left_to_process: METRICS.storage_logs_chunks_left_to_process.get(),
         };
         let status = if details.is_done() {
@@ -692,7 +694,9 @@ impl<'a> SnapshotsApplier<'a> {
 
         let chunks_left = METRICS.storage_logs_chunks_left_to_process.dec_by(1) - 1;
         let latency = latency.observe();
-        tracing::info!("Saved storage logs for chunk {chunk_id} in {latency:?}, there are {chunks_left} left to process");
+        tracing::info!(
+            "Saved storage logs for chunk {chunk_id} in {latency:?}, there are {chunks_left} left to process"
+        );
 
         Ok(())
     }
@@ -708,7 +712,8 @@ impl<'a> SnapshotsApplier<'a> {
                 "invalid storage log with zero enumeration_index: {log:?}"
             );
             anyhow::ensure!(
-                log.l1_batch_number_of_initial_write <= self.applied_snapshot_status.l1_batch_number,
+                log.l1_batch_number_of_initial_write
+                    <= self.applied_snapshot_status.l1_batch_number,
                 "invalid storage log with `l1_batch_number_of_initial_write` from the future: {log:?}"
             );
         }
@@ -798,7 +803,8 @@ impl<'a> SnapshotsApplier<'a> {
             .await?;
 
         let bogus_tokens = tokens.iter().filter(|token| {
-            // We need special handling for L2 ether; its `l2_address` doesn't have a deployed contract
+            // We need special handling for L2 ether; its `l2_address` doesn't have a deployed
+            // contract
             !token.l2_address.is_zero() && !filtered_addresses.contains_key(&token.l2_address)
         });
         let bogus_tokens: Vec<_> = bogus_tokens.collect();

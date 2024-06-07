@@ -31,7 +31,8 @@ pub enum HealthStatus {
     /// Component is affected by some non-fatal issue. The component is still considered healthy.
     Affected,
     /// Component has received a termination request and is in the process of shutting down.
-    /// Components that shut down instantly may skip this status and proceed directly to [`Self::ShutDown`].
+    /// Components that shut down instantly may skip this status and proceed directly to
+    /// [`Self::ShutDown`].
     ShuttingDown,
     /// Component is shut down.
     ShutDown,
@@ -124,7 +125,9 @@ impl AppHealthCheck {
 
         let slow_time_limit = slow_time_limit.unwrap_or(DEFAULT_SLOW_TIME_LIMIT);
         let hard_time_limit = hard_time_limit.unwrap_or(DEFAULT_HARD_TIME_LIMIT);
-        tracing::debug!("Created app health with time limits: slow={slow_time_limit:?}, hard={hard_time_limit:?}");
+        tracing::debug!(
+            "Created app health with time limits: slow={slow_time_limit:?}, hard={hard_time_limit:?}"
+        );
 
         let config = AppHealthCheckConfig {
             slow_time_limit: slow_time_limit.into(),
@@ -329,7 +332,8 @@ impl<T: CheckHealth + ?Sized> CheckHealth for Arc<T> {
     }
 }
 
-/// Basic implementation of [`CheckHealth`] trait that can be updated using a matching [`HealthUpdater`].
+/// Basic implementation of [`CheckHealth`] trait that can be updated using a matching
+/// [`HealthUpdater`].
 #[derive(Debug, Clone)]
 pub struct ReactiveHealthCheck {
     name: &'static str,
@@ -353,10 +357,11 @@ impl ReactiveHealthCheck {
         (this, updater)
     }
 
-    /// Waits until the specified `condition` is true for the tracked [`Health`], and returns health.
-    /// Mostly useful for testing.
+    /// Waits until the specified `condition` is true for the tracked [`Health`], and returns
+    /// health. Mostly useful for testing.
     ///
-    /// If the health updater associated with this check is dropped, this method can wait indefinitely.
+    /// If the health updater associated with this check is dropped, this method can wait
+    /// indefinitely.
     pub async fn wait_for(&mut self, condition: impl FnMut(&Health) -> bool) -> Health {
         match self.health_receiver.wait_for(condition).await {
             Ok(health) => health.clone(),
@@ -378,8 +383,9 @@ impl CheckHealth for ReactiveHealthCheck {
 
 /// Updater for [`ReactiveHealthCheck`]. Can be created using [`ReactiveHealthCheck::new()`].
 ///
-/// On drop, will automatically update status to [`HealthStatus::ShutDown`], or to [`HealthStatus::Panicked`]
-/// if the dropping thread is panicking, unless the drop is performed using [`Self::freeze()`].
+/// On drop, will automatically update status to [`HealthStatus::ShutDown`], or to
+/// [`HealthStatus::Panicked`] if the dropping thread is panicking, unless the drop is performed
+/// using [`Self::freeze()`].
 #[derive(Debug)]
 pub struct HealthUpdater {
     name: &'static str,
@@ -405,13 +411,14 @@ impl HealthUpdater {
         false
     }
 
-    /// Closes this updater so that the corresponding health check can no longer be updated, not even if the updater is dropped.
+    /// Closes this updater so that the corresponding health check can no longer be updated, not
+    /// even if the updater is dropped.
     pub fn freeze(mut self) {
         self.should_track_drop = false;
     }
 
-    /// Creates a [`ReactiveHealthCheck`] attached to this updater. This allows not retaining the initial health check
-    /// returned by [`ReactiveHealthCheck::new()`].
+    /// Creates a [`ReactiveHealthCheck`] attached to this updater. This allows not retaining the
+    /// initial health check returned by [`ReactiveHealthCheck::new()`].
     pub fn subscribe(&self) -> ReactiveHealthCheck {
         ReactiveHealthCheck {
             name: self.name,

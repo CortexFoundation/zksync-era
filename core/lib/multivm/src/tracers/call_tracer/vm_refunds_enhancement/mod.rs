@@ -96,8 +96,9 @@ impl CallTracer {
                     .inner
                     .last()
                     .map(|call| call.this_address)
-                    // Actually it's safe to just unwrap here, because we have at least one call in the stack
-                    // But i want to be sure that we will not have any problems in the future
+                    // Actually it's safe to just unwrap here, because we have at least one call in
+                    // the stack But i want to be sure that we will not have any
+                    // problems in the future
                     .unwrap_or(current.this_address);
                 if previous_caller == CONTRACT_DEPLOYER_ADDRESS {
                     CallType::Create

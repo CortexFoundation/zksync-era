@@ -62,9 +62,10 @@ impl From<Transaction> for TransactionData {
                     U256::zero()
                 };
 
-                // Ethereum transactions do not sign gas per pubdata limit, and so for them we need to use
-                // some default value. We use the maximum possible value that is allowed by the bootloader
-                // (i.e. we can not use u64::MAX, because the bootloader requires gas per pubdata for such
+                // Ethereum transactions do not sign gas per pubdata limit, and so for them we need
+                // to use some default value. We use the maximum possible value that
+                // is allowed by the bootloader (i.e. we can not use u64::MAX,
+                // because the bootloader requires gas per pubdata for such
                 // transactions to be higher than `MAX_GAS_PER_PUBDATA_BYTE`).
                 let gas_per_pubdata_limit = if common_data.transaction_type.is_ethereum_type() {
                     MAX_GAS_PER_PUBDATA_BYTE.into()
@@ -216,8 +217,8 @@ impl TransactionData {
 
     pub(crate) fn trusted_ergs_limit(&self) -> U256 {
         if self.tx_type == L1_TX_TYPE {
-            // In case we get a users' transactions with unexpected gas limit, we do not let it have more than
-            // a certain limit
+            // In case we get a users' transactions with unexpected gas limit, we do not let it have
+            // more than a certain limit
             return U256::from(PRIORITY_TX_MAX_GAS_LIMIT).min(self.gas_limit);
         }
 
@@ -233,7 +234,8 @@ impl TransactionData {
         let l2_tx: L2Tx = self.clone().try_into().unwrap();
         let transaction_request: TransactionRequest = l2_tx.into();
 
-        // It is assumed that the `TransactionData` always has all the necessary components to recover the hash.
+        // It is assumed that the `TransactionData` always has all the necessary components to
+        // recover the hash.
         transaction_request
             .get_tx_hash(chain_id)
             .expect("Could not recover L2 transaction hash")

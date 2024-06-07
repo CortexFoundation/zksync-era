@@ -19,7 +19,8 @@ pub(crate) fn poll_iters(delay_interval: Duration, max_wait: Duration) -> usize 
     ((max_wait_millis + delay_interval_millis - 1) / delay_interval_millis).max(1) as usize
 }
 
-/// Cursor of the L2 block / L1 batch progress used by [`StateKeeperIO`](super::StateKeeperIO) implementations.
+/// Cursor of the L2 block / L1 batch progress used by [`StateKeeperIO`](super::StateKeeperIO)
+/// implementations.
 #[derive(Debug)]
 pub struct IoCursor {
     pub next_l2_block: L2BlockNumber,
@@ -80,7 +81,8 @@ impl IoCursor {
 ///
 /// # Errors
 ///
-/// Propagates DB errors. Also returns an error if environment doesn't correspond to a pending L1 batch.
+/// Propagates DB errors. Also returns an error if environment doesn't correspond to a pending L1
+/// batch.
 pub async fn load_pending_batch(
     storage: &mut Connection<'_, Core>,
     system_env: SystemEnv,

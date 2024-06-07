@@ -6,7 +6,8 @@ use zksync_types::{L1ChainId, L2ChainId};
 
 /// Marker trait for networks. Two standard network kinds are [`L1`] and [`L2`].
 ///
-/// The `Default` value should belong to a "generic" / "unknown" network, rather than to a specific network like the mainnet.
+/// The `Default` value should belong to a "generic" / "unknown" network, rather than to a specific
+/// network like the mainnet.
 pub trait Network: 'static + Copy + Default + Sync + Send + fmt::Debug {
     /// String representation of a network used as a metric label and in log messages.
     fn metric_label(&self) -> String;
@@ -52,8 +53,9 @@ impl From<L2ChainId> for L2 {
     }
 }
 
-/// Associates a type with a particular type of RPC networks, such as Ethereum or zkSync Era. RPC traits created using `jsonrpsee::rpc`
-/// can use `ForNetwork` as a client boundary to restrict which implementations can call their methods.
+/// Associates a type with a particular type of RPC networks, such as Ethereum or zkSync Era. RPC
+/// traits created using `jsonrpsee::rpc` can use `ForNetwork` as a client boundary to restrict
+/// which implementations can call their methods.
 pub trait ForNetwork {
     /// Network that the type is associated with.
     type Net: Network;
@@ -62,7 +64,8 @@ pub trait ForNetwork {
     fn network(&self) -> Self::Net;
 
     /// Returns the component tag. The component name can be used in logging, metrics etc.
-    /// The component name should be copied to the clones of this client, but should not be passed upstream.
+    /// The component name should be copied to the clones of this client, but should not be passed
+    /// upstream.
     fn component(&self) -> &'static str;
 }
 

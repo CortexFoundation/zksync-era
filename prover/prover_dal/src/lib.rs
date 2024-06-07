@@ -23,8 +23,8 @@ mod private {
     pub trait Sealed {}
 }
 
-// Here we are making the trait sealed, because it should be public to function correctly, but we don't
-// want to allow any other downstream implementations of this trait.
+// Here we are making the trait sealed, because it should be public to function correctly, but we
+// don't want to allow any other downstream implementations of this trait.
 pub trait ProverDal<'a>: private::Sealed
 where
     Self: 'a,

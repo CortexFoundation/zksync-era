@@ -49,9 +49,10 @@ impl SnapshotsCreatorDal<'_, '_> {
         l1_batch_number: L1BatchNumber,
         hashed_keys_range: std::ops::RangeInclusive<H256>,
     ) -> DalResult<Vec<SnapshotStorageLog>> {
-        // We need to filter the returned logs by `l1_batch_number` in order to not return "phantom writes", i.e.,
-        // logs that have deduplicated writes (e.g., a write to a non-zero value and back to zero in the same L1 batch)
-        // which are actually written to in future L1 batches.
+        // We need to filter the returned logs by `l1_batch_number` in order to not return "phantom
+        // writes", i.e., logs that have deduplicated writes (e.g., a write to a non-zero
+        // value and back to zero in the same L1 batch) which are actually written to in
+        // future L1 batches.
         let storage_logs = sqlx::query!(
             r#"
             SELECT

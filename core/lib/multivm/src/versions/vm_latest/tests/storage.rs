@@ -89,7 +89,8 @@ fn test_storage_behavior() {
     );
 
     // In all of the tests below we provide the first tx to ensure that the tracers will not include
-    // the statistics from the start of the bootloader and will only include those for the transaction itself.
+    // the statistics from the start of the bootloader and will only include those for the
+    // transaction itself.
 
     let base_pubdata = test_storage_one_tx(vec![]);
     let simple_test_pubdata = test_storage_one_tx(
@@ -130,7 +131,8 @@ fn test_transient_storage_behavior() {
         .unwrap()
         .encode_input(&[])
         .unwrap();
-    // Second transaction checks that, as expected, the transient storage is cleared after the first transaction.
+    // Second transaction checks that, as expected, the transient storage is cleared after the first
+    // transaction.
     let second_tstore_test = contract
         .function("assertTValue")
         .unwrap()

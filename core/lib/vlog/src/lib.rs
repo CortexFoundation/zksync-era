@@ -1,10 +1,11 @@
 //! This module contains the observability subsystem.
-//! It is responsible for providing a centralized interface for consistent observability configuration.
+//! It is responsible for providing a centralized interface for consistent observability
+//! configuration.
 
 use std::{backtrace::Backtrace, borrow::Cow, panic::PanicInfo, str::FromStr};
 
-// Temporary re-export of `sentry::capture_message` aiming to simplify the transition from `vlog` to using
-// crates directly.
+// Temporary re-export of `sentry::capture_message` aiming to simplify the transition from
+// `vlog` to using crates directly.
 use opentelemetry::{
     sdk::{
         propagation::TraceContextPropagator,

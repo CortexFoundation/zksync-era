@@ -124,8 +124,8 @@ where
         let block = if let Some(block) = block {
             block
         } else {
-            // Fallback for local reth. Because of artificial nature of producing blocks in local reth setup
-            // there may be no pending block
+            // Fallback for local reth. Because of artificial nature of producing blocks in local
+            // reth setup there may be no pending block
             self.get_block_by_number(web3::BlockNumber::Latest, false)
                 .rpc_context("get_block_by_number")
                 .with_arg("number", &web3::BlockNumber::Latest)

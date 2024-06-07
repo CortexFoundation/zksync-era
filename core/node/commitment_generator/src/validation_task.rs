@@ -7,8 +7,8 @@ use zksync_eth_client::{
 };
 use zksync_types::{commitment::L1BatchCommitmentMode, Address};
 
-/// Managed task that asynchronously validates that the commitment mode (rollup or validium) from the node config
-/// matches the mode in the L1 diamond proxy contract.
+/// Managed task that asynchronously validates that the commitment mode (rollup or validium) from
+/// the node config matches the mode in the L1 diamond proxy contract.
 #[derive(Debug)]
 pub struct L1BatchCommitmentModeValidationTask {
     diamond_proxy_address: Address,
@@ -36,8 +36,8 @@ impl L1BatchCommitmentModeValidationTask {
         }
     }
 
-    /// Makes the task exit after the commitment mode was successfully verified. By default, the task
-    /// will only exit on error or after getting a stop signal.
+    /// Makes the task exit after the commitment mode was successfully verified. By default, the
+    /// task will only exit on error or after getting a stop signal.
     pub fn exit_on_success(mut self) -> Self {
         self.exit_on_success = true;
         self
@@ -64,12 +64,15 @@ impl L1BatchCommitmentModeValidationTask {
                 }
 
                 // Getters contract does not support `getPubdataPricingMode` method.
-                // This case is accepted for backwards compatibility with older contracts, but emits a
-                // warning in case the wrong contract address was passed by the caller.
+                // This case is accepted for backwards compatibility with older contracts, but emits
+                // a warning in case the wrong contract address was passed by the
+                // caller.
                 Err(EthClientError::EthereumGateway(err))
                     if matches!(err.as_ref(), ClientError::Call(_)) =>
                 {
-                    tracing::warn!("Contract {diamond_proxy_address:?} does not support getPubdataPricingMode method: {err}");
+                    tracing::warn!(
+                        "Contract {diamond_proxy_address:?} does not support getPubdataPricingMode method: {err}"
+                    );
                     return Ok(());
                 }
 

@@ -105,16 +105,17 @@ where
     }
 }
 
-/// RPC-level middleware that adds [`MethodCall`] metadata to method logic. Method handlers can then access this metadata
-/// using [`MethodTracer`], which is a part of `RpcState`. When the handler completes or is dropped, the results are reported
-/// as metrics.
+/// RPC-level middleware that adds [`MethodCall`] metadata to method logic. Method handlers can then
+/// access this metadata using [`MethodTracer`], which is a part of `RpcState`. When the handler
+/// completes or is dropped, the results are reported as metrics.
 ///
-/// As an example, a method handler can set the requested block ID, which would then be used in relevant metric labels.
+/// As an example, a method handler can set the requested block ID, which would then be used in
+/// relevant metric labels.
 ///
 /// # Implementation notes
 ///
-/// We express `TRACE_PARAMS` as a const param rather than a field so that the Rust compiler has more room for optimizations in case tracing
-/// is switched off.
+/// We express `TRACE_PARAMS` as a const param rather than a field so that the Rust compiler has
+/// more room for optimizations in case tracing is switched off.
 #[derive(Debug)]
 pub(crate) struct MetadataMiddleware<S, const TRACE_PARAMS: bool> {
     inner: S,
@@ -129,8 +130,9 @@ where
     type Future = WithMethodCall<'a, S::Future>;
 
     fn call(&self, request: Request<'a>) -> Self::Future {
-        // "Normalize" the method name by searching it in the set of all registered methods. This extends the lifetime
-        // of the name to `'static` and maps unknown methods to "", so that method name metric labels don't have unlimited cardinality.
+        // "Normalize" the method name by searching it in the set of all registered methods. This
+        // extends the lifetime of the name to `'static` and maps unknown methods to "", so
+        // that method name metric labels don't have unlimited cardinality.
         let method_name = self
             .registered_method_names
             .get(request.method_name())
@@ -179,13 +181,13 @@ impl<F: Future<Output = MethodResponse>> Future for WithMethodCall<'_, F> {
     }
 }
 
-/// [`tower`] middleware layer that wraps services into [`MetadataMiddleware`]. Implemented as a named type
-/// to simplify call sites.
+/// [`tower`] middleware layer that wraps services into [`MetadataMiddleware`]. Implemented as a
+/// named type to simplify call sites.
 ///
 /// # Implementation notes
 ///
-/// We express `TRACE_PARAMS` as a const param rather than a field so that the Rust compiler has more room for optimizations in case tracing
-/// is switched off.
+/// We express `TRACE_PARAMS` as a const param rather than a field so that the Rust compiler has
+/// more room for optimizations in case tracing is switched off.
 #[derive(Debug, Clone)]
 pub(crate) struct MetadataLayer<const TRACE_PARAMS: bool> {
     registered_method_names: Arc<HashSet<&'static str>>,
@@ -250,16 +252,17 @@ where
         // Unlike `MetadataMiddleware`, we don't need to extend the method lifetime to `'static`;
         // `tracing` span instantiation allocates a `String` for supplied `&str`s in any case.
         let method = request.method_name();
-        // Wrap a call into a span with unique correlation ID, so that events occurring in the span can be easily filtered.
-        // This works as a cheap alternative to Open Telemetry tracing with its trace / span IDs.
+        // Wrap a call into a span with unique correlation ID, so that events occurring in the span
+        // can be easily filtered. This works as a cheap alternative to Open Telemetry
+        // tracing with its trace / span IDs.
         let correlation_id = CORRELATION_ID_RNG.with(|rng| rng.borrow_mut().next_u64());
         let call_span = tracing::debug_span!("rpc_call", method, correlation_id);
         self.inner.call(request).instrument(call_span)
     }
 }
 
-/// Tracks the timestamp of the last call to the RPC. Used during server shutdown to start dropping new traffic
-/// only after this is coordinated by the external load balancer.
+/// Tracks the timestamp of the last call to the RPC. Used during server shutdown to start dropping
+/// new traffic only after this is coordinated by the external load balancer.
 #[derive(Debug, Clone, Default)]
 pub(crate) struct TrafficTracker {
     // We use `OnceCell` to not track requests before the server starts shutting down.

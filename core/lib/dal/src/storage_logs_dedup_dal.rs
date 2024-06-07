@@ -52,7 +52,8 @@ impl StorageLogsDedupDal<'_, '_> {
     }
 
     /// Insert initial writes and assigns indices to them.
-    /// Assumes indices are already assigned for all saved initial_writes, so must be called only after the migration.
+    /// Assumes indices are already assigned for all saved initial_writes, so must be called only
+    /// after the migration.
     pub async fn insert_initial_writes_from_snapshot(
         &mut self,
         snapshot_storage_logs: &[SnapshotStorageLog],

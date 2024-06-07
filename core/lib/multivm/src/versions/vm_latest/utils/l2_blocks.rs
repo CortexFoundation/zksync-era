@@ -34,8 +34,8 @@ pub(crate) fn assert_next_block(prev_block: &L2Block, next_block: &L2BlockEnv) {
 /// Returns the hash of the l2_block.
 /// `txs_rolling_hash` of the l2_block is calculated the following way:
 /// If the l2_block has 0 transactions, then `txs_rolling_hash` is equal to `H256::zero()`.
-/// If the l2_block has i transactions, then `txs_rolling_hash` is equal to `H(H_{i-1}, H(tx_i))`, where
-/// `H_{i-1}` is the `txs_rolling_hash` of the first i-1 transactions.
+/// If the l2_block has i transactions, then `txs_rolling_hash` is equal to `H(H_{i-1}, H(tx_i))`,
+/// where `H_{i-1}` is the `txs_rolling_hash` of the first i-1 transactions.
 pub(crate) fn l2_block_hash(
     l2_block_number: L2BlockNumber,
     l2_block_timestamp: u64,

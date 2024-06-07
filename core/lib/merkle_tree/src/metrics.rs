@@ -70,7 +70,8 @@ struct TreeUpdateMetrics {
     /// Number of new leaves inserted during tree traversal while processing a single batch.
     #[metrics(buckets = NODE_COUNT_BUCKETS)]
     new_leaves: Histogram<u64>,
-    /// Number of new internal nodes inserted during tree traversal while processing a single batch.
+    /// Number of new internal nodes inserted during tree traversal while processing a single
+    /// batch.
     #[metrics(buckets = NODE_COUNT_BUCKETS)]
     new_internal_nodes: Histogram<u64>,
     /// Number of existing leaves moved to a new location while processing a single batch.
@@ -87,7 +88,8 @@ struct TreeUpdateMetrics {
     max_leaf_level: Histogram<u64>,
 
     // Metrics related to input instructions
-    /// Number of keys read while processing a single batch (only applicable to the full operation mode).
+    /// Number of keys read while processing a single batch (only applicable to the full operation
+    /// mode).
     #[metrics(buckets = NODE_COUNT_BUCKETS)]
     key_reads: Histogram<u64>,
     /// Number of missing keys read while processing a single batch (only applicable to the full
@@ -97,7 +99,8 @@ struct TreeUpdateMetrics {
     /// Number of nodes of previous versions read from the DB while processing a single batch.
     #[metrics(buckets = NODE_COUNT_BUCKETS)]
     db_reads: Histogram<u64>,
-    /// Number of nodes of the current version re-read from the patch set while processing a single batch.
+    /// Number of nodes of the current version re-read from the patch set while processing a single
+    /// batch.
     #[metrics(buckets = NODE_COUNT_BUCKETS)]
     patch_reads: Histogram<u64>,
 }
@@ -239,7 +242,8 @@ struct ApplyPatchMetrics {
     /// Number of nodes included into a RocksDB patch per batch, grouped by the key nibble count.
     #[metrics(buckets = NODE_COUNT_BUCKETS)]
     nodes_by_nibble_count: Family<NibbleCount, Histogram<u64>>,
-    /// Total byte size of nodes included into a RocksDB patch per batch, grouped by the key nibble count.
+    /// Total byte size of nodes included into a RocksDB patch per batch, grouped by the key nibble
+    /// count.
     #[metrics(buckets = BYTE_SIZE_BUCKETS)]
     node_bytes: Family<NibbleCount, Histogram<u64>>,
     /// Number of hashes in child references copied from previous tree versions. Allows to estimate

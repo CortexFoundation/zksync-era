@@ -228,7 +228,8 @@ impl<S: Storage> VmStorageOracle for StorageOracle<S> {
 
         RefundType::RepeatedWrite(RefundedAmounts {
             ergs: 0,
-            // `INITIAL_STORAGE_WRITE_PUBDATA_BYTES` is the default amount of pubdata bytes the user pays for.
+            // `INITIAL_STORAGE_WRITE_PUBDATA_BYTES` is the default amount of pubdata bytes the user
+            // pays for.
             pubdata_bytes: (INITIAL_STORAGE_WRITE_PUBDATA_BYTES as u32) - price_to_pay,
         })
     }
@@ -274,8 +275,8 @@ impl<S: Storage> VmStorageOracle for StorageOracle<S> {
                 );
 
                 // Additional validation that the current value was correct
-                // Unwrap is safe because the return value from `write_inner` is the previous value in this leaf.
-                // It is impossible to set leaf value to `None`
+                // Unwrap is safe because the return value from `write_inner` is the previous value
+                // in this leaf. It is impossible to set leaf value to `None`
                 assert_eq!(current_value, written_value);
             }
 
@@ -297,8 +298,8 @@ impl<S: Storage> VmStorageOracle for StorageOracle<S> {
 }
 
 fn get_pubdata_price_bytes(_query: &LogQuery, is_initial: bool) -> u32 {
-    // TODO (SMA-1702): take into account the content of the log query, i.e. values that contain mostly zeroes
-    // should cost less.
+    // TODO (SMA-1702): take into account the content of the log query, i.e. values that contain
+    // mostly zeroes should cost less.
     if is_initial {
         zk_evm_1_3_1::zkevm_opcode_defs::system_params::INITIAL_STORAGE_WRITE_PUBDATA_BYTES as u32
     } else {

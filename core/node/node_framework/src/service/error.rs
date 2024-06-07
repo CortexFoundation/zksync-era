@@ -2,7 +2,9 @@ use crate::wiring_layer::WiringError;
 
 #[derive(Debug, thiserror::Error)]
 pub enum ZkStackServiceError {
-    #[error("Detected a Tokio Runtime. ZkStackService manages its own runtime and does not support nested runtimes")]
+    #[error(
+        "Detected a Tokio Runtime. ZkStackService manages its own runtime and does not support nested runtimes"
+    )]
     RuntimeDetected,
     #[error("No tasks have been added to the service")]
     NoTasks,

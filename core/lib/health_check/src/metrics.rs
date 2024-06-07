@@ -34,8 +34,8 @@ pub(crate) struct AppHealthCheckConfig {
 pub(crate) struct HealthMetrics {
     /// Immutable configuration for application health checks.
     pub info: Info<AppHealthCheckConfig>,
-    /// Latency for abnormal checks. Includes slow, dropped and timed out checks (distinguished by the "result" label);
-    /// skips normal checks.
+    /// Latency for abnormal checks. Includes slow, dropped and timed out checks (distinguished by
+    /// the "result" label); skips normal checks.
     #[metrics(buckets = Buckets::LATENCIES, unit = Unit::Seconds)]
     abnormal_check_latency: Family<AbnormalCheckLabels, Histogram<Duration>>,
 }

@@ -4,7 +4,6 @@
 //!
 //! They are not put into the `cfg(test)` folder to allow easy sharing of the content
 //! of this file with other crates.
-//!
 
 use std::collections::HashMap;
 
@@ -88,7 +87,8 @@ pub struct VmInstanceInnerState {
 }
 
 impl<S: Storage> VmInstance<S> {
-    /// This method is mostly to be used in tests. It dumps the inner state of all the oracles and the VM itself.
+    /// This method is mostly to be used in tests. It dumps the inner state of all the oracles and
+    /// the VM itself.
     pub fn dump_inner_state(&self) -> VmInstanceInnerState {
         let event_sink = self.state.event_sink.clone();
         let precompile_processor_state = PrecompileProcessorTestInnerState {

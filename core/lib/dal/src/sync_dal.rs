@@ -135,12 +135,13 @@ mod tests {
             .await
             .unwrap();
 
-        assert!(conn
-            .sync_dal()
-            .sync_block(L2BlockNumber(1), false)
-            .await
-            .unwrap()
-            .is_none());
+        assert!(
+            conn.sync_dal()
+                .sync_block(L2BlockNumber(1), false)
+                .await
+                .unwrap()
+                .is_none()
+        );
 
         // Insert another block in the store.
         let miniblock_header = L2BlockHeader {
@@ -254,12 +255,13 @@ mod tests {
             .await
             .unwrap();
 
-        assert!(conn
-            .sync_dal()
-            .sync_block(snapshot_recovery.l2_block_number, false)
-            .await
-            .unwrap()
-            .is_none());
+        assert!(
+            conn.sync_dal()
+                .sync_block(snapshot_recovery.l2_block_number, false)
+                .await
+                .unwrap()
+                .is_none()
+        );
 
         let miniblock_header = create_l2_block_header(snapshot_recovery.l2_block_number.0 + 1);
         conn.blocks_dal()

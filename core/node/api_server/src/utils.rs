@@ -6,11 +6,13 @@ use std::{
     time::{Duration, Instant},
 };
 
-/// Allows filtering events (e.g., for logging) so that they are reported no more frequently than with a configurable interval.
+/// Allows filtering events (e.g., for logging) so that they are reported no more frequently than
+/// with a configurable interval.
 ///
-/// Current implementation uses thread-local vars in order to not rely on mutexes or other cross-thread primitives.
-/// I.e., it only really works if the number of threads accessing it is limited (which is the case for the API server;
-/// the number of worker threads is congruent to the CPU count).
+/// Current implementation uses thread-local vars in order to not rely on mutexes or other
+/// cross-thread primitives. I.e., it only really works if the number of threads accessing it is
+/// limited (which is the case for the API server; the number of worker threads is congruent to the
+/// CPU count).
 #[derive(Debug)]
 pub(super) struct ReportFilter {
     interval: Duration,
@@ -29,7 +31,8 @@ impl ReportFilter {
         }
     }
 
-    /// Should be called sparingly, since it involves moderately heavy operations (getting current time).
+    /// Should be called sparingly, since it involves moderately heavy operations (getting current
+    /// time).
     pub fn should_report(&self) -> bool {
         let timestamp = self.last_timestamp.get();
         let now = Instant::now();

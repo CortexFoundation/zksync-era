@@ -1,8 +1,8 @@
 //!
-//! The script that returns the L2 gas price constants is that calculates the constants currently used by the
-//! bootloader as well as L1 smart contracts. It should be used to edit the config file located in the contracts/system-contracts/SystemConfig.json
-//! as well as contracts/SystemConfig.json
-//!
+//! The script that returns the L2 gas price constants is that calculates the constants currently
+//! used by the bootloader as well as L1 smart contracts. It should be used to edit the config file
+//! located in the contracts/system-contracts/SystemConfig.json as well as
+//! contracts/SystemConfig.json
 
 use multivm::utils::get_bootloader_encoding_space;
 use zksync_types::{ethabi::Address, IntrinsicSystemGasConstants, ProtocolVersionId, U256};
@@ -66,7 +66,8 @@ pub(crate) fn l2_gas_constants() -> IntrinsicSystemGasConstants {
     // This is needed to get the minimum number of gas a transaction could require.
     let empty_l1_tx_result = execute_user_txs_in_test_gas_vm(
         vec![
-            // Using 0 gas limit to make sure that only the mandatory parts of the L1->L2 transaction are executed.
+            // Using 0 gas limit to make sure that only the mandatory parts of the L1->L2
+            // transaction are executed.
             get_l1_tx(
                 0,
                 Address::random(),
@@ -81,9 +82,9 @@ pub(crate) fn l2_gas_constants() -> IntrinsicSystemGasConstants {
         true,
     );
 
-    // This price does not include the overhead for the transaction itself, but rather auxiliary parts
-    // that must be done by the transaction and it can not be enforced by the operator to not to accept
-    // the transaction if it does not cover the minimal costs.
+    // This price does not include the overhead for the transaction itself, but rather auxiliary
+    // parts that must be done by the transaction and it can not be enforced by the operator to
+    // not to accept the transaction if it does not cover the minimal costs.
     let min_l1_tx_price = empty_l1_tx_result.gas_consumed - bootloader_intrinsic_gas;
 
     // The price for each keccak circuit is increased by 136 bytes at a time, while
@@ -92,34 +93,38 @@ pub(crate) fn l2_gas_constants() -> IntrinsicSystemGasConstants {
     const DELTA_IN_TX_SIZE: usize = 544;
 
     let lengthier_tx_result = execute_user_txs_in_test_gas_vm(
-        vec![get_l1_tx(
-            0,
-            Address::random(),
-            Address::random(),
-            0,
-            Some(U256::zero()),
-            Some(vec![0u8; DELTA_IN_TX_SIZE]),
-            None,
-        )
-        .into()],
+        vec![
+            get_l1_tx(
+                0,
+                Address::random(),
+                Address::random(),
+                0,
+                Some(U256::zero()),
+                Some(vec![0u8; DELTA_IN_TX_SIZE]),
+                None,
+            )
+            .into(),
+        ],
         true,
     );
 
     let delta_from_544_bytes = lengthier_tx_result.gas_consumed - empty_l1_tx_result.gas_consumed;
 
-    // The number of public data per factory dependencies should not depend on the size/structure of the factory
-    // dependency, since the dependency has already been published on L1.
+    // The number of public data per factory dependencies should not depend on the size/structure of
+    // the factory dependency, since the dependency has already been published on L1.
     let tx_with_more_factory_deps_result = execute_user_txs_in_test_gas_vm(
-        vec![get_l1_tx(
-            0,
-            Address::random(),
-            Address::random(),
-            0,
-            Some(U256::zero()),
-            None,
-            Some(vec![vec![0u8; 32]]),
-        )
-        .into()],
+        vec![
+            get_l1_tx(
+                0,
+                Address::random(),
+                Address::random(),
+                0,
+                Some(U256::zero()),
+                None,
+                Some(vec![vec![0u8; 32]]),
+            )
+            .into(),
+        ],
         true,
     );
 
@@ -149,7 +154,8 @@ pub(crate) fn l2_gas_constants() -> IntrinsicSystemGasConstants {
 }
 
 // Takes the consumed resources before the transaction's inclusion and with the transaction included
-// and returns the pair of the intrinsic gas cost (for computation) and the intrinsic cost in pubdata
+// and returns the pair of the intrinsic gas cost (for computation) and the intrinsic cost in
+// pubdata
 fn get_intrinsic_price(
     prev_result: VmSpentResourcesResult,
     new_result: VmSpentResourcesResult,
@@ -179,8 +185,9 @@ fn get_intrinsic_overheads_for_tx_type(tx_generator: &TransactionGenerator) -> I
     // The same goes for the overhead for the bootloader in pubdata
     let bootloader_intrinsic_pubdata = result_0.pubdata_published;
 
-    // For various small reasons the overhead for the first transaction and for all the subsequent ones
-    // might differ a bit, so we will calculate both and will use the maximum one as the result for L2 txs.
+    // For various small reasons the overhead for the first transaction and for all the subsequent
+    // ones might differ a bit, so we will calculate both and will use the maximum one as the
+    // result for L2 txs.
 
     let (tx1_intrinsic_gas, tx1_intrinsic_pubdata) = get_intrinsic_price(result_0, result_1);
     let (tx2_intrinsic_gas, tx2_intrinsic_pubdata) = get_intrinsic_price(result_1, result_2);

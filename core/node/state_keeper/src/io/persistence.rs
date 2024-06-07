@@ -26,7 +26,8 @@ struct Completable<T> {
     completion_sender: oneshot::Sender<()>,
 }
 
-/// Canonical [`HandleStateKeeperOutput`] implementation that stores processed L2 blocks and L1 batches to Postgres.
+/// Canonical [`HandleStateKeeperOutput`] implementation that stores processed L2 blocks and L1
+/// batches to Postgres.
 #[derive(Debug)]
 pub struct StateKeeperPersistence {
     pool: ConnectionPool<Core>,
@@ -76,8 +77,9 @@ impl StateKeeperPersistence {
         self
     }
 
-    /// Disables inserting protective reads to Postgres when persisting an L1 batch. This is only sound
-    /// if the node won't *ever* run a full Merkle tree (such a tree requires protective reads to generate witness inputs).
+    /// Disables inserting protective reads to Postgres when persisting an L1 batch. This is only
+    /// sound if the node won't *ever* run a full Merkle tree (such a tree requires protective
+    /// reads to generate witness inputs).
     pub fn without_protective_reads(mut self) -> Self {
         self.insert_protective_reads = false;
         self
@@ -250,7 +252,8 @@ impl L2BlockSealerTask {
 }
 
 /// Stores tree writes for L1 batches to Postgres.
-/// It is expected to be run after `StateKeeperPersistence` as it appends data to `l1_batches` table.
+/// It is expected to be run after `StateKeeperPersistence` as it appends data to `l1_batches`
+/// table.
 #[derive(Debug)]
 pub struct TreeWritesPersistence {
     pool: ConnectionPool<Core>,

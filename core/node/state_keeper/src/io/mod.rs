@@ -35,7 +35,8 @@ mod tests;
 #[derive(Debug)]
 pub struct PendingBatchData {
     /// Data used to initialize the pending batch. We have to make sure that all the parameters
-    /// (e.g. timestamp) are the same, so transaction would have the same result after re-execution.
+    /// (e.g. timestamp) are the same, so transaction would have the same result after
+    /// re-execution.
     pub(crate) l1_batch_env: L1BatchEnv,
     pub(crate) system_env: SystemEnv,
     /// List of L2 blocks and corresponding transactions that were executed within batch.
@@ -48,12 +49,14 @@ pub struct L2BlockParams {
     pub timestamp: u64,
     /// The maximal number of virtual blocks that can be created within this L2 block.
     /// During the migration from displaying users `batch.number` to L2 block number in Q3 2023
-    /// in order to make the process smoother for users, we temporarily display the virtual blocks for users.
+    /// in order to make the process smoother for users, we temporarily display the virtual blocks
+    /// for users.
     ///
-    /// Virtual blocks start their number with batch number and will increase until they reach the L2 block number.
-    /// Note that it is the *maximal* number of virtual blocks that can be created within this L2 block since
-    /// once the virtual blocks' number reaches the L2 block number, they will never be allowed to exceed those, i.e.
-    /// any "excess" created blocks will be ignored.
+    /// Virtual blocks start their number with batch number and will increase until they reach the
+    /// L2 block number. Note that it is the *maximal* number of virtual blocks that can be
+    /// created within this L2 block since once the virtual blocks' number reaches the L2 block
+    /// number, they will never be allowed to exceed those, i.e. any "excess" created blocks
+    /// will be ignored.
     pub virtual_blocks: u32,
 }
 
@@ -132,7 +135,7 @@ pub trait StateKeeperIO: 'static + Send + Sync + fmt::Debug + IoSealCriteria {
     /// Blocks for up to `max_wait` until the next transaction is available for execution.
     /// Returns `None` if no transaction became available until the timeout.
     async fn wait_for_next_tx(&mut self, max_wait: Duration)
-        -> anyhow::Result<Option<Transaction>>;
+    -> anyhow::Result<Option<Transaction>>;
     /// Marks the transaction as "not executed", so it can be retrieved from the IO again.
     async fn rollback(&mut self, tx: Transaction) -> anyhow::Result<()>;
     /// Marks the transaction as "rejected", e.g. one that is not correct and can't be executed.
@@ -144,7 +147,8 @@ pub trait StateKeeperIO: 'static + Send + Sync + fmt::Debug + IoSealCriteria {
         protocol_version: ProtocolVersionId,
         cursor: &IoCursor,
     ) -> anyhow::Result<BaseSystemContracts>;
-    /// Loads protocol version of the specified L1 batch, which is guaranteed to exist in the storage.
+    /// Loads protocol version of the specified L1 batch, which is guaranteed to exist in the
+    /// storage.
     async fn load_batch_version_id(
         &self,
         number: L1BatchNumber,
@@ -154,7 +158,7 @@ pub trait StateKeeperIO: 'static + Send + Sync + fmt::Debug + IoSealCriteria {
         &self,
         version_id: ProtocolVersionId,
     ) -> anyhow::Result<Option<ProtocolUpgradeTx>>;
-    /// Loads state hash for the L1 batch with the specified number. The batch is guaranteed to be present
-    /// in the storage.
+    /// Loads state hash for the L1 batch with the specified number. The batch is guaranteed to be
+    /// present in the storage.
     async fn load_batch_state_hash(&self, number: L1BatchNumber) -> anyhow::Result<H256>;
 }

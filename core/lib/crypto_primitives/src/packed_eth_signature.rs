@@ -11,8 +11,8 @@ use crate::{
     eip712_signature::typed_structure::{EIP712TypedStructure, Eip712Domain},
 };
 
-/// Struct used for working with Ethereum signatures created using eth_sign (using geth, ethers.js, etc)
-/// message is serialized as 65 bytes long `0x` prefixed string.
+/// Struct used for working with Ethereum signatures created using eth_sign (using geth, ethers.js,
+/// etc) message is serialized as 65 bytes long `0x` prefixed string.
 ///
 /// Some notes on implementation of methods of this structure:
 ///
@@ -22,12 +22,13 @@ use crate::{
 ///
 /// That is why:
 /// 1) when we create this structure by deserialization of message produced by user
-/// we subtract 27 from v in `ETHSignature` if necessary and store it in the `ETHSignature` structure this way.
+/// we subtract 27 from v in `ETHSignature` if necessary and store it in the `ETHSignature`
+/// structure this way.
 /// 2) When we serialize/create this structure we add 27 to v in `ETHSignature`.
 ///
-/// This way when we have methods that consumes &self we can be sure that ETHSignature::recover_signer works
-/// And we can be sure that we are compatible with Ethereum clients.
-///
+/// This way when we have methods that consumes &self we can be sure that
+/// ETHSignature::recover_signer works And we can be sure that we are compatible with Ethereum
+/// clients.
 #[derive(Debug, Clone, PartialEq, Eq, Default)]
 pub struct PackedEthSignature(ETHSignature);
 
@@ -56,8 +57,9 @@ impl PackedEthSignature {
         Ok(PackedEthSignature(ETHSignature::from(signature)))
     }
 
-    /// Unlike the `deserialize_packed` packed signature, this method does not make sure that the `v` value is in the range [0, 3].
-    /// This one should be generally avoided and be used only in places where preservation of the original `v` is important.
+    /// Unlike the `deserialize_packed` packed signature, this method does not make sure that the
+    /// `v` value is in the range [0, 3]. This one should be generally avoided and be used only
+    /// in places where preservation of the original `v` is important.
     pub fn deserialize_packed_no_v_check(bytes: &[u8]) -> Result<Self, DeserializeError> {
         let signature = Self::deserialize_signature(bytes)?;
         Ok(PackedEthSignature(ETHSignature::from(signature)))

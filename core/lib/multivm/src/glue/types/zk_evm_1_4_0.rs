@@ -2,8 +2,8 @@ use zksync_utils::u256_to_h256;
 
 use crate::glue::GlueFrom;
 
-// Most of the types between `zk_evm@1.4.0` and `zk_evm@1.3.3` are shared and so we need only the additional conversion
-// for `EventMessage` only.
+// Most of the types between `zk_evm@1.4.0` and `zk_evm@1.3.3` are shared and so we need only the
+// additional conversion for `EventMessage` only.
 impl GlueFrom<zk_evm_1_4_0::reference_impls::event_sink::EventMessage>
     for zksync_types::l2_to_l1_log::L2ToL1Log
 {

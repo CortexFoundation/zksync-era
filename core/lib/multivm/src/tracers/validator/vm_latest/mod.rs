@@ -89,7 +89,8 @@ impl<H: HistoryMode> ValidationTracer<H> {
                         return Err(ViolatedValidationRule::TouchedUnallowedContext);
                     }
                     ContextOpcode::ErgsLeft => {
-                        // TODO (SMA-1168): implement the correct restrictions for the gas left opcode.
+                        // TODO (SMA-1168): implement the correct restrictions for the gas left
+                        // opcode.
                     }
                     _ => {}
                 }
@@ -150,11 +151,13 @@ impl<S: WriteStorage, H: HistoryMode> DynTracer<S, SimpleMemory<H::Vm1_5_0>>
         let current_mode = self.validation_mode;
         match (current_mode, hook) {
             (ValidationTracerMode::NoValidation, VmHook::AccountValidationEntered) => {
-                // Account validation can be entered when there is no prior validation (i.e. "nested" validations are not allowed)
+                // Account validation can be entered when there is no prior validation (i.e.
+                // "nested" validations are not allowed)
                 self.validation_mode = ValidationTracerMode::UserTxValidation;
             }
             (ValidationTracerMode::NoValidation, VmHook::PaymasterValidationEntered) => {
-                // Paymaster validation can be entered when there is no prior validation (i.e. "nested" validations are not allowed)
+                // Paymaster validation can be entered when there is no prior validation (i.e.
+                // "nested" validations are not allowed)
                 self.validation_mode = ValidationTracerMode::PaymasterTxValidation;
             }
             (_, VmHook::AccountValidationEntered | VmHook::PaymasterValidationEntered) => {

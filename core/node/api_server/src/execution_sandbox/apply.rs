@@ -1,8 +1,8 @@
-//! This module provides primitives focusing on the VM instantiation and execution for different use cases.
-//! It is rather generic and low-level, so it's not supposed to be a part of public API.
+//! This module provides primitives focusing on the VM instantiation and execution for different use
+//! cases. It is rather generic and low-level, so it's not supposed to be a part of public API.
 //!
-//! Instead, we expect people to write wrappers in the `execution_sandbox` module with a more high-level API
-//! that would, in its turn, be used by the actual API method handlers.
+//! Instead, we expect people to write wrappers in the `execution_sandbox` module with a more
+//! high-level API that would, in its turn, be used by the actual API method handlers.
 //!
 //! This module is intended to be blocking.
 
@@ -132,9 +132,12 @@ impl<'a> Sandbox<'a> {
             }
         } else if current_l2_block_info.l2_block_number == 0 {
             // Special case:
-            // - For environments, where genesis block was created before virtual block upgrade it doesn't matter what we put here.
-            // - Otherwise, we need to put actual values here. We cannot create next L2 block with block_number=0 and `max_virtual_blocks_to_create=0`
-            //   because of SystemContext requirements. But, due to intrinsics of SystemContext, block.number still will be resolved to 0.
+            // - For environments, where genesis block was created before virtual block upgrade it
+            //   doesn't matter what we put here.
+            // - Otherwise, we need to put actual values here. We cannot create next L2 block with
+            //   block_number=0 and `max_virtual_blocks_to_create=0` because of SystemContext
+            //   requirements. But, due to intrinsics of SystemContext, block.number still will be
+            //   resolved to 0.
             L2BlockEnv {
                 number: 1,
                 timestamp: 0,
@@ -142,8 +145,8 @@ impl<'a> Sandbox<'a> {
                 max_virtual_blocks_to_create: 1,
             }
         } else {
-            // We need to reset L2 block info in storage to process transaction in the current block context.
-            // Actual resetting will be done after `storage_view` is created.
+            // We need to reset L2 block info in storage to process transaction in the current block
+            // context. Actual resetting will be done after `storage_view` is created.
             let prev_l2_block_info = StoredL2BlockInfo::new(
                 connection,
                 resolved_block_info.state_l2_block_number - 1,
@@ -287,9 +290,10 @@ impl<'a> Sandbox<'a> {
 pub(super) fn apply_vm_in_sandbox<T>(
     vm_permit: VmPermit,
     shared_args: TxSharedArgs,
-    // If `true`, then the batch's L1/pubdata gas price will be adjusted so that the transaction's gas per pubdata limit is <=
-    // to the one in the block. This is often helpful in case we want the transaction validation to work regardless of the
-    // current L1 prices for gas or pubdata.
+    // If `true`, then the batch's L1/pubdata gas price will be adjusted so that the transaction's
+    // gas per pubdata limit is <= to the one in the block. This is often helpful in case we
+    // want the transaction validation to work regardless of the current L1 prices for gas or
+    // pubdata.
     adjust_pubdata_price: bool,
     execution_args: &TxExecutionArgs,
     connection_pool: &ConnectionPool<Core>,
@@ -448,7 +452,8 @@ impl BlockArgs {
                 .context("no L2 blocks in storage")?;
 
             state_l2_block_number = sealed_l2_block_header.number;
-            // Timestamp of the next L1 batch must be greater than the timestamp of the last L2 block.
+            // Timestamp of the next L1 batch must be greater than the timestamp of the last L2
+            // block.
             l1_batch_timestamp = seconds_since_epoch().max(sealed_l2_block_header.timestamp + 1);
             sealed_l2_block_header
         } else {

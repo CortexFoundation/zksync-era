@@ -48,7 +48,8 @@ async fn test_filter_initialization(commitment_mode: L1BatchCommitmentMode) {
     assert_eq!(mempool.filter(), &L2TxFilter::default());
 }
 
-/// Ensure that MempoolIO.filter is modified correctly if there is a pending batch upon mempool initialization.
+/// Ensure that MempoolIO.filter is modified correctly if there is a pending batch upon mempool
+/// initialization.
 #[test_casing(2, COMMITMENT_MODES)]
 #[tokio::test]
 async fn test_filter_with_pending_batch(commitment_mode: L1BatchCommitmentMode) {
@@ -66,8 +67,8 @@ async fn test_filter_with_pending_batch(commitment_mode: L1BatchCommitmentMode) 
         .insert_sealed_batch(&connection_pool, 1, &[tx_result])
         .await;
 
-    // Inserting a pending L2 block that isn't included in a sealed batch means there is a pending batch.
-    // The gas values are randomly chosen but so affect filter values calculation.
+    // Inserting a pending L2 block that isn't included in a sealed batch means there is a pending
+    // batch. The gas values are randomly chosen but so affect filter values calculation.
 
     let fee_input = BatchFeeInput::PubdataIndependent(PubdataIndependentBatchFeeModelInput {
         l1_gas_price: 100,
@@ -80,7 +81,8 @@ async fn test_filter_with_pending_batch(commitment_mode: L1BatchCommitmentMode) 
         .await;
 
     let (mut mempool, _) = tester.create_test_mempool_io(connection_pool).await;
-    // Before the mempool knows there is a pending batch, the filter is still set to the default values.
+    // Before the mempool knows there is a pending batch, the filter is still set to the default
+    // values.
     assert_eq!(mempool.filter(), &L2TxFilter::default());
 
     mempool.initialize().await.unwrap();
@@ -131,8 +133,8 @@ async fn test_filter_with_no_pending_batch(commitment_mode: L1BatchCommitmentMod
         want_filter.gas_per_pubdata,
     );
 
-    // Now, given that there is a transaction matching the expected filter, waiting for the new batch params
-    // should succeed and initialize the filter.
+    // Now, given that there is a transaction matching the expected filter, waiting for the new
+    // batch params should succeed and initialize the filter.
     mempool
         .wait_for_new_batch_params(&io_cursor, Duration::from_secs(10))
         .await

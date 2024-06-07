@@ -10,8 +10,8 @@
 //!
 //! - [`RocksDBWrapper`] is a wrapper around RocksDB
 //! - [`PatchSet`] is an in-memory implementation useful for testing / benchmarking
-//! - [`Patched`] is a wrapper combining the persistent backend and a [`PatchSet`]. It's used
-//!   in `ZkSyncTree` to accumulate changes before flushing them to RocksDB.
+//! - [`Patched`] is a wrapper combining the persistent backend and a [`PatchSet`]. It's used in
+//!   `ZkSyncTree` to accumulate changes before flushing them to RocksDB.
 //!
 //! The hashing backend is abstracted via the [`HashTree`] trait, which has the following
 //! implementations:
@@ -25,15 +25,15 @@
 //!
 //! - Hash of a vacant leaf is `hash([0_u8; 40])`, where `hash` is the hash function used
 //!   (Blake2s-256).
-//! - Hash of an occupied leaf is `hash(u64::to_be_bytes(leaf_index) ++ value_hash)`,
-//!   where `leaf_index` is a 1-based index of the leaf key provided when the leaf is inserted / updated,
+//! - Hash of an occupied leaf is `hash(u64::to_be_bytes(leaf_index) ++ value_hash)`, where
+//!   `leaf_index` is a 1-based index of the leaf key provided when the leaf is inserted / updated,
 //!   `++` is byte concatenation.
 //! - Hash of an internal node is `hash(left_child_hash ++ right_child_hash)`.
 //!
-//! Currently in zksync, leaf indices enumerate leaves in the order of their insertion into the tree.
-//! Indices are computed externally and are provided to the tree as inputs; the tree doesn't verify
-//! index assignment and doesn't rely on particular index assignment assumptions (other than when
-//! [verifying tree consistency](MerkleTree::verify_consistency())).
+//! Currently in zksync, leaf indices enumerate leaves in the order of their insertion into the
+//! tree. Indices are computed externally and are provided to the tree as inputs; the tree doesn't
+//! verify index assignment and doesn't rely on particular index assignment assumptions (other than
+//! when [verifying tree consistency](MerkleTree::verify_consistency())).
 //!
 //! [Jellyfish Merkle tree]: https://developers.diem.com/papers/jellyfish-merkle-tree/2021-01-14.pdf
 
@@ -98,12 +98,12 @@ pub mod unstable {
 ///
 /// The tree store principally contains the following information:
 ///
-/// - The tree *manifest* specifying version-independent information (right now, this is just
-///   the number of versions).
-/// - For each of the stored versions: tree *root* containing the number of leaves
-///   and the root node of the tree.
-/// - *Nodes* of the particular version of the tree keyed by version + the path from the root
-///   of the tree to the node.
+/// - The tree *manifest* specifying version-independent information (right now, this is just the
+///   number of versions).
+/// - For each of the stored versions: tree *root* containing the number of leaves and the root node
+///   of the tree.
+/// - *Nodes* of the particular version of the tree keyed by version + the path from the root of the
+///   tree to the node.
 ///
 /// To be more I/O-efficient (at the cost of some additional hashing operations), the tree
 /// is stored in the radix-16 format. That is, each internal node may have up to 16 children.

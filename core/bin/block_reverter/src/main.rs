@@ -69,7 +69,11 @@ enum Command {
         /// Flag that specifies if RocksDB with state keeper cache should be rolled back.
         #[arg(long)]
         rollback_sk_cache: bool,
-        /// Flag that allows to roll back already executed blocks. It's ultra dangerous and required only for fixing external nodes.
+        /// Flag that specifies if snapshot files in GCS should be rolled back.
+        #[arg(long, requires = "rollback_postgres")]
+        rollback_snapshots: bool,
+        /// Flag that allows to roll back already executed blocks. It's ultra dangerous and
+        /// required only for fixing external nodes.
         #[arg(long)]
         allow_executed_block_reversion: bool,
     },
@@ -187,6 +191,7 @@ async fn main() -> anyhow::Result<()> {
             rollback_postgres,
             rollback_tree,
             rollback_sk_cache,
+            rollback_snapshots,
             allow_executed_block_reversion,
         } => {
             if !rollback_tree && rollback_postgres {
@@ -205,7 +210,9 @@ async fn main() -> anyhow::Result<()> {
             }
 
             if allow_executed_block_reversion {
-                println!("You want to roll back already executed blocks. It's impossible to restore them for the main node");
+                println!(
+                    "You want to roll back already executed blocks. It's impossible to restore them for the main node"
+                );
                 println!("Make sure you are doing it ONLY for external node");
                 println!("Are you sure? Print y/n");
 
@@ -219,13 +226,15 @@ async fn main() -> anyhow::Result<()> {
 
             if rollback_postgres {
                 block_reverter.enable_rolling_back_postgres();
-                let object_store_config = SnapshotsObjectStoreConfig::from_env()
-                    .context("SnapshotsObjectStoreConfig::from_env()")?;
-                block_reverter.enable_rolling_back_snapshot_objects(
-                    ObjectStoreFactory::new(object_store_config.0)
-                        .create_store()
-                        .await,
-                );
+                if rollback_snapshots {
+                    let object_store_config = SnapshotsObjectStoreConfig::from_env()
+                        .context("SnapshotsObjectStoreConfig::from_env()")?;
+                    block_reverter.enable_rolling_back_snapshot_objects(
+                        ObjectStoreFactory::new(object_store_config.0)
+                            .create_store()
+                            .await,
+                    );
+                }
             }
             if rollback_tree {
                 block_reverter.enable_rolling_back_merkle_tree(db_config.merkle_tree.path);

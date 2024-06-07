@@ -5,7 +5,8 @@ use crate::FromEnv;
 impl FromEnv for ObservabilityConfig {
     fn from_env() -> anyhow::Result<Self> {
         // The logic in this method mimics the historical logic of loading observability options
-        // This is left intact, since some of the existing deployments may rely on the this behavior.
+        // This is left intact, since some of the existing deployments may rely on the this
+        // behavior.
         let sentry_url = if let Ok(sentry_url) = std::env::var("MISC_SENTRY_URL") {
             if sentry_url == "unset" {
                 None

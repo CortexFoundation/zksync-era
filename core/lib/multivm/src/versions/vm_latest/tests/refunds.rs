@@ -48,9 +48,9 @@ fn test_predetermined_refunded_gas() {
     let mut current_state_without_predefined_refunds = vm.vm.get_current_execution_state();
     assert!(!result_without_predefined_refunds.result.is_failed(),);
 
-    // Here we want to provide the same refund from the operator and check that it's the correct one.
-    // We execute the whole block without refund tracer, because refund tracer will eventually override the provided refund.
-    // But the overall result should be the same
+    // Here we want to provide the same refund from the operator and check that it's the correct
+    // one. We execute the whole block without refund tracer, because refund tracer will
+    // eventually override the provided refund. But the overall result should be the same
 
     let mut vm = VmTesterBuilder::new(HistoryEnabled)
         .with_empty_in_memory_storage()

@@ -11,12 +11,13 @@ use crate::configs::ExperimentalDBConfig;
 #[derive(Debug, Clone, Copy, Default, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(rename_all = "snake_case")]
 pub enum MerkleTreeMode {
-    /// In this mode, `MetadataCalculator` will compute commitments and witness inputs for all storage operations
-    /// and optionally put witness inputs into the object store as provided by `store_factory` (e.g., GCS).
+    /// In this mode, `MetadataCalculator` will compute commitments and witness inputs for all
+    /// storage operations and optionally put witness inputs into the object store as provided
+    /// by `store_factory` (e.g., GCS).
     #[default]
     Full,
-    /// In this mode, `MetadataCalculator` computes Merkle tree root hashes and some auxiliary information
-    /// for L1 batches, but not witness inputs.
+    /// In this mode, `MetadataCalculator` computes Merkle tree root hashes and some auxiliary
+    /// information for L1 batches, but not witness inputs.
     Lightweight,
 }
 
@@ -28,16 +29,18 @@ pub struct MerkleTreeConfig {
     /// Operation mode for the Merkle tree. If not specified, the full mode will be used.
     #[serde(default)]
     pub mode: MerkleTreeMode,
-    /// Chunk size for multi-get operations. Can speed up loading data for the Merkle tree on some environments,
-    /// but the effects vary wildly depending on the setup (e.g., the filesystem used).
+    /// Chunk size for multi-get operations. Can speed up loading data for the Merkle tree on some
+    /// environments, but the effects vary wildly depending on the setup (e.g., the filesystem
+    /// used).
     #[serde(default = "MerkleTreeConfig::default_multi_get_chunk_size")]
     pub multi_get_chunk_size: usize,
-    /// Capacity of the block cache for the Merkle tree RocksDB. Reasonable values range from ~100 MB to several GB.
-    /// The default value is 128 MB.
+    /// Capacity of the block cache for the Merkle tree RocksDB. Reasonable values range from ~100
+    /// MB to several GB. The default value is 128 MB.
     #[serde(default = "MerkleTreeConfig::default_block_cache_size_mb")]
     pub block_cache_size_mb: usize,
-    /// Byte capacity of memtables (recent, non-persisted changes to RocksDB). Setting this to a reasonably
-    /// large value (order of 512 MiB) is helpful for large DBs that experience write stalls.
+    /// Byte capacity of memtables (recent, non-persisted changes to RocksDB). Setting this to a
+    /// reasonably large value (order of 512 MiB) is helpful for large DBs that experience
+    /// write stalls.
     #[serde(default = "MerkleTreeConfig::default_memtable_capacity_mb")]
     pub memtable_capacity_mb: usize,
     /// Timeout to wait for the Merkle tree database to run compaction on stalled writes.
@@ -97,7 +100,8 @@ impl MerkleTreeConfig {
         self.memtable_capacity_mb * super::BYTES_IN_MEGABYTE
     }
 
-    /// Returns the timeout to wait for the Merkle tree database to run compaction on stalled writes.
+    /// Returns the timeout to wait for the Merkle tree database to run compaction on stalled
+    /// writes.
     pub fn stalled_writes_timeout(&self) -> Duration {
         Duration::from_secs(self.stalled_writes_timeout_sec)
     }
@@ -135,13 +139,14 @@ pub struct PostgresConfig {
     /// Maximum size of the connection pool to master DB.
     pub max_connections_master: Option<u32>,
 
-    /// Acquire timeout in seconds for a single connection attempt. There are multiple attempts (currently 3)
-    /// before acquire methods will return an error.
+    /// Acquire timeout in seconds for a single connection attempt. There are multiple attempts
+    /// (currently 3) before acquire methods will return an error.
     pub acquire_timeout_sec: Option<u64>,
     /// Statement timeout in seconds for Postgres connections. Applies only to the replica
     /// connection pool used by the API servers.
     pub statement_timeout_sec: Option<u64>,
-    /// Threshold in milliseconds for the DB connection lifetime to denote it as long-living and log its details.
+    /// Threshold in milliseconds for the DB connection lifetime to denote it as long-living and
+    /// log its details.
     pub long_connection_threshold_ms: Option<u64>,
     /// Threshold in milliseconds to denote a DB query as "slow" and log its details.
     pub slow_query_threshold_ms: Option<u64>,

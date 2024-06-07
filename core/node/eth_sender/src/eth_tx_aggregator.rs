@@ -145,8 +145,8 @@ impl EthTxAggregator {
     }
 
     // Multicall's aggregate function accepts 1 argument - arrays of different contract calls.
-    // The role of the method below is to tokenize input for multicall, which is actually a vector of tokens.
-    // Each token describes a specific contract call.
+    // The role of the method below is to tokenize input for multicall, which is actually a vector
+    // of tokens. Each token describes a specific contract call.
     pub(super) fn generate_calldata_for_multicall(&self) -> Vec<Token> {
         const ALLOW_FAILURE: bool = false;
 
@@ -216,8 +216,9 @@ impl EthTxAggregator {
         ]
     }
 
-    // The role of the method below is to de-tokenize multicall call's result, which is actually a token.
-    // This token is an array of tuples like `(bool, bytes)`, that contain the status and result for each contract call.
+    // The role of the method below is to de-tokenize multicall call's result, which is actually a
+    // token. This token is an array of tuples like `(bool, bytes)`, that contain the status and
+    // result for each contract call.
     pub(super) fn parse_multicall_data(
         &self,
         token: Token,
@@ -312,8 +313,9 @@ impl EthTxAggregator {
             }
 
             let protocol_version = U256::from_big_endian(&multicall3_protocol_version);
-            // In case the protocol version is smaller than `PACKED_SEMVER_MINOR_MASK`, it will mean that it is
-            // equal to the `protocol_version_id` value, since it the interface from before the semver was supported.
+            // In case the protocol version is smaller than `PACKED_SEMVER_MINOR_MASK`, it will mean
+            // that it is equal to the `protocol_version_id` value, since it the
+            // interface from before the semver was supported.
             let protocol_version_id = if protocol_version < U256::from(PACKED_SEMVER_MINOR_MASK) {
                 ProtocolVersionId::try_from(protocol_version.as_u32() as u16).unwrap()
             } else {
@@ -428,7 +430,8 @@ impl EthTxAggregator {
     ) -> TxData {
         let operation_is_pre_shared_bridge = op.protocol_version().is_pre_shared_bridge();
 
-        // The post shared bridge contracts support pre-shared bridge operations, but vice versa is not true.
+        // The post shared bridge contracts support pre-shared bridge operations, but vice versa is
+        // not true.
         if contracts_are_pre_shared_bridge {
             assert!(operation_is_pre_shared_bridge);
         }
@@ -602,8 +605,9 @@ impl EthTxAggregator {
             .await
             .unwrap()
             .unwrap_or(0);
-        // Between server starts we can execute some txs using operator account or remove some txs from the database
-        // At the start we have to consider this fact and get the max nonce.
+        // Between server starts we can execute some txs using operator account or remove some txs
+        // from the database At the start we have to consider this fact and get the max
+        // nonce.
         Ok(if from_addr.is_none() {
             db_nonce.max(self.base_nonce)
         } else {

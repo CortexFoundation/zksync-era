@@ -128,9 +128,10 @@ struct UpdaterCursor {
 impl UpdaterCursor {
     async fn new(storage: &mut Connection<'_, Core>) -> anyhow::Result<Self> {
         let first_l1_batch_number = projected_first_l1_batch(storage).await?;
-        // Use the snapshot L1 batch, or the genesis batch if we are not using a snapshot. Technically, the snapshot L1 batch
-        // is not necessarily proven / executed yet, but since it and earlier batches are not stored, it serves
-        // a natural lower boundary for the cursor.
+        // Use the snapshot L1 batch, or the genesis batch if we are not using a snapshot.
+        // Technically, the snapshot L1 batch is not necessarily proven / executed yet, but
+        // since it and earlier batches are not stored, it serves a natural lower boundary
+        // for the cursor.
         let starting_l1_batch_number = L1BatchNumber(first_l1_batch_number.saturating_sub(1));
 
         let last_executed_l1_batch = storage
@@ -236,10 +237,11 @@ impl UpdaterCursor {
 /// locally applied batch was committed, proven or executed on L1.
 ///
 /// In essence, it keeps track of the last batch number per status, and periodically polls the main
-/// node on these batches in order to see whether the status has changed. If some changes were picked up,
-/// the module updates the database to mirror the state observable from the main node. This is required for other components
-/// (e.g., the API server and the consistency checker) to function properly. E.g., the API server returns commit / prove / execute
-/// L1 transaction information in `zks_getBlockDetails` and `zks_getL1BatchDetails` RPC methods.
+/// node on these batches in order to see whether the status has changed. If some changes were
+/// picked up, the module updates the database to mirror the state observable from the main node.
+/// This is required for other components (e.g., the API server and the consistency checker) to
+/// function properly. E.g., the API server returns commit / prove / execute L1 transaction
+/// information in `zks_getBlockDetails` and `zks_getL1BatchDetails` RPC methods.
 #[derive(Debug)]
 pub struct BatchStatusUpdater {
     client: Box<dyn MainNodeClient>,
@@ -290,10 +292,12 @@ impl BatchStatusUpdater {
             .update(Health::from(HealthStatus::Ready).with_details(cursor));
 
         while !*stop_receiver.borrow_and_update() {
-            // Status changes are created externally, so that even if we will receive a network error
-            // while requesting the changes, we will be able to process what we already fetched.
+            // Status changes are created externally, so that even if we will receive a network
+            // error while requesting the changes, we will be able to process what we
+            // already fetched.
             let mut status_changes = StatusChanges::default();
-            // Note that we don't update `cursor` here (it is copied), but rather only in `apply_status_changes`.
+            // Note that we don't update `cursor` here (it is copied), but rather only in
+            // `apply_status_changes`.
             match self.get_status_changes(&mut status_changes, cursor).await {
                 Ok(()) => { /* everything went smoothly */ }
                 Err(UpdaterError::Web3(err)) => {
@@ -344,12 +348,13 @@ impl BatchStatusUpdater {
         };
 
         let mut batch = cursor.last_executed_l1_batch.next();
-        // In this loop we try to progress on the batch statuses, utilizing the same request to the node to potentially
-        // update all three statuses (e.g. if the node is still syncing), but also skipping the gaps in the statuses
-        // (e.g. if the last executed batch is 10, but the last proven is 20, we don't need to check the batches 11-19).
+        // In this loop we try to progress on the batch statuses, utilizing the same request to the
+        // node to potentially update all three statuses (e.g. if the node is still
+        // syncing), but also skipping the gaps in the statuses (e.g. if the last executed
+        // batch is 10, but the last proven is 20, we don't need to check the batches 11-19).
         while batch <= last_sealed_batch {
-            // While we may receive `None` for the `self.current_l1_batch`, it's OK: open batch is guaranteed to not
-            // be sent to L1.
+            // While we may receive `None` for the `self.current_l1_batch`, it's OK: open batch is
+            // guaranteed to not be sent to L1.
             let l2_block_number = self.client.resolve_l1_batch_to_l2_block(batch).await?;
             let Some(l2_block_number) = l2_block_number else {
                 return Ok(());
@@ -388,9 +393,9 @@ impl BatchStatusUpdater {
     }
 
     /// Inserts the provided status changes into the database.
-    /// The status changes are applied to the database by inserting bogus confirmed transactions (with
-    /// some fields missing/substituted) only to satisfy API needs; this component doesn't expect the updated
-    /// tables to be ever accessed by the `eth_sender` module.
+    /// The status changes are applied to the database by inserting bogus confirmed transactions
+    /// (with some fields missing/substituted) only to satisfy API needs; this component doesn't
+    /// expect the updated tables to be ever accessed by the `eth_sender` module.
     async fn apply_status_changes(
         &self,
         cursor: &mut UpdaterCursor,

@@ -41,9 +41,11 @@ async fn prepare_basic_circuits_job_serialization() {
 fn assert_job_integrity(next_enumeration_index: u64, merkle_paths: Vec<StorageLogMetadata>) {
     assert_eq!(next_enumeration_index, 1);
     assert_eq!(merkle_paths.len(), 3);
-    assert!(merkle_paths
-        .iter()
-        .all(|log| log.is_write && log.first_write));
+    assert!(
+        merkle_paths
+            .iter()
+            .all(|log| log.is_write && log.first_write)
+    );
     assert!(merkle_paths.iter().all(|log| log.merkle_paths.len() == 256));
 }
 

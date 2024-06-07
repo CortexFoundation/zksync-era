@@ -10,9 +10,9 @@ pub struct ActionQueueSender(mpsc::Sender<SyncAction>);
 impl ActionQueueSender {
     /// Pushes a set of actions to the queue.
     ///
-    /// Requires that the actions are in the correct order: starts with a new open L1 batch / L2 block,
-    /// followed by 0 or more transactions, have mandatory `SealL2Block` and optional `SealBatch` at the end.
-    /// Would panic if the order is incorrect.
+    /// Requires that the actions are in the correct order: starts with a new open L1 batch / L2
+    /// block, followed by 0 or more transactions, have mandatory `SealL2Block` and optional
+    /// `SealBatch` at the end. Would panic if the order is incorrect.
     pub async fn push_actions(&self, actions: Vec<SyncAction>) {
         Self::check_action_sequence(&actions).unwrap();
         for action in actions {
@@ -24,8 +24,8 @@ impl ActionQueueSender {
     }
 
     /// Checks whether the action sequence is valid.
-    /// Returned error is meant to be used as a panic message, since an invalid sequence represents an unrecoverable
-    /// error. This function itself does not panic for the ease of testing.
+    /// Returned error is meant to be used as a panic message, since an invalid sequence represents
+    /// an unrecoverable error. This function itself does not panic for the ease of testing.
     fn check_action_sequence(actions: &[SyncAction]) -> Result<(), String> {
         // Rules for the sequence:
         // 1. Must start with either `OpenBatch` or `L2Block`, both of which may be met only once.
@@ -149,12 +149,13 @@ pub enum SyncAction {
         number: L2BlockNumber,
     },
     Tx(Box<FetchedTransaction>),
-    /// We need an explicit action for the L2 block sealing, since we fetch the whole L2 blocks and already know
-    /// that they are sealed, but at the same time the next L2 block may not exist yet.
-    /// By having a dedicated action for that we prevent a situation where the L2 block is kept open on the EN until
-    /// the next one is sealed on the main node.
+    /// We need an explicit action for the L2 block sealing, since we fetch the whole L2 blocks and
+    /// already know that they are sealed, but at the same time the next L2 block may not exist
+    /// yet. By having a dedicated action for that we prevent a situation where the L2 block is
+    /// kept open on the EN until the next one is sealed on the main node.
     SealL2Block,
-    /// Similarly to `SealL2Block` we must be able to seal the batch even if there is no next L2 block yet.
+    /// Similarly to `SealL2Block` we must be able to seal the batch even if there is no next L2
+    /// block yet.
     SealBatch,
 }
 
@@ -242,8 +243,8 @@ mod tests {
 
     #[test]
     fn incorrect_sequence() {
-        // Note: it is very important to check the exact error that occurs to prevent the test to pass if sequence is
-        // considered invalid e.g. because it's incomplete.
+        // Note: it is very important to check the exact error that occurs to prevent the test to
+        // pass if sequence is considered invalid e.g. because it's incomplete.
         let test_vector = vec![
             // Incomplete sequences.
             (vec![open_batch()], "Incomplete sequence"),
@@ -284,7 +285,9 @@ mod tests {
         ];
         for (idx, (sequence, expected_err)) in test_vector.into_iter().enumerate() {
             let Err(err) = ActionQueueSender::check_action_sequence(&sequence) else {
-                panic!("Invalid sequence passed the test. Sequence #{idx}, expected error: {expected_err}");
+                panic!(
+                    "Invalid sequence passed the test. Sequence #{idx}, expected error: {expected_err}"
+                );
             };
             assert!(
                 err.starts_with(expected_err),

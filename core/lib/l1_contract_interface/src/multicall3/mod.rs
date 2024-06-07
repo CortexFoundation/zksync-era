@@ -25,8 +25,11 @@ impl Tokenizable for Multicall3Call {
         let Token::Tuple(mut result_token) = token else {
             return Err(error(&[token], "Multicall3Call"));
         };
-        let [Token::Address(target), Token::Bool(allow_failure), Token::Bytes(calldata)] =
-            result_token.as_mut_slice()
+        let [
+            Token::Address(target),
+            Token::Bool(allow_failure),
+            Token::Bytes(calldata),
+        ] = result_token.as_mut_slice()
         else {
             return Err(error(&result_token, "Multicall3Call"));
         };

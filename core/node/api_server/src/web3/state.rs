@@ -162,8 +162,8 @@ impl InternalApiConfig {
 /// Thread-safe updatable information about the last sealed L2 block number.
 ///
 /// The information may be temporarily outdated and thus should only be used where this is OK
-/// (e.g., for metrics reporting). The value is updated by [`Self::diff()`] and [`Self::diff_with_block_args()`]
-/// and on an interval specified when creating an instance.
+/// (e.g., for metrics reporting). The value is updated by [`Self::diff()`] and
+/// [`Self::diff_with_block_args()`] and on an interval specified when creating an instance.
 #[derive(Debug, Clone)]
 pub(crate) struct SealedL2BlockNumber(Arc<AtomicU32>);
 
@@ -242,8 +242,8 @@ pub(crate) struct RpcState {
     pub(super) tx_sender: TxSender,
     pub(super) sync_state: Option<SyncState>,
     pub(super) api_config: InternalApiConfig,
-    /// Number of the first locally available L2 block / L1 batch. May differ from 0 if the node state was recovered
-    /// from a snapshot.
+    /// Number of the first locally available L2 block / L1 batch. May differ from 0 if the node
+    /// state was recovered from a snapshot.
     pub(super) start_info: BlockStartInfo,
     pub(super) mempool_cache: Option<MempoolCache>,
     pub(super) last_sealed_l2_block: SealedL2BlockNumber,
@@ -273,8 +273,8 @@ impl RpcState {
     }
 
     /// Acquires a DB connection mapping possible errors.
-    // `track_caller` is necessary to correctly record call location. `async fn`s don't support it yet,
-    // thus manual de-sugaring.
+    // `track_caller` is necessary to correctly record call location. `async fn`s don't support it
+    // yet, thus manual de-sugaring.
     #[track_caller]
     pub(crate) fn acquire_connection(
         &self,
@@ -284,7 +284,8 @@ impl RpcState {
             .map_err(|err| err.generalize().into())
     }
 
-    /// Resolves the specified block ID to a block number, which is guaranteed to be present in the node storage.
+    /// Resolves the specified block ID to a block number, which is guaranteed to be present in the
+    /// node storage.
     pub(crate) async fn resolve_block(
         &self,
         connection: &mut Connection<'_, Core>,
@@ -299,13 +300,13 @@ impl RpcState {
             .ok_or(Web3Error::NoBlock)
     }
 
-    /// Resolves the specified block ID to a block number, which is **not** guaranteed to be present in the node storage.
-    /// Returns `None` if the block is known to not be present in the storage (e.g., it's a "finalized" block ID and no blocks
-    /// were finalized yet).
+    /// Resolves the specified block ID to a block number, which is **not** guaranteed to be present
+    /// in the node storage. Returns `None` if the block is known to not be present in the
+    /// storage (e.g., it's a "finalized" block ID and no blocks were finalized yet).
     ///
-    /// This method is more efficient than [`Self::resolve_block()`] (it doesn't query the storage if block ID maps to a known
-    /// block number), but is more difficult to reason about. You should use it only if the block number consumer correctly handles
-    /// non-existing blocks.
+    /// This method is more efficient than [`Self::resolve_block()`] (it doesn't query the storage
+    /// if block ID maps to a known block number), but is more difficult to reason about. You
+    /// should use it only if the block number consumer correctly handles non-existing blocks.
     pub(crate) async fn resolve_block_unchecked(
         &self,
         connection: &mut Connection<'_, Core>,
@@ -364,7 +365,8 @@ impl RpcState {
         Ok((from_block, to_block))
     }
 
-    /// If filter has `block_hash` then it resolves block number by hash and sets it to `from_block` and `to_block`.
+    /// If filter has `block_hash` then it resolves block number by hash and sets it to `from_block`
+    /// and `to_block`.
     pub async fn resolve_filter_block_hash(&self, filter: &mut Filter) -> Result<(), Web3Error> {
         match (filter.block_hash, filter.from_block, filter.to_block) {
             (Some(block_hash), None, None) => {

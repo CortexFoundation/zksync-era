@@ -165,7 +165,8 @@ fn test_reentrancy_protection_send_or_transfer(test_option: TestOptions) {
         ])
         .build();
 
-    // First transaction, the job of which is to warm up the slots for balance of the recipient as well as its storage variable.
+    // First transaction, the job of which is to warm up the slots for balance of the recipient as
+    // well as its storage variable.
     let account = &mut vm.rich_accounts[0];
     let tx1 = account.get_l2_tx_for_execute(
         Execute {

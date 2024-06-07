@@ -20,8 +20,8 @@ use super::{
     BlockArgs, TxExecutionArgs, TxSharedArgs, VmPermit,
 };
 
-/// Validation error used by the sandbox. Besides validation errors returned by VM, it also includes an internal error
-/// variant (e.g., for DB-related errors).
+/// Validation error used by the sandbox. Besides validation errors returned by VM, it also includes
+/// an internal error variant (e.g., for DB-related errors).
 #[derive(Debug, thiserror::Error)]
 pub(crate) enum ValidationError {
     #[error("VM validation error: {0}")]

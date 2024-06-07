@@ -1,5 +1,4 @@
 //! The network where the zkSync resides.
-//!
 
 // Built-in uses
 use std::{fmt, str::FromStr};

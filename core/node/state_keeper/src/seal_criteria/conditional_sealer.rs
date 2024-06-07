@@ -1,8 +1,8 @@
 //! This module represents the conditional sealer, which can decide whether the batch
 //! should be sealed after executing a particular transaction.
 //!
-//! The conditional sealer abstraction allows to implement different sealing strategies, e.g. the actual
-//! sealing strategy for the main node or noop sealer for the external node.
+//! The conditional sealer abstraction allows to implement different sealing strategies, e.g. the
+//! actual sealing strategy for the main node or noop sealer for the external node.
 
 use std::fmt;
 
@@ -37,8 +37,9 @@ pub trait ConditionalSealer: 'static + fmt::Debug + Send + Sync {
 /// Implementation of [`ConditionalSealer`] used by the main node.
 /// Internally uses a set of [`SealCriterion`]s to determine whether the batch should be sealed.
 ///
-/// The checks are deterministic, i.e., should depend solely on execution metrics and [`StateKeeperConfig`].
-/// Non-deterministic seal criteria are expressed using [`IoSealCriteria`](super::IoSealCriteria).
+/// The checks are deterministic, i.e., should depend solely on execution metrics and
+/// [`StateKeeperConfig`]. Non-deterministic seal criteria are expressed using
+/// [`IoSealCriteria`](super::IoSealCriteria).
 #[derive(Debug, Default)]
 pub struct SequencerSealer {
     config: StateKeeperConfig,

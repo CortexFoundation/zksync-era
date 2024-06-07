@@ -15,7 +15,8 @@ use super::{
 };
 use crate::utils::ReportFilter;
 
-/// Observed version of RPC parameters. Have a bounded upper-limit size (256 bytes), so that we don't over-allocate.
+/// Observed version of RPC parameters. Have a bounded upper-limit size (256 bytes), so that we
+/// don't over-allocate.
 #[derive(Debug)]
 pub(super) enum ObservedRpcParams<'a> {
     None,
@@ -67,9 +68,10 @@ impl<'a> ObservedRpcParams<'a> {
     pub fn new(raw: Option<&Cow<'a, serde_json::value::RawValue>>) -> Self {
         match raw {
             None => Self::None,
-            // In practice, `jsonrpsee` never returns `Some(Cow::Borrowed(_))` because of a `serde` / `serde_json` flaw (?)
-            // when deserializing `Cow<'_, RawValue`: https://github.com/serde-rs/json/issues/1076. Thus, each `new()` call
-            // in which params are actually specified will allocate, but this allocation is quite small.
+            // In practice, `jsonrpsee` never returns `Some(Cow::Borrowed(_))` because of a `serde`
+            // / `serde_json` flaw (?) when deserializing `Cow<'_, RawValue`: https://github.com/serde-rs/json/issues/1076. Thus, each `new()` call
+            // in which params are actually specified will allocate, but this allocation is quite
+            // small.
             Some(Cow::Borrowed(params)) => Self::Borrowed(params),
             Some(Cow::Owned(params)) => Self::Owned {
                 start: Self::maybe_shorten(params).into(),
@@ -225,7 +227,8 @@ struct Web3ConfigLabels {
     websocket_requests_per_minute_limit: Option<u32>,
 }
 
-/// Roughly exponential buckets for the `web3_call_block_diff` metric. The distribution should be skewed towards lower values.
+/// Roughly exponential buckets for the `web3_call_block_diff` metric. The distribution should be
+/// skewed towards lower values.
 const BLOCK_DIFF_BUCKETS: Buckets = Buckets::values(&[
     0.0, 1.0, 2.0, 3.0, 4.0, 5.0, 10.0, 20.0, 50.0, 100.0, 200.0, 500.0, 1_000.0,
 ]);
@@ -240,7 +243,8 @@ pub(crate) struct ApiMetrics {
     web3_info: Family<ApiTransportLabel, Info<Web3ConfigLabels>>,
 
     /// Latency of a Web3 call. Calls that take block ID as an input have block ID and block diff
-    /// labels (the latter is the difference between the latest sealed L2 block and the resolved L2 block).
+    /// labels (the latter is the difference between the latest sealed L2 block and the resolved L2
+    /// block).
     #[metrics(buckets = Buckets::LATENCIES)]
     web3_call: Family<MethodLabels, Histogram<Duration>>,
     #[metrics(buckets = Buckets::LATENCIES, unit = Unit::Seconds)]
@@ -252,10 +256,11 @@ pub(crate) struct ApiMetrics {
     #[metrics(buckets = RESPONSE_SIZE_BUCKETS, labels = ["method"], unit = Unit::Bytes)]
     web3_call_response_size: LabeledFamily<&'static str, Histogram<usize>>,
 
-    /// Number of application errors grouped by error kind and method name. Only collected for errors that were successfully routed
-    /// to a method (i.e., this method is defined).
+    /// Number of application errors grouped by error kind and method name. Only collected for
+    /// errors that were successfully routed to a method (i.e., this method is defined).
     web3_errors: Family<Web3ErrorLabels, Counter>,
-    /// Number of protocol errors grouped by error code and method name. Method name is not set for "method not found" errors.
+    /// Number of protocol errors grouped by error code and method name. Method name is not set for
+    /// "method not found" errors.
     web3_rpc_errors: Family<ProtocolErrorLabels, Counter>,
     /// Number of transaction submission errors for a specific submission error reason.
     #[metrics(labels = ["reason"])]
@@ -437,8 +442,8 @@ pub(super) struct PubSubMetrics {
     /// Lifetime of a subscriber of a certain type.
     #[metrics(buckets = Buckets::LATENCIES)]
     pub subscriber_lifetime: Family<SubscriptionType, Histogram<Duration>>,
-    /// Current length of the broadcast channel of a certain type. With healthy subscribers, this value
-    /// should be reasonably low.
+    /// Current length of the broadcast channel of a certain type. With healthy subscribers, this
+    /// value should be reasonably low.
     pub broadcast_channel_len: Family<SubscriptionType, Gauge<usize>>,
     /// Number of skipped broadcast messages.
     #[metrics(buckets = Buckets::exponential(1.0..=128.0, 2.0))]
@@ -490,8 +495,8 @@ pub(super) static FILTER_METRICS: vise::Global<FilterMetrics> = vise::Global::ne
 #[derive(Debug, Metrics)]
 #[metrics(prefix = "server_mempool_cache")]
 pub(super) struct MempoolCacheMetrics {
-    /// Latency of mempool cache updates - the time it takes to load all the new transactions from the DB.
-    /// Does not include cache update time
+    /// Latency of mempool cache updates - the time it takes to load all the new transactions from
+    /// the DB. Does not include cache update time
     #[metrics(buckets = Buckets::LATENCIES)]
     pub db_poll_latency: Histogram<Duration>,
     /// Number of transactions loaded from the DB during the last cache update

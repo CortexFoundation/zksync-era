@@ -94,7 +94,8 @@ impl TeeVerifierInputProducer {
 
         // In the state keeper, this value is used to reject execution.
         // All batches have already been executed by State Keeper.
-        // This means we don't want to reject any execution, therefore we're using MAX as an allow all.
+        // This means we don't want to reject any execution, therefore we're using MAX as an allow
+        // all.
         let validation_computational_gas_limit = u32::MAX;
 
         let (system_env, l1_batch_env) = l1_batch_params_provider

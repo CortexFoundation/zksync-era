@@ -1,11 +1,12 @@
 //! # MultiVM Tracing
 //!
-//! The MultiVM tracing module enables support for Tracers in different versions of virtual machines.
+//! The MultiVM tracing module enables support for Tracers in different versions of virtual
+//! machines.
 //!
 //! ## Overview
 //!
-//! Different VM versions may have distinct requirements and types for Tracers. To accommodate these differences,
-//! this module defines one primary trait:
+//! Different VM versions may have distinct requirements and types for Tracers. To accommodate these
+//! differences, this module defines one primary trait:
 //!
 //! - `MultiVMTracer<S, H>`: This trait represents a tracer that can be converted into a tracer for
 //! a specific VM version.
@@ -25,7 +26,8 @@
 //! ## Adding a new VM version
 //!
 //! To add support for one more VM version to MultiVMTracer, one needs to:
-//! - Create a new trait performing conversion to the specified VM tracer, e.g., `Into<VmVersion>Tracer`.
+//! - Create a new trait performing conversion to the specified VM tracer, e.g.,
+//!   `Into<VmVersion>Tracer`.
 //! - Add this trait as a trait bound to the `MultiVMTracer`.
 //! - Add this trait as a trait bound for `T` in `MultiVMTracer` implementation.
 //! - Implement the trait for `T` with a bound to `VmTracer` for a specific version.

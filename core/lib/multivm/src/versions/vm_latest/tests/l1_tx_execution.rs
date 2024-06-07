@@ -111,8 +111,9 @@ fn test_l1_tx_execution() {
     let res = vm.vm.execute(VmExecutionMode::OneTx);
     let storage_logs = res.logs.storage_logs;
     let res = StorageWritesDeduplicator::apply_on_empty_state(&storage_logs);
-    // We changed one slot inside contract. However, the rewrite of the `basePubdataSpent` didn't happen, since it was the same
-    // as the start of the previous tx. Thus we have `+1` slot for the changed counter and `-1` slot for base pubdata spent
+    // We changed one slot inside contract. However, the rewrite of the `basePubdataSpent` didn't
+    // happen, since it was the same as the start of the previous tx. Thus we have `+1` slot for
+    // the changed counter and `-1` slot for base pubdata spent
     assert_eq!(res.initial_storage_writes - basic_initial_writes, 0);
 
     // No repeated writes
@@ -122,8 +123,8 @@ fn test_l1_tx_execution() {
     vm.vm.push_transaction(tx);
     let storage_logs = vm.vm.execute(VmExecutionMode::OneTx).logs.storage_logs;
     let res = StorageWritesDeduplicator::apply_on_empty_state(&storage_logs);
-    // We do the same storage write, it will be deduplicated, so still 4 initial write and 0 repeated.
-    // But now the base pubdata spent has changed too.
+    // We do the same storage write, it will be deduplicated, so still 4 initial write and 0
+    // repeated. But now the base pubdata spent has changed too.
     assert_eq!(res.initial_storage_writes - basic_initial_writes, 1);
     assert_eq!(res.repeated_storage_writes, repeated_writes);
 
@@ -147,8 +148,9 @@ fn test_l1_tx_execution() {
 #[test]
 fn test_l1_tx_execution_high_gas_limit() {
     // In this test, we try to execute an L1->L2 transaction with a high gas limit.
-    // Usually priority transactions with dangerously gas limit should even pass the checks on the L1,
-    // however, they might pass during the transition period to the new fee model, so we check that we can safely process those.
+    // Usually priority transactions with dangerously gas limit should even pass the checks on the
+    // L1, however, they might pass during the transition period to the new fee model, so we
+    // check that we can safely process those.
 
     let mut vm = VmTesterBuilder::new(HistoryEnabled)
         .with_empty_in_memory_storage()

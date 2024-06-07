@@ -41,8 +41,8 @@ pub(crate) struct PubdataTracer<S> {
     l1_batch_env: L1BatchEnv,
     pubdata_info_requested: bool,
     execution_mode: VmExecutionMode,
-    // For testing purposes it might be helpful to supply an exact set of state diffs to be provided
-    // to the L1Messenger.
+    // For testing purposes it might be helpful to supply an exact set of state diffs to be
+    // provided to the L1Messenger.
     enforced_state_diffs: Option<Vec<StateDiffRecord>>,
     subversion: MultiVMSubversion,
     _phantom_data: PhantomData<S>,

@@ -183,8 +183,7 @@ impl EthTxManager {
         if priority_fee_per_gas > self.config.max_acceptable_priority_fee_in_gwei {
             panic!(
                 "Extremely high value of priority_fee_per_gas is suggested: {}, while max acceptable is {}",
-                priority_fee_per_gas,
-                self.config.max_acceptable_priority_fee_in_gwei
+                priority_fee_per_gas, self.config.max_acceptable_priority_fee_in_gwei
             );
         }
 
@@ -231,7 +230,8 @@ impl EthTxManager {
             return Err(ETHSenderError::from(Error::EthereumGateway(err)));
         }
 
-        // Increase `priority_fee_per_gas` by at least 20% to prevent "replacement transaction under-priced" error.
+        // Increase `priority_fee_per_gas` by at least 20% to prevent "replacement transaction
+        // under-priced" error.
         Ok((previous_priority_fee + (previous_priority_fee / 5) + 1)
             .max(self.gas_adjuster.get_priority_fee()))
     }

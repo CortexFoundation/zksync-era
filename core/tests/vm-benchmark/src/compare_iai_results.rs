@@ -63,7 +63,9 @@ fn main() {
     {
         // write the header before writing the first line of diff
         if !nonzero_diff {
-            println!("Benchmark name | change in estimated runtime | change in number of opcodes executed \n--- | --- | ---");
+            println!(
+                "Benchmark name | change in estimated runtime | change in number of opcodes executed \n--- | --- | ---"
+            );
             nonzero_diff = true;
         }
 
@@ -77,7 +79,9 @@ fn main() {
     }
 
     if nonzero_diff {
-        println!("\n Changes in number of opcodes executed indicate that the gas price of the benchmark has changed, which causes it run out of gas at a different time. Or that it is behaving completely differently.");
+        println!(
+            "\n Changes in number of opcodes executed indicate that the gas price of the benchmark has changed, which causes it run out of gas at a different time. Or that it is behaving completely differently."
+        );
     }
 }
 

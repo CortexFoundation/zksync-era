@@ -216,8 +216,9 @@ impl<S: WriteStorage, H: HistoryMode> VmTracer<S, H> for RefundsTracer<S> {
         #[vise::register]
         static METRICS: vise::Global<RefundMetrics> = vise::Global::new();
 
-        // This means that the bootloader has informed the system (usually via `VMHooks`) - that some gas
-        // should be refunded back (see `askOperatorForRefund` in `bootloader.yul` for details).
+        // This means that the bootloader has informed the system (usually via `VMHooks`) - that
+        // some gas should be refunded back (see `askOperatorForRefund` in `bootloader.yul`
+        // for details).
         if let Some(bootloader_refund) = self.requested_refund() {
             assert!(
                 self.operator_refund.is_none(),
@@ -320,8 +321,9 @@ pub(crate) fn pubdata_published<S: WriteStorage, H: HistoryMode>(
         .into_iter()
         .map(|e| e.into_vm_event(batch_number))
         .collect();
-    // For the first transaction in L1 batch there may be (it depends on the execution mode) an L2->L1 log
-    // that is sent by `SystemContext` in `setNewBlock`. It's a part of the L1 batch pubdata overhead and not the transaction itself.
+    // For the first transaction in L1 batch there may be (it depends on the execution mode) an
+    // L2->L1 log that is sent by `SystemContext` in `setNewBlock`. It's a part of the L1 batch
+    // pubdata overhead and not the transaction itself.
     let l2_l1_logs_bytes = (l1_messages
         .into_iter()
         .map(|log| L2ToL1Log {

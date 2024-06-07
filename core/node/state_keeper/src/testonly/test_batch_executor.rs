@@ -1,7 +1,8 @@
-// TODO(QIT-33): Some of the interfaces are public, and some are only used in tests within this crate.
-// This causes crate-local interfaces to spawn a warning without `cfg(test)`. The interfaces here must
-// be revisited and properly split into "truly public" (e.g. useful for other crates to test, say, different
-// IO or `BatchExecutor` implementations) and "local-test-only" (e.g. used only in tests within this crate).
+// TODO(QIT-33): Some of the interfaces are public, and some are only used in tests within this
+// crate. This causes crate-local interfaces to spawn a warning without `cfg(test)`. The interfaces
+// here must be revisited and properly split into "truly public" (e.g. useful for other crates to
+// test, say, different IO or `BatchExecutor` implementations) and "local-test-only" (e.g. used only
+// in tests within this crate).
 #![allow(dead_code)]
 
 use std::{
@@ -40,14 +41,15 @@ pub const FEE_ACCOUNT: Address = Address::repeat_byte(0x11);
 
 /// Main entry for writing tests for the state keeper.
 /// Represents a planned sequence of actions that would happen with the state keeper.
-/// We defined a scenario by telling *exactly* what we expect to happen, and then launch the state keeper.
-/// While state keeper progresses over the planned transactions, `TestScenario` makes sure that every action happens
-/// according to the scenario.
+/// We defined a scenario by telling *exactly* what we expect to happen, and then launch the state
+/// keeper. While state keeper progresses over the planned transactions, `TestScenario` makes sure
+/// that every action happens according to the scenario.
 ///
-/// Every action requires a description: since in most scenarios there will be a lot of similar actions (e.g. `next_tx`
-/// or `seal_l2_block`) it helps to see which action *exactly* caused a test failure. It's recommended to write
-/// descriptions that are not only unique, but also will explain *why* we expected this action to happen. This way,
-/// it would be easier for developer to find the problem.
+/// Every action requires a description: since in most scenarios there will be a lot of similar
+/// actions (e.g. `next_tx` or `seal_l2_block`) it helps to see which action *exactly* caused a test
+/// failure. It's recommended to write descriptions that are not only unique, but also will explain
+/// *why* we expected this action to happen. This way, it would be easier for developer to find the
+/// problem.
 ///
 /// See any test in the `mod.rs` file to get a visual example.
 pub(crate) struct TestScenario {
@@ -80,14 +82,15 @@ impl TestScenario {
     }
 
     /// Adds a pending batch data that would be fed into the state keeper.
-    /// Note that during processing pending batch, state keeper do *not* call `seal_l2_block` method on the IO (since
-    /// it only recovers the temporary state).
+    /// Note that during processing pending batch, state keeper do *not* call `seal_l2_block` method
+    /// on the IO (since it only recovers the temporary state).
     pub(crate) fn load_pending_batch(mut self, pending_batch: PendingBatchData) -> Self {
         self.pending_batch = Some(pending_batch);
         self
     }
 
-    /// Configures scenario to repeatedly return `None` to tx requests until the next action from the scenario happens.
+    /// Configures scenario to repeatedly return `None` to tx requests until the next action from
+    /// the scenario happens.
     pub(crate) fn no_txs_until_next_action(mut self, description: &'static str) -> Self {
         self.actions
             .push_back(ScenarioItem::NoTxsUntilNextAction(description));
@@ -102,8 +105,8 @@ impl TestScenario {
     }
 
     /// Expect the state keeper to request a transaction from IO.
-    /// Adds both a transaction and an outcome of this transaction (that would be returned to the state keeper from the
-    /// batch executor).
+    /// Adds both a transaction and an outcome of this transaction (that would be returned to the
+    /// state keeper from the batch executor).
     pub(crate) fn next_tx(
         mut self,
         description: &'static str,
@@ -123,8 +126,9 @@ impl TestScenario {
     }
 
     /// Expect the state keeper to reject the transaction.
-    /// `err` argument is an optional substring of the expected error message. If `None` is provided, any rejection
-    /// would work. If `Some` is provided, rejection reason would be checked against the provided substring.
+    /// `err` argument is an optional substring of the expected error message. If `None` is
+    /// provided, any rejection would work. If `Some` is provided, rejection reason would be
+    /// checked against the provided substring.
     pub(crate) fn tx_rejected(
         mut self,
         description: &'static str,
@@ -144,8 +148,8 @@ impl TestScenario {
     }
 
     /// Expects the L2 block to be sealed.
-    /// Accepts a function that would be given access to the received L2 block seal params, which can implement
-    /// additional assertions on the sealed L2 block.
+    /// Accepts a function that would be given access to the received L2 block seal params, which
+    /// can implement additional assertions on the sealed L2 block.
     pub(crate) fn l2_block_sealed_with<F: FnOnce(&UpdatesManager) + Send + 'static>(
         mut self,
         description: &'static str,
@@ -164,8 +168,8 @@ impl TestScenario {
     }
 
     /// Expects the batch to be sealed.
-    /// Accepts a function that would be given access to the received batch seal params, which can implement
-    /// additional assertions on the sealed batch.
+    /// Accepts a function that would be given access to the received batch seal params, which can
+    /// implement additional assertions on the sealed batch.
     pub(crate) fn batch_sealed_with<F>(mut self, description: &'static str, f: F) -> Self
     where
         F: FnOnce(&UpdatesManager) + Send + 'static,
@@ -192,7 +196,8 @@ impl TestScenario {
     }
 
     /// Launches the test.
-    /// Provided `SealManager` is expected to be externally configured to adhere the written scenario logic.
+    /// Provided `SealManager` is expected to be externally configured to adhere the written
+    /// scenario logic.
     pub(crate) async fn run(self, sealer: SequencerSealer) {
         assert!(!self.actions.is_empty(), "Test scenario can't be empty");
 
@@ -209,8 +214,8 @@ impl TestScenario {
         );
         let sk_thread = tokio::spawn(state_keeper.run());
 
-        // We must assume that *theoretically* state keeper may ignore the stop signal from IO once scenario is
-        // completed, so we spawn it in a separate thread to not get test stuck.
+        // We must assume that *theoretically* state keeper may ignore the stop signal from IO once
+        // scenario is completed, so we spawn it in a separate thread to not get test stuck.
         let hard_timeout = Duration::from_secs(60);
         let poll_interval = Duration::from_millis(50);
         let start = Instant::now();
@@ -238,8 +243,8 @@ pub(crate) fn random_tx(tx_number: u64) -> Transaction {
     tx.into()
 }
 
-/// Creates a random protocol upgrade transaction. Provided tx number would be used as a transaction hash,
-/// so it's easier to understand which transaction caused test to fail.
+/// Creates a random protocol upgrade transaction. Provided tx number would be used as a transaction
+/// hash, so it's easier to understand which transaction caused test to fail.
 pub(crate) fn random_upgrade_tx(tx_number: u64) -> ProtocolUpgradeTx {
     let mut tx = ProtocolUpgradeTx {
         execute: Default::default(),
@@ -250,7 +255,8 @@ pub(crate) fn random_upgrade_tx(tx_number: u64) -> ProtocolUpgradeTx {
     tx
 }
 
-/// Creates a `TxExecutionResult` object denoting a successful tx execution with the given execution metrics.
+/// Creates a `TxExecutionResult` object denoting a successful tx execution with the given execution
+/// metrics.
 pub(crate) fn successful_exec_with_metrics(
     tx_metrics: ExecutionMetricsForCriteria,
 ) -> TxExecutionResult {
@@ -277,7 +283,8 @@ pub(crate) fn rejected_exec() -> TxExecutionResult {
 
 #[allow(clippy::type_complexity, clippy::large_enum_variant)] // It's OK for tests.
 enum ScenarioItem {
-    /// Configures scenario to repeatedly return `None` to tx requests until the next action from the scenario happens.
+    /// Configures scenario to repeatedly return `None` to tx requests until the next action from
+    /// the scenario happens.
     NoTxsUntilNextAction(&'static str),
     /// Increments protocol version in IO state.
     IncrementProtocolVersion(&'static str),
@@ -391,8 +398,8 @@ impl TestBatchExecutorBuilder {
         if !batch_txs.is_empty() {
             txs.push_back(mem::take(&mut batch_txs));
         }
-        // After sealing the batch, state keeper initialized a new one, so we need to create an empty set
-        // for the initialization of the "next-to-last" batch.
+        // After sealing the batch, state keeper initialized a new one, so we need to create an
+        // empty set for the initialization of the "next-to-last" batch.
         txs.push_back(HashMap::default());
 
         Self { txs, rollback_set }
@@ -436,7 +443,8 @@ impl BatchExecutor for TestBatchExecutorBuilder {
 pub(super) struct TestBatchExecutor {
     commands: mpsc::Receiver<Command>,
     /// Mapping tx -> response.
-    /// The same transaction can be executed several times, so we use a sequence of responses and consume them by one.
+    /// The same transaction can be executed several times, so we use a sequence of responses and
+    /// consume them by one.
     txs: HashMap<H256, VecDeque<TxExecutionResult>>,
     /// Set of transactions that are expected to be rolled back.
     rollback_set: HashSet<H256>,
@@ -480,9 +488,10 @@ impl TestBatchExecutor {
                     resp.send(()).unwrap();
                 }
                 Command::RollbackLastTx(resp) => {
-                    // This is an additional safety check: IO would check that every rollback is included in the
-                    // test scenario, but here we want to additionally check that each such request goes to the
-                    // the batch executor as well.
+                    // This is an additional safety check: IO would check that every rollback is
+                    // included in the test scenario, but here we want to
+                    // additionally check that each such request goes to the the
+                    // batch executor as well.
                     if !self.rollback_set.contains(&self.last_tx) {
                         // Request to rollback an unexpected tx.
                         panic!(
@@ -491,8 +500,9 @@ impl TestBatchExecutor {
                         )
                     }
                     resp.send(()).unwrap();
-                    // It's OK to not update `last_executed_tx`, since state keeper never should rollback more than 1
-                    // tx in a row, and it's going to cause a panic anyway.
+                    // It's OK to not update `last_executed_tx`, since state keeper never should
+                    // rollback more than 1 tx in a row, and it's going to cause
+                    // a panic anyway.
                 }
                 Command::FinishBatch(resp) => {
                     // Blanket result, it doesn't really matter.
@@ -563,8 +573,8 @@ pub(crate) struct TestIO {
     l1_batch_seal_fn: Box<SealFn>,
     l2_block_seal_fn: Box<SealFn>,
     actions: Arc<Mutex<VecDeque<ScenarioItem>>>,
-    /// Internal flag that is being set if scenario was configured to return `None` to all the transaction
-    /// requests until some other action happens.
+    /// Internal flag that is being set if scenario was configured to return `None` to all the
+    /// transaction requests until some other action happens.
     skipping_txs: bool,
     protocol_version: ProtocolVersionId,
     previous_batch_protocol_version: ProtocolVersionId,

@@ -235,7 +235,8 @@ impl<S: Storage, H: HistoryMode> VmStorageOracle for StorageOracle<S, H> {
 
         RefundType::RepeatedWrite(RefundedAmounts {
             ergs: 0,
-            // `INITIAL_STORAGE_WRITE_PUBDATA_BYTES` is the default amount of pubdata bytes the user pays for.
+            // `INITIAL_STORAGE_WRITE_PUBDATA_BYTES` is the default amount of pubdata bytes the user
+            // pays for.
             pubdata_bytes: (INITIAL_STORAGE_WRITE_PUBDATA_BYTES as u32) - price_to_pay,
         })
     }
@@ -278,8 +279,8 @@ impl<S: Storage, H: HistoryMode> VmStorageOracle for StorageOracle<S, H> {
                 );
 
                 // Additional validation that the current value was correct
-                // Unwrap is safe because the return value from `write_inner` is the previous value in this leaf.
-                // It is impossible to set leaf value to `None`
+                // Unwrap is safe because the return value from `write_inner` is the previous value
+                // in this leaf. It is impossible to set leaf value to `None`
                 assert_eq!(current_value, written_value);
             }
 
@@ -294,13 +295,14 @@ impl<S: Storage, H: HistoryMode> VmStorageOracle for StorageOracle<S, H> {
 // Since we need to publish the state diffs onchain, for each of the updated storage slot
 // we basically need to publish the following pair: `(<storage_key, new_value>)`.
 // While `new_value` is always 32 bytes long, for key we use the following optimization:
-//   - The first time we publish it, we use 32 bytes.
-//         Then, we remember a 8-byte id for this slot and assign it to it. We call this initial write.
-//   - The second time we publish it, we will use this 8-byte instead of the 32 bytes of the entire key.
-//         So the total size of the publish pubdata is 40 bytes. We call this kind of write the repeated one
+//   - The first time we publish it, we use 32 bytes. Then, we remember a 8-byte id for this slot
+//     and assign it to it. We call this initial write.
+//   - The second time we publish it, we will use this 8-byte instead of the 32 bytes of the entire
+//     key. So the total size of the publish pubdata is 40 bytes. We call this kind of write the
+//     repeated one
 fn get_pubdata_price_bytes(_query: &LogQuery, is_initial: bool) -> u32 {
-    // TODO (SMA-1702): take into account the content of the log query, i.e. values that contain mostly zeroes
-    // should cost less.
+    // TODO (SMA-1702): take into account the content of the log query, i.e. values that contain
+    // mostly zeroes should cost less.
     if is_initial {
         zk_evm_1_3_1::zkevm_opcode_defs::system_params::INITIAL_STORAGE_WRITE_PUBDATA_BYTES as u32
     } else {

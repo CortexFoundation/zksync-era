@@ -25,7 +25,8 @@ use super::{
 };
 
 /// Amount of time to block on waiting for some resource. The exact value is not really important,
-/// we only need it to not block on waiting indefinitely and be able to process cancellation requests.
+/// we only need it to not block on waiting indefinitely and be able to process cancellation
+/// requests.
 pub(super) const POLL_WAIT_DURATION: Duration = Duration::from_secs(1);
 
 /// Structure used to indicate that task cancellation was requested.
@@ -47,14 +48,15 @@ impl Error {
 }
 
 /// State keeper represents a logic layer of L1 batch / L2 block processing flow.
-/// It's responsible for taking all the data from the `StateKeeperIO`, feeding it into `BatchExecutor` objects
-/// and calling `SealManager` to decide whether an L2 block or L1 batch should be sealed.
+/// It's responsible for taking all the data from the `StateKeeperIO`, feeding it into
+/// `BatchExecutor` objects and calling `SealManager` to decide whether an L2 block or L1 batch
+/// should be sealed.
 ///
-/// State keeper maintains the batch execution state in the `UpdatesManager` until batch is sealed and these changes
-/// are persisted by the `StateKeeperIO` implementation.
+/// State keeper maintains the batch execution state in the `UpdatesManager` until batch is sealed
+/// and these changes are persisted by the `StateKeeperIO` implementation.
 ///
-/// You can think of it as a state machine that runs over a sequence of incoming transactions, turning them into
-/// a sequence of executed L2 blocks and batches.
+/// You can think of it as a state machine that runs over a sequence of incoming transactions,
+/// turning them into a sequence of executed L2 blocks and batches.
 #[derive(Debug)]
 pub struct ZkSyncStateKeeper {
     stop_receiver: watch::Receiver<bool>,
@@ -304,8 +306,9 @@ impl ZkSyncStateKeeper {
         &mut self,
         cursor: &IoCursor,
     ) -> Result<(SystemEnv, L1BatchEnv), Error> {
-        // `io.wait_for_new_batch_params(..)` is not cancel-safe; once we get new batch params, we must hold onto them
-        // until we get the rest of parameters from I/O or receive a stop signal.
+        // `io.wait_for_new_batch_params(..)` is not cancel-safe; once we get new batch params, we
+        // must hold onto them until we get the rest of parameters from I/O or receive a
+        // stop signal.
         let params = self.wait_for_new_batch_params(cursor).await?;
         let contracts = self
             .io
@@ -374,8 +377,9 @@ impl ZkSyncStateKeeper {
     }
 
     /// Applies the "pending state" on the `UpdatesManager`.
-    /// Pending state means transactions that were executed before the server restart. Before we continue processing the
-    /// batch, we need to restore the state. We must ensure that every transaction is executed successfully.
+    /// Pending state means transactions that were executed before the server restart. Before we
+    /// continue processing the batch, we need to restore the state. We must ensure that every
+    /// transaction is executed successfully.
     ///
     /// Additionally, it initialized the next L2 block timestamp.
     async fn restore_state(
@@ -389,7 +393,8 @@ impl ZkSyncStateKeeper {
         }
 
         for (index, l2_block) in l2_blocks_to_reexecute.into_iter().enumerate() {
-            // Push any non-first L2 block to updates manager. The first one was pushed when `updates_manager` was initialized.
+            // Push any non-first L2 block to updates manager. The first one was pushed when
+            // `updates_manager` was initialized.
             if index > 0 {
                 Self::start_next_l2_block(
                     L2BlockParams {
@@ -468,7 +473,8 @@ impl ZkSyncStateKeeper {
             "All the transactions from the pending state were re-executed successfully"
         );
 
-        // We've processed all the L2 blocks, and right now we're initializing the next *actual* L2 block.
+        // We've processed all the L2 blocks, and right now we're initializing the next *actual* L2
+        // block.
         let new_l2_block_params = self
             .wait_for_new_l2_block_params(updates_manager)
             .await
@@ -622,7 +628,9 @@ impl ZkSyncStateKeeper {
                     ..
                 } = exec_result
                 else {
-                    anyhow::bail!("Tx inclusion seal resolution must be a result of a successful tx execution");
+                    anyhow::bail!(
+                        "Tx inclusion seal resolution must be a result of a successful tx execution"
+                    );
                 };
 
                 // Despite success of upgrade transaction is not enforced by protocol,
@@ -658,13 +666,15 @@ impl ZkSyncStateKeeper {
         }
     }
 
-    /// Executes one transaction in the batch executor, and then decides whether the batch should be sealed.
-    /// Batch may be sealed because of one of the following reasons:
-    /// 1. The VM entered an incorrect state (e.g. out of gas). In that case, we must revert the transaction and seal
+    /// Executes one transaction in the batch executor, and then decides whether the batch should be
+    /// sealed. Batch may be sealed because of one of the following reasons:
+    /// 1. The VM entered an incorrect state (e.g. out of gas). In that case, we must revert the
+    ///    transaction and seal
     /// the block.
     /// 2. Seal manager decided that batch is ready to be sealed.
-    /// Note: this method doesn't mutate `updates_manager` in the end. However, reference should be mutable
-    /// because we use `apply_and_rollback` method of `updates_manager.storage_writes_deduplicator`.
+    /// Note: this method doesn't mutate `updates_manager` in the end. However, reference should be
+    /// mutable because we use `apply_and_rollback` method of
+    /// `updates_manager.storage_writes_deduplicator`.
     async fn process_one_tx(
         &mut self,
         batch_executor: &mut BatchExecutorHandle,
@@ -677,12 +687,16 @@ impl ZkSyncStateKeeper {
             .with_context(|| format!("failed executing transaction {:?}", tx.hash()))?;
         // All of `TxExecutionResult::BootloaderOutOfGasForTx`,
         // `Halt::NotEnoughGasProvided` correspond to out-of-gas errors but of different nature.
-        // - `BootloaderOutOfGasForTx`: it is returned when bootloader stack frame run out of gas before tx execution finished.
-        // - `Halt::NotEnoughGasProvided`: there are checks in bootloader in some places (search for `checkEnoughGas` calls).
-        //      They check if there is more gas in the frame than bootloader estimates it will need.
-        //      This error is returned when such a check fails. Basically, bootloader doesn't continue execution but panics prematurely instead.
-        // If some transaction fails with any of these errors and is the first transaction in L1 batch, then it's marked as unexecutable.
-        // Otherwise, `ExcludeAndSeal` resolution is returned, i.e. batch will be sealed and transaction will be included in the next L1 batch.
+        // - `BootloaderOutOfGasForTx`: it is returned when bootloader stack frame run out of gas
+        //   before tx execution finished.
+        // - `Halt::NotEnoughGasProvided`: there are checks in bootloader in some places (search for
+        //   `checkEnoughGas` calls). They check if there is more gas in the frame than bootloader
+        //   estimates it will need. This error is returned when such a check fails. Basically,
+        //   bootloader doesn't continue execution but panics prematurely instead.
+        // If some transaction fails with any of these errors and is the first transaction in L1
+        // batch, then it's marked as unexecutable. Otherwise, `ExcludeAndSeal` resolution
+        // is returned, i.e. batch will be sealed and transaction will be included in the next L1
+        // batch.
 
         let is_first_tx = updates_manager.pending_executed_transactions_len() == 0;
         let resolution = match &exec_result {

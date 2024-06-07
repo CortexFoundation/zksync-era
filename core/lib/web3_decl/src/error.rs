@@ -39,8 +39,8 @@ pub enum Web3Error {
     LogsLimitExceeded(usize, u32, u32),
     #[error("invalid filter: if blockHash is supplied fromBlock and toBlock must not be")]
     InvalidFilterBlockHash,
-    /// Weaker form of a "method not found" error; the method implementation is technically present,
-    /// but the node configuration prevents the method from functioning.
+    /// Weaker form of a "method not found" error; the method implementation is technically
+    /// present, but the node configuration prevents the method from functioning.
     #[error("Method not implemented")]
     MethodNotImplemented,
     /// Unavailability caused by node configuration is returned as [`Self::MethodNotImplemented`].
@@ -90,7 +90,8 @@ impl EnrichedClientError {
         match self.as_ref() {
             ClientError::Transport(_) | ClientError::RequestTimeout => true,
             ClientError::Call(err) => {
-                // At least some RPC providers use "internal error" in case of the server being overloaded
+                // At least some RPC providers use "internal error" in case of the server being
+                // overloaded
                 err.code() == ErrorCode::ServerIsBusy.code()
                     || err.code() == ErrorCode::InternalError.code()
             }
@@ -181,7 +182,8 @@ where
                 let err = EnrichedClientError {
                     inner_error: err,
                     method: projection.method,
-                    // `mem::take()` is safe to use: by contract, a `Future` shouldn't be polled after completion
+                    // `mem::take()` is safe to use: by contract, a `Future` shouldn't be polled
+                    // after completion
                     args: mem::take(projection.args)
                         .into_iter()
                         .map(|(name, value)| (name, format!("{value:?}")))
@@ -193,7 +195,8 @@ where
     }
 }
 
-/// Extension trait allowing to add context to client RPC calls. Can be used on any future resolving to `Result<_, ClientError>`.
+/// Extension trait allowing to add context to client RPC calls. Can be used on any future resolving
+/// to `Result<_, ClientError>`.
 pub trait ClientRpcContext: Sized {
     /// Adds basic context information: the name of the invoked RPC method.
     fn rpc_context(self, method: &'static str) -> ClientCallWrapper<Self>;

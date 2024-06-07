@@ -1,6 +1,7 @@
-//! Ethereum watcher polls the Ethereum node for the relevant events, such as priority operations (aka L1 transactions),
-//! protocol upgrades etc.
-//! New events are accepted to the zkSync network once they have the sufficient amount of L1 confirmations.
+//! Ethereum watcher polls the Ethereum node for the relevant events, such as priority operations
+//! (aka L1 transactions), protocol upgrades etc.
+//! New events are accepted to the zkSync network once they have the sufficient amount of L1
+//! confirmations.
 
 use std::time::Duration;
 
@@ -144,8 +145,9 @@ impl EthWatch {
                     return Err(err);
                 }
                 Err(err) => {
-                    // This is an error because otherwise we could potentially miss a priority operation
-                    // thus entering priority mode, which is not desired.
+                    // This is an error because otherwise we could potentially miss a priority
+                    // operation thus entering priority mode, which is not
+                    // desired.
                     tracing::error!("Failed to process new blocks: {err}");
                     self.last_processed_ethereum_block =
                         Self::initialize_state(&*self.client, &mut storage)

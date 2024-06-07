@@ -26,7 +26,8 @@ pub(super) struct CommitmentGeneratorMetrics {
     #[metrics(buckets = Buckets::LATENCIES, unit = Unit::Seconds)]
     pub events_queue_commitment_latency: Histogram<Duration>,
 
-    /// Latency of processing a continuous chunk of L1 batches during a single step of the generator.
+    /// Latency of processing a continuous chunk of L1 batches during a single step of the
+    /// generator.
     #[metrics(buckets = Buckets::LATENCIES, unit = Unit::Seconds)]
     pub step_latency: Histogram<Duration>,
     /// Number of L1 batches processed during a single step.

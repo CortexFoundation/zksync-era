@@ -2,8 +2,8 @@
 //!
 //! # Overview
 //!
-//! Tree recovery works by checking Postgres and Merkle tree state on Metadata calculator initialization.
-//! Depending on these states, we can have one of the following situations:
+//! Tree recovery works by checking Postgres and Merkle tree state on Metadata calculator
+//! initialization. Depending on these states, we can have one of the following situations:
 //!
 //! - Tree is recovering.
 //! - Tree is empty and should be recovered (i.e., there's a snapshot in Postgres).
@@ -21,9 +21,9 @@
 //! The recovery logic is fault-tolerant and supports graceful shutdown. If recovery is interrupted,
 //! recovery of the remaining chunks will continue when Metadata calculator is restarted.
 //!
-//! Recovery performs basic sanity checks to ensure that the tree won't end up containing garbage data.
-//! E.g., it's checked that the tree always recovers from the same snapshot; that the tree root hash
-//! after recovery matches one in the Postgres snapshot etc.
+//! Recovery performs basic sanity checks to ensure that the tree won't end up containing garbage
+//! data. E.g., it's checked that the tree always recovers from the same snapshot; that the tree
+//! root hash after recovery matches one in the Postgres snapshot etc.
 
 use std::{
     fmt, ops,
@@ -154,11 +154,11 @@ struct RecoveryOptions<'a> {
 }
 
 impl GenericAsyncTree {
-    /// Ensures that the tree is ready for the normal operation, recovering it from a Postgres snapshot
-    /// if necessary.
+    /// Ensures that the tree is ready for the normal operation, recovering it from a Postgres
+    /// snapshot if necessary.
     ///
-    /// `recovery_pool` is taken by value to free up its connection after recovery (provided that it's not shared
-    /// with other components).
+    /// `recovery_pool` is taken by value to free up its connection after recovery (provided that
+    /// it's not shared with other components).
     pub async fn ensure_ready(
         self,
         config: &MetadataCalculatorRecoveryConfig,
@@ -192,7 +192,8 @@ impl GenericAsyncTree {
                     let tree = AsyncTreeRecovery::new(db, l1_batch.0.into(), mode)?;
                     (tree, snapshot_recovery)
                 } else {
-                    // Start the tree from scratch. The genesis block will be filled in `TreeUpdater::loop_updating_tree()`.
+                    // Start the tree from scratch. The genesis block will be filled in
+                    // `TreeUpdater::loop_updating_tree()`.
                     return Ok(Some(AsyncTree::new(db, mode)?));
                 }
             }
@@ -366,8 +367,9 @@ impl AsyncTreeRecovery {
             return Ok(());
         }
 
-        // Sanity check: all entry keys must be distinct. Otherwise, we may end up writing non-final values
-        // to the tree, since we don't enforce any ordering on entries besides by the hashed key.
+        // Sanity check: all entry keys must be distinct. Otherwise, we may end up writing non-final
+        // values to the tree, since we don't enforce any ordering on entries besides by the
+        // hashed key.
         for window in all_entries.windows(2) {
             let [prev_entry, next_entry] = window else {
                 unreachable!();

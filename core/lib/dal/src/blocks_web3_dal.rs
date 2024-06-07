@@ -126,7 +126,8 @@ impl BlocksWeb3Dal<'_, '_> {
         Ok(tx_count.map(|count| count as u64))
     }
 
-    /// Returns hashes of blocks with numbers starting from `from_block` and the number of the last block.
+    /// Returns hashes of blocks with numbers starting from `from_block` and the number of the last
+    /// block.
     pub async fn get_block_hashes_since(
         &mut self,
         from_block: L2BlockNumber,
@@ -160,7 +161,8 @@ impl BlocksWeb3Dal<'_, '_> {
         Ok((hashes, last_block_number))
     }
 
-    /// Returns hashes of blocks with numbers greater than `from_block` and the number of the last block.
+    /// Returns hashes of blocks with numbers greater than `from_block` and the number of the last
+    /// block.
     pub async fn get_block_headers_after(
         &mut self,
         from_block: L2BlockNumber,
@@ -334,9 +336,10 @@ impl BlocksWeb3Dal<'_, '_> {
             .map(|row| row.timestamp as u64))
         } else {
             // Got a pending L2 block. Searching the timestamp of the first pending L2 block using
-            // `WHERE l1_batch_number IS NULL` is slow since it potentially locks the `miniblocks` table.
-            // Instead, we determine its number using the previous L1 batch, taking into the account that
-            // it may be stored in the `snapshot_recovery` table.
+            // `WHERE l1_batch_number IS NULL` is slow since it potentially locks the `miniblocks`
+            // table. Instead, we determine its number using the previous L1 batch,
+            // taking into the account that it may be stored in the `snapshot_recovery`
+            // table.
             let prev_l1_batch_number = if l1_batch_number.pending_l1_batch == L1BatchNumber(0) {
                 return Ok(None); // We haven't created the genesis L2 block yet
             } else {
@@ -513,7 +516,8 @@ impl BlocksWeb3Dal<'_, '_> {
         Ok(result)
     }
 
-    /// Returns call traces for all transactions in the specified L2 block in the order of their execution.
+    /// Returns call traces for all transactions in the specified L2 block in the order of their
+    /// execution.
     pub async fn get_traces_for_l2_block(
         &mut self,
         block_number: L2BlockNumber,
@@ -564,8 +568,8 @@ impl BlocksWeb3Dal<'_, '_> {
         .collect())
     }
 
-    /// Returns `base_fee_per_gas` for L2 block range [min(newest_block - block_count + 1, 0), newest_block]
-    /// in descending order of L2 block numbers.
+    /// Returns `base_fee_per_gas` for L2 block range [min(newest_block - block_count + 1, 0),
+    /// newest_block] in descending order of L2 block numbers.
     pub async fn get_fee_history(
         &mut self,
         newest_block: L2BlockNumber,

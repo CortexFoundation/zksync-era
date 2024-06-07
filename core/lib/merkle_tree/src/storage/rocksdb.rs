@@ -59,17 +59,17 @@ type LocalProfiledOperation = RefCell<Option<Arc<ProfiledOperation>>>;
 ///
 /// The wrapper is cloneable, which works by wrapping the underlying RocksDB in an [`Arc`].
 /// Thus, it is technically possible to run several [`MerkleTree`]s or [`MerkleTreePruner`]s
-/// for the same RocksDB instance in parallel, but this will most probably lead to unexpected results.
-/// The intended usage of cloning is to have no more than one component of each kind modifying RocksDB
-/// (i.e., no more than one `MerkleTree` and no more than one `MerkleTreePruner`).
+/// for the same RocksDB instance in parallel, but this will most probably lead to unexpected
+/// results. The intended usage of cloning is to have no more than one component of each kind
+/// modifying RocksDB (i.e., no more than one `MerkleTree` and no more than one `MerkleTreePruner`).
 ///
 /// [`MerkleTree`]: crate::MerkleTree
 /// [`MerkleTreePruner`]: crate::MerkleTreePruner
 #[derive(Debug, Clone)]
 pub struct RocksDBWrapper {
     db: RocksDB<MerkleTreeColumnFamily>,
-    // We want to scope profiled operations both by the thread and by DB instance, hence the use of `ThreadLocal`
-    // struct (as opposed to `thread_local!` vars).
+    // We want to scope profiled operations both by the thread and by DB instance, hence the use of
+    // `ThreadLocal` struct (as opposed to `thread_local!` vars).
     profiled_operation: Arc<ThreadLocal<LocalProfiledOperation>>,
     multi_get_chunk_size: usize,
 }
@@ -113,7 +113,8 @@ impl RocksDBWrapper {
     }
 
     fn raw_nodes(&self, keys: &NodeKeys) -> Vec<Option<DBPinnableSlice<'_>>> {
-        // Propagate the currently profiled operation to rayon threads used in the parallel iterator below.
+        // Propagate the currently profiled operation to rayon threads used in the parallel iterator
+        // below.
         let profiled_operation = self
             .profiled_operation
             .get()

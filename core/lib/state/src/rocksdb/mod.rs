@@ -130,8 +130,8 @@ impl From<anyhow::Error> for RocksdbSyncError {
 pub struct RocksdbStorageOptions {
     /// Size of the RocksDB block cache in bytes. The default value is 128 MiB.
     pub block_cache_capacity: usize,
-    /// Number of open files that can be simultaneously opened by RocksDB. Default is `None`, for no limit.
-    /// Can be used to restrict memory usage of RocksDB.
+    /// Number of open files that can be simultaneously opened by RocksDB. Default is `None`, for
+    /// no limit. Can be used to restrict memory usage of RocksDB.
     pub max_open_files: Option<NonZeroU32>,
 }
 
@@ -164,8 +164,8 @@ pub struct RocksdbStorage {
     listener: RocksdbStorageEventListener,
 }
 
-/// Builder of [`RocksdbStorage`]. The storage data is inaccessible until the storage is [`Self::synchronize()`]d
-/// with Postgres.
+/// Builder of [`RocksdbStorage`]. The storage data is inaccessible until the storage is
+/// [`Self::synchronize()`]d with Postgres.
 #[derive(Debug)]
 pub struct RocksdbStorageBuilder(RocksdbStorage);
 
@@ -189,7 +189,8 @@ impl RocksdbStorageBuilder {
         self.0.l1_batch_number().await
     }
 
-    /// Ensures that the storage is ready to process L1 batches (i.e., has completed snapshot recovery).
+    /// Ensures that the storage is ready to process L1 batches (i.e., has completed snapshot
+    /// recovery).
     ///
     /// # Return value
     ///
@@ -226,8 +227,8 @@ impl RocksdbStorageBuilder {
     ///
     /// # Errors
     ///
-    /// - Errors if the local L1 batch number is greater than the last sealed L1 batch number
-    ///   in Postgres.
+    /// - Errors if the local L1 batch number is greater than the last sealed L1 batch number in
+    ///   Postgres.
     pub async fn synchronize(
         self,
         storage: &mut Connection<'_, Core>,
@@ -265,8 +266,8 @@ impl RocksdbStorage {
     const ENUM_INDEX_MIGRATION_CURSOR: &'static [u8] = b"enum_index_migration_cursor";
 
     /// Desired size of log chunks loaded from Postgres during snapshot recovery.
-    /// This is intentionally not configurable because chunks must be the same for the entire recovery
-    /// (i.e., not changed after a node restart).
+    /// This is intentionally not configurable because chunks must be the same for the entire
+    /// recovery (i.e., not changed after a node restart).
     const DESIRED_LOG_CHUNK_SIZE: u64 = 200_000;
 
     #[allow(dead_code)]
@@ -632,8 +633,8 @@ impl ReadStorage for RocksdbStorage {
     }
 
     fn get_enumeration_index(&mut self, key: &StorageKey) -> Option<u64> {
-        // Can safely unwrap here since it indicates that the migration has not yet ended and boojum will
-        // only be deployed when the migration is finished.
+        // Can safely unwrap here since it indicates that the migration has not yet ended and boojum
+        // will only be deployed when the migration is finished.
         Self::read_state_value(&self.db, key.hashed_key())
             .map(|state_value| state_value.enum_index.unwrap())
     }

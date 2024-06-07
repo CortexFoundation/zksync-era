@@ -44,7 +44,8 @@ impl RestApi {
         Ok(())
     }
 
-    /// Add a contract verification job to the queue if the requested contract wasn't previously verified.
+    /// Add a contract verification job to the queue if the requested contract wasn't previously
+    /// verified.
     #[tracing::instrument(skip(self_, request))]
     pub async fn verification(
         State(self_): State<Arc<Self>>,

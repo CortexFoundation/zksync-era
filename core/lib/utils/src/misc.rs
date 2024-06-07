@@ -1,11 +1,7 @@
 use zksync_basic_types::{web3::keccak256, H256, U256};
 
 pub const fn ceil_div(a: u64, b: u64) -> u64 {
-    if a == 0 {
-        a
-    } else {
-        (a - 1) / b + 1
-    }
+    if a == 0 { a } else { (a - 1) / b + 1 }
 }
 
 pub fn ceil_div_u256(a: U256, b: U256) -> U256 {

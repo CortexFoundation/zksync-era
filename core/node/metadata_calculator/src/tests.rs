@@ -257,7 +257,8 @@ async fn running_metadata_calculator_with_additional_blocks() {
         .unwrap()
         .unwrap();
 
-    // Switch to the full tree. It should pick up from the same spot and result in the same tree root hash.
+    // Switch to the full tree. It should pick up from the same spot and result in the same tree
+    // root hash.
     let (calculator, _) = setup_calculator(temp_dir.path(), pool).await;
     let root_hash_for_full_tree = run_calculator(calculator).await;
     assert_eq!(root_hash_for_full_tree, updated_root_hash);
@@ -668,9 +669,11 @@ async fn deduplication_works_as_expected() {
         .await
         .unwrap();
     assert_eq!(initial_writes.len(), hashed_keys.len());
-    assert!(initial_writes
-        .values()
-        .all(|&(batch, _)| batch == L1BatchNumber(1)));
+    assert!(
+        initial_writes
+            .values()
+            .all(|&(batch, _)| batch == L1BatchNumber(1))
+    );
 
     let mut new_logs = gen_storage_logs(120..140, 1).pop().unwrap();
     let new_hashed_keys: Vec<_> = new_logs.iter().map(|log| log.key.hashed_key()).collect();
@@ -688,9 +691,11 @@ async fn deduplication_works_as_expected() {
         .await
         .unwrap();
     assert_eq!(initial_writes.len(), hashed_keys.len());
-    assert!(initial_writes
-        .values()
-        .all(|&(batch, _)| batch == L1BatchNumber(1)));
+    assert!(
+        initial_writes
+            .values()
+            .all(|&(batch, _)| batch == L1BatchNumber(1))
+    );
 
     let initial_writes = storage
         .storage_logs_dal()
@@ -698,9 +703,11 @@ async fn deduplication_works_as_expected() {
         .await
         .unwrap();
     assert_eq!(initial_writes.len(), new_hashed_keys.len());
-    assert!(initial_writes
-        .values()
-        .all(|&(batch, _)| batch == L1BatchNumber(2)));
+    assert!(
+        initial_writes
+            .values()
+            .all(|&(batch, _)| batch == L1BatchNumber(2))
+    );
 
     let mut no_op_logs = gen_storage_logs(140..160, 1).pop().unwrap();
     let no_op_hashed_keys: Vec<_> = no_op_logs.iter().map(|log| log.key.hashed_key()).collect();

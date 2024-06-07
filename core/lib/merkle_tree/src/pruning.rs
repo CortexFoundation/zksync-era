@@ -52,16 +52,16 @@ impl MerkleTreePrunerHandle {
     }
 }
 
-/// Component responsible for Merkle tree pruning, i.e. removing nodes not referenced by new versions
-/// of the tree. A pruner should be instantiated using a [`Clone`] of the tree database, possibly
-/// configured and then [`run()`](Self::run()) on its own thread. [`MerkleTreePrunerHandle`] provides
-/// a way to gracefully shut down the pruner.
+/// Component responsible for Merkle tree pruning, i.e. removing nodes not referenced by new
+/// versions of the tree. A pruner should be instantiated using a [`Clone`] of the tree database,
+/// possibly configured and then [`run()`](Self::run()) on its own thread.
+/// [`MerkleTreePrunerHandle`] provides a way to gracefully shut down the pruner.
 ///
 /// # Implementation details
 ///
 /// Pruning works by recording stale node keys each time the Merkle tree is updated; in RocksDB,
-/// stale keys are recorded in a separate column family. A pruner takes stale keys that were produced
-/// by a certain range of tree versions, and removes the corresponding nodes from the tree
+/// stale keys are recorded in a separate column family. A pruner takes stale keys that were
+/// produced by a certain range of tree versions, and removes the corresponding nodes from the tree
 /// (in RocksDB, this uses simple pointwise `delete_cf()` operations). The range of versions
 /// depends on pruning policies; for now, it's passed via the pruner handle.
 pub struct MerkleTreePruner<DB> {
@@ -88,7 +88,8 @@ impl<DB: PruneDatabase> MerkleTreePruner<DB> {
     ///
     /// # Return value
     ///
-    /// Returns the created pruner and a handle to it. *The pruner will be aborted when its handle is dropped.*
+    /// Returns the created pruner and a handle to it. *The pruner will be aborted when its handle
+    /// is dropped.*
     pub fn new(db: DB) -> (Self, MerkleTreePrunerHandle) {
         let (aborted_sender, aborted_receiver) = mpsc::channel();
         let target_retained_version = Arc::new(AtomicU64::new(0));
@@ -123,7 +124,8 @@ impl<DB: PruneDatabase> MerkleTreePruner<DB> {
         self.poll_interval = poll_interval;
     }
 
-    /// Returns max version number that can be safely pruned, so that there is at least one version present after pruning.
+    /// Returns max version number that can be safely pruned, so that there is at least one version
+    /// present after pruning.
     #[doc(hidden)] // Used in integration tests; logically private
     pub fn last_prunable_version(&self) -> Option<u64> {
         let manifest = self.db.manifest()?;

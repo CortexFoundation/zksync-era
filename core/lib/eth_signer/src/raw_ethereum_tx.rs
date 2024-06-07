@@ -1,13 +1,13 @@
 //! This file is a copy-paste from https://github.com/tomusdrw/rust-web3/blob/master/src/api/accounts.rs#L39
 //! We want to use our own Signer, which is independent of Transaction Sender.
 //! Unfortunately, it is impossible to use public interfaces from web3 library.
-//! The only thing which has been changed is optional parameters, which are necessary for signing transactions.
-//! In the library, they are filling using eth_node.
+//! The only thing which has been changed is optional parameters, which are necessary for signing
+//! transactions. In the library, they are filling using eth_node.
 //!
 //! I see no big difference between transaction and transaction parameters.
-//! We can refactor this code and adapt it for our needs better, but I prefer to reuse as much code as we can.
-//! In the case where it will be possible to use only the web3 library without copy-paste, the changes will be small and simple
-//! Link to @Deniallugo's PR to web3: https://github.com/tomusdrw/rust-web3/pull/630
+//! We can refactor this code and adapt it for our needs better, but I prefer to reuse as much code
+//! as we can. In the case where it will be possible to use only the web3 library without
+//! copy-paste, the changes will be small and simple Link to @Deniallugo's PR to web3: https://github.com/tomusdrw/rust-web3/pull/630
 
 use rlp::RlpStream;
 use zksync_types::{
@@ -111,7 +111,8 @@ impl Transaction {
         let list_size = if signature.is_some() { 11 } else { 8 };
         stream.begin_list(list_size);
 
-        // append `chain_id`. from EIP-2930: `chainId` is defined to be an integer of arbitrary size.
+        // append `chain_id`. from EIP-2930: `chainId` is defined to be an integer of arbitrary
+        // size.
         stream.append(&chain_id);
 
         self.rlp_append_legacy(&mut stream);
@@ -130,7 +131,8 @@ impl Transaction {
         let list_size = if signature.is_some() { 12 } else { 9 };
         stream.begin_list(list_size);
 
-        // append `chain_id`. from EIP-2930: `chainId` is defined to be an integer of arbitrary size.
+        // append `chain_id`. from EIP-2930: `chainId` is defined to be an integer of arbitrary
+        // size.
         stream.append(&chain_id);
 
         stream.append(&self.nonce);

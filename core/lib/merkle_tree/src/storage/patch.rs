@@ -424,7 +424,8 @@ impl WorkingPatchSet {
                     } else {
                         // We're at the root node level.
                         if matches!(operation, Operation::Insert) {
-                            // The root node is always replaced for inserts and is never replaced for updated.
+                            // The root node is always replaced for inserts and is never replaced
+                            // for updated.
                             if let Some(prev_version) = node.prev_version {
                                 stale_keys.push(nibbles.with_version(prev_version));
                             }
@@ -597,7 +598,8 @@ impl WorkingPatchSet {
                 Some(Node::Internal(node)) => {
                     let (next_nibble, child_ref) = node.last_child_ref();
                     nibbles = nibbles.push(next_nibble).unwrap();
-                    // ^ `unwrap()` is safe; there can be no internal nodes on the bottom-most tree level
+                    // ^ `unwrap()` is safe; there can be no internal nodes on the bottom-most tree
+                    // level
                     let child_key = nibbles.with_version(child_ref.version);
                     let child_node = db.tree_node(&child_key, child_ref.is_leaf).unwrap();
                     // ^ `unwrap()` is safe by construction
@@ -615,7 +617,8 @@ impl WorkingPatchSet {
     }
 
     /// Creates a Merkle proof for the specified `key`, which has given `parent_nibbles`
-    /// in this patch set. `root_nibble_count` specifies to which level the proof needs to be constructed.
+    /// in this patch set. `root_nibble_count` specifies to which level the proof needs to be
+    /// constructed.
     pub(crate) fn create_proof(
         &mut self,
         hasher: &mut HasherWithStats<'_>,

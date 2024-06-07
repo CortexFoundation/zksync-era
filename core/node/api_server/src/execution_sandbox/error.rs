@@ -22,7 +22,7 @@ pub(crate) enum SandboxExecutionError {
     #[error("Bootloader-based tx failed")]
     InnerTxError,
     #[error(
-    "Virtual machine entered unexpected state. Please contact developers and provide transaction details \
+        "Virtual machine entered unexpected state. Please contact developers and provide transaction details \
         that caused this error. Error description: {0}"
     )]
     UnexpectedVMBehavior(String),

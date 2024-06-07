@@ -1,5 +1,6 @@
 //! Testing harness for the batch executor.
-//! Contains helper functionality to initialize test context and perform tests without too much boilerplate.
+//! Contains helper functionality to initialize test context and perform tests without too much
+//! boilerplate.
 
 use std::{collections::HashMap, fmt::Debug, sync::Arc};
 
@@ -60,8 +61,9 @@ impl TestConfig {
     }
 }
 
-/// Tester represents an entity that can initialize the state and create batch executors over this storage.
-/// Important: `Tester` must be a *sole* owner of the `ConnectionPool`, since the test pool cannot be shared.
+/// Tester represents an entity that can initialize the state and create batch executors over this
+/// storage. Important: `Tester` must be a *sole* owner of the `ConnectionPool`, since the test pool
+/// cannot be shared.
 #[derive(Debug)]
 pub(super) struct Tester {
     fee_account: Address,
@@ -324,8 +326,8 @@ pub trait AccountLoadNextExecutable {
     /// Returns a valid `execute` transaction.
     /// Automatically increments nonce of the account.
     fn execute_with_gas_limit(&mut self, gas_limit: u32) -> Transaction;
-    /// Returns a transaction to the loadnext contract with custom gas limit and expected burned gas amount.
-    /// Increments the account nonce.
+    /// Returns a transaction to the loadnext contract with custom gas limit and expected burned gas
+    /// amount. Increments the account nonce.
     fn loadnext_custom_gas_call(
         &mut self,
         address: Address,
@@ -412,8 +414,8 @@ impl AccountLoadNextExecutable for Account {
         )
     }
 
-    /// Returns a transaction to the loadnext contract with custom gas limit and expected burned gas amount.
-    /// Increments the account nonce.
+    /// Returns a transaction to the loadnext contract with custom gas limit and expected burned gas
+    /// amount. Increments the account nonce.
     fn loadnext_custom_gas_call(
         &mut self,
         address: Address,
@@ -464,7 +466,8 @@ pub(super) struct StorageSnapshot {
 }
 
 impl StorageSnapshot {
-    /// Generates a new snapshot by executing the specified number of transactions, each in a separate L2 block.
+    /// Generates a new snapshot by executing the specified number of transactions, each in a
+    /// separate L2 block.
     pub async fn new(
         connection_pool: &ConnectionPool<Core>,
         alice: &mut Account,

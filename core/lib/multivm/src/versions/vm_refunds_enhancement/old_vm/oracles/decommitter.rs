@@ -21,8 +21,8 @@ use crate::vm_refunds_enhancement::old_vm::history_recorder::{
 pub struct DecommitterOracle<const B: bool, S, H: HistoryMode> {
     /// Pointer that enables to read contract bytecodes from the database.
     storage: StoragePtr<S>,
-    /// The cache of bytecodes that the bootloader "knows", but that are not necessarily in the database.
-    /// And it is also used as a database cache.
+    /// The cache of bytecodes that the bootloader "knows", but that are not necessarily in the
+    /// database. And it is also used as a database cache.
     pub known_bytecodes: HistoryRecorder<HashMap<U256, Vec<U256>>, H>,
     /// Stores pages of memory where certain code hashes have already been decommitted.
     /// It is expected that they all are present in the DB.
@@ -42,8 +42,8 @@ impl<S: ReadStorage, const B: bool, H: HistoryMode> DecommitterOracle<B, S, H> {
         }
     }
 
-    /// Gets the bytecode for a given hash (either from storage, or from 'known_bytecodes' that were populated by `populate` method).
-    /// Panics if bytecode doesn't exist.
+    /// Gets the bytecode for a given hash (either from storage, or from 'known_bytecodes' that were
+    /// populated by `populate` method). Panics if bytecode doesn't exist.
     pub fn get_bytecode(&mut self, hash: U256, timestamp: Timestamp) -> Vec<U256> {
         let entry = self.known_bytecodes.inner().get(&hash);
 

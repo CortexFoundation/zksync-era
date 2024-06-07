@@ -77,7 +77,8 @@ impl L2BlockSealProcess {
     }
 }
 
-/// An abstraction that represents l2 block seal sub-task that can be run in parallel with other sub-tasks.
+/// An abstraction that represents l2 block seal sub-task that can be run in parallel with other
+/// sub-tasks.
 #[async_trait::async_trait]
 pub trait L2BlockSealSubtask: Send + Sync + 'static {
     /// Returns sub-task name.

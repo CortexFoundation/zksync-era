@@ -9,7 +9,8 @@ pub struct FinishedL1Batch {
     pub block_tip_execution_result: VmExecutionResultAndLogs,
     /// State of the VM after the execution of the last transaction.
     pub final_execution_state: CurrentExecutionState,
-    /// Memory of the bootloader with all executed transactions. Could be none for old versions of the VM.
+    /// Memory of the bootloader with all executed transactions. Could be none for old versions of
+    /// the VM.
     pub final_bootloader_memory: Option<BootloaderMemory>,
     /// Pubdata to be published on L1. Could be none for old versions of the VM.
     pub pubdata_input: Option<Vec<u8>>,

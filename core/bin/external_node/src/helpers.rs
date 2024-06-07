@@ -197,8 +197,8 @@ impl ValidateChainIdsTask {
     }
 
     pub async fn run(self, mut stop_receiver: watch::Receiver<bool>) -> anyhow::Result<()> {
-        // Since check futures are fused, they are safe to poll after getting resolved; they will never resolve again,
-        // so we'll just wait for another check or a stop signal.
+        // Since check futures are fused, they are safe to poll after getting resolved; they will
+        // never resolve again, so we'll just wait for another check or a stop signal.
         let eth_client_check = Self::check_eth_client(self.eth_client, self.l1_chain_id).fuse();
         let main_node_l1_check =
             Self::check_l1_chain_using_main_node(self.main_node_client.clone(), self.l1_chain_id)

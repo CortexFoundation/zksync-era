@@ -9,20 +9,22 @@
 //!
 //! Importantly, a recovered tree is only *observably* identical to the original tree; it differs
 //! in (currently un-observable) node versions. In a recovered tree, all nodes will initially have
-//! the same version (the snapshot version), while in the original tree, node versions are distributed
-//! from 0 to the snapshot version (both inclusive).
+//! the same version (the snapshot version), while in the original tree, node versions are
+//! distributed from 0 to the snapshot version (both inclusive).
 //!
 //! Recovery process proceeds as follows:
 //!
-//! 1. Initialize a tree in the recovery mode. Until recovery is finished, the tree cannot be accessed
+//! 1. Initialize a tree in the recovery mode. Until recovery is finished, the tree cannot be
+//!    accessed
 //!   using ordinary [`MerkleTree`] APIs.
 //! 2. Update the tree from a snapshot, which [is fed to the tree](MerkleTreeRecovery::extend())
 //!   as [`RecoveryEntry`] chunks. Recovery entries must be ordered by increasing key.
-//! 3. Finalize recovery using [`MerkleTreeRecovery::finalize()`]. To check integrity, you may compare
+//! 3. Finalize recovery using [`MerkleTreeRecovery::finalize()`]. To check integrity, you may
+//!    compare
 //!   [`MerkleTreeRecovery::root_hash()`] to the reference value.
 //!
-//! The recovery process is tolerant to crashes and may be resumed from the middle. To find the latest
-//! recovered key, you may use [`MerkleTreeRecovery::last_processed_key()`].
+//! The recovery process is tolerant to crashes and may be resumed from the middle. To find the
+//! latest recovered key, you may use [`MerkleTreeRecovery::last_processed_key()`].
 //!
 //! `RecoveryEntry` chunks are not validated during recovery. They can be authenticated using
 //! [`TreeRangeDigest`](crate::TreeRangeDigest)s provided that the tree root hash is authenticated
@@ -31,9 +33,9 @@
 //! # Implementation details
 //!
 //! We require `RecoveryEntry` ordering to simplify tracking the recovery progress. It also makes
-//! node updates more efficient. Indeed, it suffices to load a leaf with the greatest key and its ancestors
-//! before extending the tree; these nodes are guaranteed to be the *only* DB reads necessary
-//! to insert new entries.
+//! node updates more efficient. Indeed, it suffices to load a leaf with the greatest key and its
+//! ancestors before extending the tree; these nodes are guaranteed to be the *only* DB reads
+//! necessary to insert new entries.
 
 use std::{collections::HashMap, time::Instant};
 
@@ -71,10 +73,10 @@ impl<DB: PruneDatabase, H: HashTree> MerkleTreeRecovery<DB, H> {
     ///
     /// # Errors
     ///
-    /// - Errors if the tree DB exists and it's not being recovered, or if it's being recovered
-    ///   for a different tree version.
-    /// - Errors if the hasher or basic tree parameters (e.g., the tree depth)
-    ///   do not match those of the tree loaded from the database.
+    /// - Errors if the tree DB exists and it's not being recovered, or if it's being recovered for
+    ///   a different tree version.
+    /// - Errors if the hasher or basic tree parameters (e.g., the tree depth) do not match those of
+    ///   the tree loaded from the database.
     pub fn with_hasher(mut db: DB, recovered_version: u64, hasher: H) -> anyhow::Result<Self> {
         let manifest = db.manifest();
         let mut manifest = if let Some(manifest) = manifest {
@@ -111,7 +113,8 @@ impl<DB: PruneDatabase, H: HashTree> MerkleTreeRecovery<DB, H> {
         })
     }
 
-    /// Updates custom tags for the tree using the provided closure. The update is atomic and unconditional.
+    /// Updates custom tags for the tree using the provided closure. The update is atomic and
+    /// unconditional.
     ///
     /// # Errors
     ///

@@ -101,8 +101,8 @@ impl HandleOrError {
 }
 
 /// A public interface for interaction with the `BatchExecutor`.
-/// `BatchExecutorHandle` is stored in the state keeper and is used to invoke or rollback transactions, and also seal
-/// the batches.
+/// `BatchExecutorHandle` is stored in the state keeper and is used to invoke or rollback
+/// transactions, and also seal the batches.
 #[derive(Debug)]
 pub struct BatchExecutorHandle {
     handle: HandleOrError,
@@ -163,8 +163,8 @@ impl BatchExecutorHandle {
     }
 
     pub async fn start_next_l2_block(&mut self, env: L2BlockEnv) -> anyhow::Result<()> {
-        // While we don't get anything from the channel, it's useful to have it as a confirmation that the operation
-        // indeed has been processed.
+        // While we don't get anything from the channel, it's useful to have it as a confirmation
+        // that the operation indeed has been processed.
         let (response_sender, response_receiver) = oneshot::channel();
         let send_failed = self
             .commands
@@ -186,8 +186,8 @@ impl BatchExecutorHandle {
     }
 
     pub async fn rollback_last_tx(&mut self) -> anyhow::Result<()> {
-        // While we don't get anything from the channel, it's useful to have it as a confirmation that the operation
-        // indeed has been processed.
+        // While we don't get anything from the channel, it's useful to have it as a confirmation
+        // that the operation indeed has been processed.
         let (response_sender, response_receiver) = oneshot::channel();
         let send_failed = self
             .commands

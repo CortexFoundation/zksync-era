@@ -164,7 +164,8 @@ impl ContractVerificationDal<'_, '_> {
         Ok(result)
     }
 
-    /// Updates the verification request status and inserts the verification info upon successful verification.
+    /// Updates the verification request status and inserts the verification info upon successful
+    /// verification.
     pub async fn save_verification_info(
         &mut self,
         verification_info: VerificationInfo,
@@ -325,7 +326,8 @@ impl ContractVerificationDal<'_, '_> {
         let calldata = match row.contract_address {
             Some(contract_address) if contract_address == CONTRACT_DEPLOYER_ADDRESS.0.to_vec() => {
                 // `row.contract_address` and `row.data` are either both `None` or both `Some(_)`.
-                // In this arm it's checked that `row.contract_address` is `Some(_)`, so it's safe to unwrap `row.data`.
+                // In this arm it's checked that `row.contract_address` is `Some(_)`, so it's safe
+                // to unwrap `row.data`.
                 let data: serde_json::Value = row.data.context("data missing")?;
                 let calldata_str: String = serde_json::from_value(
                     data.get("calldata").context("calldata missing")?.clone(),

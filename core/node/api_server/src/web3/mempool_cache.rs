@@ -9,8 +9,8 @@ use zksync_types::H256;
 use super::metrics::MEMPOOL_CACHE_METRICS;
 
 /// Used for `eth_newPendingTransactionFilter` requests on API servers
-/// Stores all transactions accepted by the mempool and provides a way to query all that are newer than a given timestamp.
-/// Updates the cache based on interval passed in the constructor
+/// Stores all transactions accepted by the mempool and provides a way to query all that are newer
+/// than a given timestamp. Updates the cache based on interval passed in the constructor
 #[derive(Debug, Clone)]
 pub struct MempoolCache(Arc<RwLock<SequentialCache<NaiveDateTime, H256>>>);
 
@@ -48,7 +48,8 @@ impl MempoolCache {
     }
 }
 
-/// Task updating [`MempoolCache`]. Should be spawned as a Tokio task (exactly one task for the cache).
+/// Task updating [`MempoolCache`]. Should be spawned as a Tokio task (exactly one task for the
+/// cache).
 #[derive(Debug)]
 pub struct MempoolCacheUpdateTask {
     cache: Arc<RwLock<SequentialCache<NaiveDateTime, H256>>>,
@@ -65,7 +66,8 @@ impl MempoolCacheUpdateTask {
             }
 
             // Get the timestamp that will be used as the lower bound for the next update
-            // If cache is non-empty - this is the last tx time, otherwise it's `INITIAL_LOOKBEHIND` seconds ago
+            // If cache is non-empty - this is the last tx time, otherwise it's `INITIAL_LOOKBEHIND`
+            // seconds ago
             let last_timestamp = self
                 .cache
                 .read()

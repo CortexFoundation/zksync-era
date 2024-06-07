@@ -122,8 +122,8 @@ impl<S> ResultTracer<S> {
 
 fn current_frame_is_bootloader(local_state: &VmLocalState) -> bool {
     // The current frame is bootloader if the call stack depth is 1.
-    // Some of the near calls inside the bootloader can be out of gas, which is totally normal behavior
-    // and it shouldn't result in `is_bootloader_out_of_gas` becoming true.
+    // Some of the near calls inside the bootloader can be out of gas, which is totally normal
+    // behavior and it shouldn't result in `is_bootloader_out_of_gas` becoming true.
     local_state.callstack.inner.len() == 1
 }
 
@@ -134,7 +134,8 @@ impl<S, H: HistoryMode> DynTracer<S, SimpleMemory<H>> for ResultTracer<S> {
         data: AfterDecodingData,
         _memory: &SimpleMemory<H>,
     ) {
-        // We should check not only for the `NOT_ENOUGH_ERGS` flag but if the current frame is bootloader too.
+        // We should check not only for the `NOT_ENOUGH_ERGS` flag but if the current frame is
+        // bootloader too.
         if current_frame_is_bootloader(state.vm_local_state)
             && data
                 .error_flags_accumulated
@@ -162,7 +163,8 @@ impl<S, H: HistoryMode> DynTracer<S, SimpleMemory<H>> for ResultTracer<S> {
                 .unwrap_or_default();
             if success == U256::zero() {
                 self.result = Some(Result::Error {
-                    // Tx has reverted, without bootloader error, we can simply parse the revert reason
+                    // Tx has reverted, without bootloader error, we can simply parse the revert
+                    // reason
                     error_reason: (VmRevertReason::from(returndata.as_slice())),
                 });
             } else {
@@ -243,8 +245,9 @@ impl<S: WriteStorage> ResultTracer<S> {
                 });
             }
             VmExecutionResult::Revert(output) => {
-                // Unlike `VmHook::ExecutionResult`,  vm has completely finished and returned not only the revert reason,
-                // but with bytecode, which represents the type of error from the bootloader side
+                // Unlike `VmHook::ExecutionResult`,  vm has completely finished and returned not
+                // only the revert reason, but with bytecode, which represents the
+                // type of error from the bootloader side
                 let revert_reason = TxRevertReason::parse_error(&output);
 
                 match revert_reason {

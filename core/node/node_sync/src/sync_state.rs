@@ -16,10 +16,11 @@ use zksync_web3_decl::{
 
 /// `SyncState` is a structure that holds the state of the syncing process.
 /// The intended use case is to signalize to Web3 API whether the node is fully synced.
-/// Data inside is expected to be updated by both `MainNodeFetcher` (on last block available on the main node)
-/// and `ExternalIO` (on latest sealed L2 block).
+/// Data inside is expected to be updated by both `MainNodeFetcher` (on last block available on the
+/// main node) and `ExternalIO` (on latest sealed L2 block).
 ///
-/// This structure operates on L2 blocks rather than L1 batches, since this is the default unit used in the web3 API.
+/// This structure operates on L2 blocks rather than L1 batches, since this is the default unit used
+/// in the web3 API.
 #[derive(Debug, Clone)]
 pub struct SyncState(Arc<watch::Sender<SyncStateInner>>);
 
@@ -271,7 +272,8 @@ mod tests {
         sync_state.set_local_block(L2BlockNumber(2));
         // ^ should not panic, as we defer the situation to the re-org detector.
 
-        // At the same time, we should consider ourselves synced unless `ReorgDetector` tells us otherwise.
+        // At the same time, we should consider ourselves synced unless `ReorgDetector` tells us
+        // otherwise.
         assert!(sync_state.is_synced());
     }
 
@@ -283,7 +285,8 @@ mod tests {
         sync_state.set_main_node_block(L2BlockNumber(1));
         // ^ should not panic, as we defer the situation to the re-org detector.
 
-        // At the same time, we should consider ourselves synced unless `ReorgDetector` tells us otherwise.
+        // At the same time, we should consider ourselves synced unless `ReorgDetector` tells us
+        // otherwise.
         assert!(sync_state.is_synced());
     }
 }

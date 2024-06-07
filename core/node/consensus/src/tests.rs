@@ -106,39 +106,37 @@ async fn test_validator(from_snapshot: bool) {
 
         tracing::info!("Populate storage with a bunch of blocks.");
         sk.push_random_blocks(rng, 5).await;
-        pool
-            .wait_for_payload(ctx, sk.last_block())
+        pool.wait_for_payload(ctx, sk.last_block())
             .await
             .context("sk.wait_for_payload(<1st phase>)")?;
 
-        tracing::info!("Restart consensus actor a couple times, making it process a bunch of blocks each time.");
+        tracing::info!(
+            "Restart consensus actor a couple times, making it process a bunch of blocks each time."
+        );
         for iteration in 0..3 {
             tracing::info!("iteration {iteration}");
             scope::run!(ctx, |ctx, s| async {
                 tracing::info!("Start consensus actor");
                 // In the first iteration it will initialize genesis.
-                let (cfg,secrets) = testonly::config(&cfgs[0]);
+                let (cfg, secrets) = testonly::config(&cfgs[0]);
                 s.spawn_bg(run_main_node(ctx, cfg, secrets, pool.clone()));
 
                 tracing::info!("Generate couple more blocks and wait for consensus to catch up.");
                 sk.push_random_blocks(rng, 3).await;
-                pool
-                    .wait_for_certificate(ctx, sk.last_block())
+                pool.wait_for_certificate(ctx, sk.last_block())
                     .await
                     .context("wait_for_certificate(<2nd phase>)")?;
 
                 tracing::info!("Synchronously produce blocks one by one, and wait for consensus.");
                 for _ in 0..2 {
                     sk.push_random_blocks(rng, 1).await;
-                    pool
-                        .wait_for_certificate(ctx, sk.last_block())
+                    pool.wait_for_certificate(ctx, sk.last_block())
                         .await
                         .context("wait_for_certificate(<3rd phase>)")?;
                 }
 
                 tracing::info!("Verify all certificates");
-                pool
-                    .wait_for_certificates_and_verify(ctx, sk.last_block())
+                pool.wait_for_certificates_and_verify(ctx, sk.last_block())
                     .await
                     .context("wait_for_certificates_and_verify()")?;
                 Ok(())

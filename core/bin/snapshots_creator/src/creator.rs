@@ -203,8 +203,8 @@ impl SnapshotCreator {
         );
         let l1_batch_number = sealed_l1_batch_number - 1;
 
-        // Sanity check: the selected L1 batch should have Merkle tree data; otherwise, it could be impossible
-        // to recover from the generated snapshot.
+        // Sanity check: the selected L1 batch should have Merkle tree data; otherwise, it could be
+        // impossible to recover from the generated snapshot.
         conn.blocks_dal()
             .get_l1_batch_tree_data(l1_batch_number)
             .await?
@@ -229,7 +229,8 @@ impl SnapshotCreator {
             .get_distinct_storage_logs_keys_count(l1_batch_number)
             .await?;
         let chunk_size = config.storage_logs_chunk_size;
-        // We force the minimum number of chunks to avoid situations where only one chunk is created in tests.
+        // We force the minimum number of chunks to avoid situations where only one chunk is created
+        // in tests.
         let chunk_count = distinct_storage_logs_keys_count
             .div_ceil(chunk_size)
             .max(min_chunk_count);
@@ -288,7 +289,8 @@ impl SnapshotCreator {
             .load_or_initialize_snapshot_progress(&config, min_chunk_count)
             .await?
         else {
-            // No snapshot creation is necessary; a snapshot for the current L1 batch is already created
+            // No snapshot creation is necessary; a snapshot for the current L1 batch is already
+            // created
             return Ok(());
         };
 

@@ -74,11 +74,12 @@ impl L1BatchPublishCriterion for NumberCriterion {
 #[derive(Debug)]
 pub struct TimestampDeadlineCriterion {
     pub op: AggregatedActionType,
-    /// Maximum L1 batch age in seconds. Once reached, we pack and publish all the available L1 batches.
+    /// Maximum L1 batch age in seconds. Once reached, we pack and publish all the available L1
+    /// batches.
     pub deadline_seconds: u64,
-    /// If `max_allowed_lag` is `Some(_)` and last batch sent to L1 is more than `max_allowed_lag` behind,
-    /// it means that sender is lagging significantly and we shouldn't apply this criteria to use all capacity
-    /// and avoid packing small ranges.
+    /// If `max_allowed_lag` is `Some(_)` and last batch sent to L1 is more than `max_allowed_lag`
+    /// behind, it means that sender is lagging significantly and we shouldn't apply this
+    /// criteria to use all capacity and avoid packing small ranges.
     pub max_allowed_lag: Option<usize>,
 }
 

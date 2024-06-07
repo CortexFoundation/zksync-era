@@ -208,7 +208,9 @@ impl FriProverGroupConfig {
                 anyhow::bail!("Circuit IDs: {duplicates:?} should be unique for round {round}.",);
             }
             if !not_in_range.is_empty() {
-                anyhow::bail!("Aggregation round {round} should only contain {expected_circuits_description}. Ids out of range: {not_in_range:?}");
+                anyhow::bail!(
+                    "Aggregation round {round} should only contain {expected_circuits_description}. Ids out of range: {not_in_range:?}"
+                );
             }
         }
         Ok(())

@@ -37,10 +37,11 @@ fn test_get_used_contracts() {
     let result = vm.vm.execute(VmExecutionMode::OneTx);
     assert!(!result.result.is_failed());
 
-    assert!(vm
-        .vm
-        .get_used_contracts()
-        .contains(&h256_to_u256(tx.bytecode_hash)));
+    assert!(
+        vm.vm
+            .get_used_contracts()
+            .contains(&h256_to_u256(tx.bytecode_hash))
+    );
 
     // Note: `Default_AA` will be in the list of used contracts if L2 tx is used
     assert_eq!(
@@ -84,9 +85,11 @@ fn test_get_used_contracts() {
     for factory_dep in tx2.execute.factory_deps.unwrap() {
         let hash = hash_bytecode(&factory_dep);
         let hash_to_u256 = h256_to_u256(hash);
-        assert!(known_bytecodes_without_aa_code(&vm.vm)
-            .keys()
-            .contains(&hash_to_u256));
+        assert!(
+            known_bytecodes_without_aa_code(&vm.vm)
+                .keys()
+                .contains(&hash_to_u256)
+        );
         assert!(!vm.vm.get_used_contracts().contains(&hash_to_u256));
     }
 }

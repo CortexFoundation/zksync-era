@@ -523,7 +523,8 @@ impl storage::ReplicaStore for Store {
 
 #[async_trait::async_trait]
 impl PayloadManager for Store {
-    /// Currently (for the main node) proposing is implemented as just converting an L2 block from db (without a cert) into a payload.
+    /// Currently (for the main node) proposing is implemented as just converting an L2 block from
+    /// db (without a cert) into a payload.
     async fn propose(
         &self,
         ctx: &ctx::Ctx,
@@ -545,11 +546,11 @@ impl PayloadManager for Store {
     /// Verify that `payload` is a correct proposal for the block `block_number`.
     /// * for the main node it checks whether the same block is already present in storage.
     /// * for the EN validator
-    ///   * if the block with this number was already applied, it checks that it was the
-    ///     same block. It should always be true, because main node is the only proposer and
-    ///     to propose a different block a hard fork is needed.
-    ///   * otherwise, EN attempts to apply the received block. If the block was incorrect
-    ///     the statekeeper is expected to crash the whole EN. Otherwise OK is returned.
+    ///   * if the block with this number was already applied, it checks that it was the same block.
+    ///     It should always be true, because main node is the only proposer and to propose a
+    ///     different block a hard fork is needed.
+    ///   * otherwise, EN attempts to apply the received block. If the block was incorrect the
+    ///     statekeeper is expected to crash the whole EN. Otherwise OK is returned.
     async fn verify(
         &self,
         ctx: &ctx::Ctx,

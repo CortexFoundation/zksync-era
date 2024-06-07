@@ -1,6 +1,7 @@
-//! Internal types, mostly related to Merkle tree nodes. Note that because of the public `Database` trait,
-//! some of these types are declared as public and can be even exported using the `unstable` module.
-//! Still, logically these types are private, so adding them to new public APIs etc. is a logical error.
+//! Internal types, mostly related to Merkle tree nodes. Note that because of the public `Database`
+//! trait, some of these types are declared as public and can be even exported using the `unstable`
+//! module. Still, logically these types are private, so adding them to new public APIs etc. is a
+//! logical error.
 
 use std::{collections::HashMap, fmt, num::NonZeroU64};
 

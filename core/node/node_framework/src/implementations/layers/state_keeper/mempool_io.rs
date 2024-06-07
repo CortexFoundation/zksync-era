@@ -82,7 +82,8 @@ impl WiringLayer for MempoolIOLayer {
         let master_pool = context.get_resource::<PoolResource<MasterPool>>().await?;
 
         // Create L2 block sealer task and output handler.
-        // L2 Block sealing process is parallelized, so we have to provide enough pooled connections.
+        // L2 Block sealing process is parallelized, so we have to provide enough pooled
+        // connections.
         let persistence_pool = master_pool
             .get_custom(L2BlockSealProcess::subtasks_len())
             .await

@@ -128,8 +128,8 @@ pub fn create_l2_transaction(fee_per_gas: u64, gas_per_pubdata: u64) -> L2Tx {
     )
     .unwrap();
     // Input means all transaction data (NOT calldata, but all tx fields) that came from the API.
-    // This input will be used for the derivation of the tx hash, so put some random to it to be sure
-    // that the transaction hash is unique.
+    // This input will be used for the derivation of the tx hash, so put some random to it to be
+    // sure that the transaction hash is unique.
     tx.set_input(H256::random().0.to_vec(), H256::random());
     tx
 }

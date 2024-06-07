@@ -315,12 +315,15 @@ impl TransactionsDal<'_, '_> {
         // from the query below, to indicate what actually happened:
         // 1) transaction is added
         // 2) transaction is replaced
-        // 3) WHERE clause conditions for DO UPDATE block were not met, so the transaction can't be replaced
-        // the subquery in RETURNING clause looks into pre-UPDATE state of the table. So if the subquery will return NULL
-        // transaction is fresh and was added to db(the second condition of RETURNING clause checks it).
-        // Otherwise, if the subquery won't return NULL it means that there is already tx with such nonce and `initiator_address` in DB
+        // 3) WHERE clause conditions for DO UPDATE block were not met, so the transaction can't be
+        //    replaced
+        // the subquery in RETURNING clause looks into pre-UPDATE state of the table. So if the
+        // subquery will return NULL transaction is fresh and was added to db(the second
+        // condition of RETURNING clause checks it). Otherwise, if the subquery won't return
+        // NULL it means that there is already tx with such nonce and `initiator_address` in DB
         // and we can replace it WHERE clause conditions are met.
-        // It is worth mentioning that if WHERE clause conditions are not met, None will be returned.
+        // It is worth mentioning that if WHERE clause conditions are not met, None will be
+        // returned.
         let query_result = sqlx::query!(
             r#"
             INSERT INTO
@@ -443,8 +446,9 @@ impl TransactionsDal<'_, '_> {
                 // We assume that if there already exists some transaction with some tx hash
                 // another tx with the same tx hash is supposed to have the same data
                 // In this case we identify it as Duplicate
-                // Note, this error can happen because of the race condition (tx can be taken by several
-                // API servers, that simultaneously start execute it and try to inserted to DB)
+                // Note, this error can happen because of the race condition (tx can be taken by
+                // several API servers, that simultaneously start execute it and try
+                // to inserted to DB)
                 if let sqlx::Error::Database(error) = err.inner() {
                     if let Some(constraint) = error.constraint() {
                         if constraint == "transactions_pkey" {
@@ -528,7 +532,8 @@ impl TransactionsDal<'_, '_> {
         }
 
         if insert_txs {
-            // There can be transactions in the DB in case of block rollback or if the DB was restored from a dump.
+            // There can be transactions in the DB in case of block rollback or if the DB was
+            // restored from a dump.
             let tx_hashes: Vec<_> = transactions.iter().map(|tx| tx.hash.as_bytes()).collect();
             sqlx::query!(
                 r#"
@@ -562,7 +567,8 @@ impl TransactionsDal<'_, '_> {
                 .await?;
             }
 
-            // Different transaction types have different sets of fields to insert so we handle them separately.
+            // Different transaction types have different sets of fields to insert so we handle them
+            // separately.
             transaction
                 .transactions_dal()
                 .insert_executed_l2_transactions(
@@ -580,7 +586,8 @@ impl TransactionsDal<'_, '_> {
                 .insert_executed_upgrade_transactions(l2_block_number, transactions)
                 .await?;
         } else {
-            // Different transaction types have different sets of fields to update so we handle them separately.
+            // Different transaction types have different sets of fields to update so we handle them
+            // separately.
             transaction
                 .transactions_dal()
                 .update_executed_l2_transactions(
@@ -936,7 +943,8 @@ impl TransactionsDal<'_, '_> {
         // Due to the current tx replacement model, it's possible that tx has been replaced,
         // but the original was executed in memory,
         // so we have to update all fields for tx from fields stored in memory.
-        // Note, that transactions are updated in order of their hashes to avoid deadlocks with other UPDATE queries.
+        // Note, that transactions are updated in order of their hashes to avoid deadlocks with
+        // other UPDATE queries.
         let query = sqlx::query!(
             r#"
             UPDATE transactions
@@ -1604,8 +1612,8 @@ impl TransactionsDal<'_, '_> {
         transaction_hash: H256,
         error: &str,
     ) -> DalResult<()> {
-        // If the rejected tx has been replaced, it means that this tx hash does not exist in the database
-        // and we will update nothing.
+        // If the rejected tx has been replaced, it means that this tx hash does not exist in the
+        // database and we will update nothing.
         // These txs don't affect the state, so we can just easily skip this update.
         sqlx::query!(
             r#"
@@ -1691,8 +1699,8 @@ impl TransactionsDal<'_, '_> {
         Ok(rows.len())
     }
 
-    /// Fetches new updates for mempool. Returns new transactions and current nonces for related accounts;
-    /// the latter are only used to bootstrap mempool for given account.
+    /// Fetches new updates for mempool. Returns new transactions and current nonces for related
+    /// accounts; the latter are only used to bootstrap mempool for given account.
     pub async fn sync_mempool(
         &mut self,
         stashed_accounts: &[Address],
@@ -1735,7 +1743,8 @@ impl TransactionsDal<'_, '_> {
         .execute(self.storage)
         .await?;
 
-        // Note, that transactions are updated in order of their hashes to avoid deadlocks with other UPDATE queries.
+        // Note, that transactions are updated in order of their hashes to avoid deadlocks with
+        // other UPDATE queries.
         let transactions = sqlx::query_as!(
             StorageTransaction,
             r#"
@@ -1856,7 +1865,8 @@ impl TransactionsDal<'_, '_> {
     }
 
     /// Returns the next ID after the ID of the last sealed priority operation.
-    /// Doesn't work if node was recovered from snapshot because transaction history is not recovered.
+    /// Doesn't work if node was recovered from snapshot because transaction history is not
+    /// recovered.
     pub async fn next_priority_id(&mut self) -> PriorityOpId {
         {
             sqlx::query!(
@@ -2058,8 +2068,8 @@ impl TransactionsDal<'_, '_> {
             let prev_block_hash = match prev_l2_block_hashes.get(&prev_l2_block_number) {
                 Some(hash) => *hash,
                 None => {
-                    // Can occur after snapshot recovery; the first previous L2 block may not be present
-                    // in the storage.
+                    // Can occur after snapshot recovery; the first previous L2 block may not be
+                    // present in the storage.
                     let row = sqlx::query!(
                         r#"
                         SELECT

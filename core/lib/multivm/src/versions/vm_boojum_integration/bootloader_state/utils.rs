@@ -95,8 +95,8 @@ pub(crate) fn apply_l2_block(
     txs_index: usize,
 ) {
     // Since L2 block information starts from the `TX_OPERATOR_L2_BLOCK_INFO_OFFSET` and each
-    // L2 block info takes `TX_OPERATOR_SLOTS_PER_L2_BLOCK_INFO slots`, the position where the L2 block info
-    // for this transaction needs to be written is:
+    // L2 block info takes `TX_OPERATOR_SLOTS_PER_L2_BLOCK_INFO slots`, the position where the L2
+    // block info for this transaction needs to be written is:
 
     let block_position =
         TX_OPERATOR_L2_BLOCK_INFO_OFFSET + txs_index * TX_OPERATOR_SLOTS_PER_L2_BLOCK_INFO;
@@ -151,9 +151,9 @@ pub(crate) fn apply_pubdata_to_memory(
 ///
 /// # Current layout
 ///
-/// - 0 byte (MSB): server-side tx execution mode
-///     In the server, we may want to execute different parts of the transaction in the different context
-///     For example, when checking validity, we don't want to actually execute transaction and have side effects.
+/// - 0 byte (MSB): server-side tx execution mode In the server, we may want to execute different
+///   parts of the transaction in the different context For example, when checking validity, we
+///   don't want to actually execute transaction and have side effects.
 ///
 ///     Possible values:
 ///     - `0x00`: validate & execute (normal mode)

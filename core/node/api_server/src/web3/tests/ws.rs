@@ -118,7 +118,8 @@ async fn notifiers_start_after_snapshot_recovery() {
         subscribe_logic.spawn_notifiers(pool.clone(), POLL_INTERVAL, stop_receiver);
     assert!(!notifier_handles.is_empty());
 
-    // Wait a little doing nothing and check that notifier tasks are still active (i.e., have not panicked).
+    // Wait a little doing nothing and check that notifier tasks are still active (i.e., have not
+    // panicked).
     tokio::time::sleep(POLL_INTERVAL).await;
     for handle in &notifier_handles {
         assert!(!handle.is_finished());
@@ -148,7 +149,8 @@ async fn notifiers_start_after_snapshot_recovery() {
 
 #[async_trait]
 trait WsTest: Send + Sync {
-    /// Prepares the storage before the server is started. The default implementation performs genesis.
+    /// Prepares the storage before the server is started. The default implementation performs
+    /// genesis.
     fn storage_initialization(&self) -> StorageInitialization {
         StorageInitialization::Genesis
     }

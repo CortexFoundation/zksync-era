@@ -494,10 +494,12 @@ fn tx_into_log(tx: L1Tx) -> Log {
 
     Log {
         address: Address::repeat_byte(0x1),
-        topics: vec![hyperchain_contract()
-            .event("NewPriorityRequest")
-            .expect("NewPriorityRequest event is missing in abi")
-            .signature()],
+        topics: vec![
+            hyperchain_contract()
+                .event("NewPriorityRequest")
+                .expect("NewPriorityRequest event is missing in abi")
+                .signature(),
+        ],
         data: data.into(),
         block_hash: Some(H256::repeat_byte(0x11)),
         block_number: Some(eth_block),

@@ -7,7 +7,8 @@ use crate::{
 };
 
 /// Layer that changes the handling of SIGINT signal, preventing an immediate shutdown.
-/// Instead, it would propagate the signal to the rest of the node, allowing it to shut down gracefully.
+/// Instead, it would propagate the signal to the rest of the node, allowing it to shut down
+/// gracefully.
 #[derive(Debug)]
 pub struct SigintHandlerLayer;
 

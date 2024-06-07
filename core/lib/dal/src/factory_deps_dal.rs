@@ -179,7 +179,8 @@ impl FactoryDepsDal<'_, '_> {
         .collect())
     }
 
-    /// Removes all factory deps with a miniblock number strictly greater than the specified `block_number`.
+    /// Removes all factory deps with a miniblock number strictly greater than the specified
+    /// `block_number`.
     pub async fn roll_back_factory_deps(&mut self, block_number: L2BlockNumber) -> DalResult<()> {
         sqlx::query!(
             r#"

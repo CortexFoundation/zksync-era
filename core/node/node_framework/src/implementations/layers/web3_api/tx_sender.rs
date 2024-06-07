@@ -148,9 +148,10 @@ impl Task for VmConcurrencyBarrierTask {
         // Stop signal was received: seal the barrier so that no new VM requests are accepted.
         self.barrier.close();
         // Wait until all the existing API requests are processed.
-        // We don't have to synchronize this with API servers being stopped, as they can decide themselves how to handle
-        // ongoing requests during the shutdown.
-        // We don't have to implement a timeout here either, as it'll be handled by the framework itself.
+        // We don't have to synchronize this with API servers being stopped, as they can decide
+        // themselves how to handle ongoing requests during the shutdown.
+        // We don't have to implement a timeout here either, as it'll be handled by the framework
+        // itself.
         self.barrier.wait_until_stopped().await;
         Ok(())
     }

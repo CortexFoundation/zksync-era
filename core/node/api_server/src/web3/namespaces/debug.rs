@@ -201,7 +201,7 @@ impl DebugNamespace {
                 return Err(Web3Error::SubmitTransactionError(
                     reason.to_string(),
                     vec![],
-                ))
+                ));
             }
         };
 

@@ -82,7 +82,8 @@ impl Executor {
         })
     }
 
-    /// Inner representation of `start` function which returns a `Result`, so it can conveniently use `?`.
+    /// Inner representation of `start` function which returns a `Result`, so it can conveniently
+    /// use `?`.
     async fn start_inner(&mut self) -> anyhow::Result<LoadtestResult> {
         tracing::info!("Initializing accounts");
         tracing::info!("Running for MASTER {:?}", self.pool.master_wallet.address());
@@ -361,7 +362,8 @@ impl Executor {
         ethereum.set_confirmation_timeout(ETH_CONFIRMATION_TIMEOUT);
         ethereum.set_polling_interval(ETH_POLLING_INTERVAL);
 
-        // We request nonce each time, so that if one iteration was failed, it will be repeated on the next iteration.
+        // We request nonce each time, so that if one iteration was failed, it will be repeated on
+        // the next iteration.
         let mut nonce = Nonce(master_wallet.get_nonce().await?);
 
         let txs_amount = accounts_to_process * 2 + 1;
@@ -376,8 +378,8 @@ impl Executor {
 
             // Prior to sending funds in L2, we will send funds in L1 for accounts
             // to be able to perform priority operations.
-            // We don't actually care whether transactions will be successful or not; at worst we will not use
-            // priority operations in test.
+            // We don't actually care whether transactions will be successful or not; at worst we
+            // will not use priority operations in test.
 
             // If we don't need to send l1 txs we don't need to distribute the funds
             if weight_of_l1_txs != 0.0 {
@@ -428,7 +430,8 @@ impl Executor {
                 }
             }
 
-            // And then we will prepare an L2 transaction to send ERC20 token (for transfers and fees).
+            // And then we will prepare an L2 transaction to send ERC20 token (for transfers and
+            // fees).
             let mut builder = master_wallet
                 .start_transfer()
                 .to(target_address)
@@ -495,7 +498,8 @@ impl Executor {
     ///
     /// - Spawning the `ReportCollector`.
     /// - Distributing ERC-20 token in L2 among test wallets via `Transfer` operation.
-    /// - Distributing ETH in L1 among test wallets in order to make them able to perform priority operations.
+    /// - Distributing ETH in L1 among test wallets in order to make them able to perform priority
+    ///   operations.
     /// - Spawning test account routine futures.
     /// - Completing all the spawned tasks and returning the result to the caller.
     async fn send_initial_transfers(&mut self) -> anyhow::Result<LoadtestResult> {
@@ -632,8 +636,8 @@ impl Executor {
     }
 
     /// Returns the amount of funds to be deposited on the main account in L2.
-    /// Amount is chosen to be big enough to not worry about precisely calculating the remaining balances on accounts,
-    /// but also to not be close to the supported limits in zkSync.
+    /// Amount is chosen to be big enough to not worry about precisely calculating the remaining
+    /// balances on accounts, but also to not be close to the supported limits in zkSync.
     fn amount_to_deposit(&self) -> u128 {
         u128::MAX >> 32
     }

@@ -6,10 +6,11 @@
 //! - Report slow and failing queries as metrics
 //! - Log slow and failing queries together with their arguments, which makes it easier to debug.
 //!
-//! The entry point for instrumentation is the [`InstrumentExt`] trait. After it is imported into the scope,
-//! its `instrument()` method can be placed on the output of `query*` functions or macros. You can then call
-//! [`Instrumented`] methods on the returned struct, e.g. to [report query latency](Instrumented::report_latency())
-//! and/or [to add logged args](Instrumented::with_arg()) for a query.
+//! The entry point for instrumentation is the [`InstrumentExt`] trait. After it is imported into
+//! the scope, its `instrument()` method can be placed on the output of `query*` functions or
+//! macros. You can then call [`Instrumented`] methods on the returned struct, e.g. to [report query
+//! latency](Instrumented::report_latency()) and/or [to add logged args](Instrumented::with_arg())
+//! for a query.
 
 use std::{fmt, future::Future, panic::Location};
 
@@ -122,7 +123,8 @@ where
     }
 }
 
-/// Wrapper for a `COPY` SQL statement. To actually do something on a statement, it should be instrumented.
+/// Wrapper for a `COPY` SQL statement. To actually do something on a statement, it should be
+/// instrumented.
 #[derive(Debug)]
 pub struct CopyStatement {
     statement: &'static str,
@@ -267,8 +269,8 @@ impl<'a> InstrumentedData<'a> {
     }
 }
 
-/// Instrumented `sqlx` query that wraps and can be used as a drop-in replacement for `sqlx::query!` / `query_as!` output
-/// (i.e., [`Map`]).
+/// Instrumented `sqlx` query that wraps and can be used as a drop-in replacement for `sqlx::query!`
+/// / `query_as!` output (i.e., [`Map`]).
 ///
 /// The following instrumentation logic is included:
 ///
@@ -276,8 +278,9 @@ impl<'a> InstrumentedData<'a> {
 ///   the query name, its args provided via [Self::with_arg()`] and the caller location.
 /// - If the query returns an error, it is logged with a `WARN` level. The logged info is everything
 ///   included in the case of a slow query, plus the error info.
-/// - Slow and erroneous queries are also reported using metrics (`dal.request.slow` and `dal.request.error`,
-///   respectively). The query name is included as a metric label; args are not included for obvious reasons.
+/// - Slow and erroneous queries are also reported using metrics (`dal.request.slow` and
+///   `dal.request.error`, respectively). The query name is included as a metric label; args are not
+///   included for obvious reasons.
 #[derive(Debug, Clone)]
 pub struct Instrumented<'a, Q> {
     query: Q,
@@ -285,8 +288,8 @@ pub struct Instrumented<'a, Q> {
 }
 
 impl<'a> Instrumented<'a, ()> {
-    /// Creates an empty instrumentation information. This is useful if you need to validate query arguments
-    /// before invoking a query.
+    /// Creates an empty instrumentation information. This is useful if you need to validate query
+    /// arguments before invoking a query.
     #[track_caller]
     pub fn new(name: &'static str) -> Self {
         Self {
@@ -343,8 +346,8 @@ impl<'a, Q> Instrumented<'a, Q> {
         self
     }
 
-    /// Adds a traced query argument. The argument will be logged (using `Debug`) if the query executes too slow
-    /// or finishes with an error.
+    /// Adds a traced query argument. The argument will be logged (using `Debug`) if the query
+    /// executes too slow or finishes with an error.
     pub fn with_arg(mut self, name: &'static str, value: &'a ThreadSafeDebug) -> Self {
         self.data.args.inner.push((name, value));
         self

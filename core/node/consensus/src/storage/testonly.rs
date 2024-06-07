@@ -58,7 +58,8 @@ impl ConnectionPool {
         Self(pool)
     }
 
-    /// Waits for `want_last` block to have certificate then fetches all L2 blocks with certificates.
+    /// Waits for `want_last` block to have certificate then fetches all L2 blocks with
+    /// certificates.
     pub async fn wait_for_certificates(
         &self,
         ctx: &ctx::Ctx,

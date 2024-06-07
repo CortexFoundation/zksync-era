@@ -169,7 +169,9 @@ async fn run_tree(
     app_health.insert_custom_component(Arc::new(metadata_calculator.tree_health_check()))?;
 
     if config.optional.pruning_enabled {
-        tracing::warn!("Proceeding with node state pruning for the Merkle tree. This is an experimental feature; use at your own risk");
+        tracing::warn!(
+            "Proceeding with node state pruning for the Merkle tree. This is an experimental feature; use at your own risk"
+        );
 
         let pruning_task =
             metadata_calculator.pruning_task(config.optional.pruning_removal_delay() / 2);
@@ -226,9 +228,11 @@ async fn run_core(
 
     let mut persistence = persistence.with_tx_insertion();
     if !config.optional.protective_reads_persistence_enabled {
-        // **Important:** Disabling protective reads persistence is only sound if the node will never
-        // run a full Merkle tree.
-        tracing::warn!("Disabling persisting protective reads; this should be safe, but is considered an experimental option at the moment");
+        // **Important:** Disabling protective reads persistence is only sound if the node will
+        // never run a full Merkle tree.
+        tracing::warn!(
+            "Disabling persisting protective reads; this should be safe, but is considered an experimental option at the moment"
+        );
         persistence = persistence.without_protective_reads();
     }
     let tree_writes_persistence = TreeWritesPersistence::new(connection_pool.clone());
@@ -270,11 +274,12 @@ async fn run_core(
         let main_node_client = main_node_client.clone();
         let mut stop_receiver = stop_receiver.clone();
         async move {
-            // We instantiate the root context here, since the consensus task is the only user of the
-            // structured concurrency framework.
-            // Note, however, that awaiting for the `stop_receiver` is related to the root context behavior,
-            // not the consensus task itself. There may have been any number of tasks running in the root context,
-            // but we only need to wait for stop signal once, and it will be propagated to all child contexts.
+            // We instantiate the root context here, since the consensus task is the only user of
+            // the structured concurrency framework.
+            // Note, however, that awaiting for the `stop_receiver` is related to the root context
+            // behavior, not the consensus task itself. There may have been any number
+            // of tasks running in the root context, but we only need to wait for stop
+            // signal once, and it will be propagated to all child contexts.
             let ctx = ctx::root();
             scope::run!(&ctx, |ctx, s| async move {
                 s.spawn_bg(consensus::era::run_en(
@@ -294,7 +299,9 @@ async fn run_core(
     }));
 
     if config.optional.pruning_enabled {
-        tracing::warn!("Proceeding with node state pruning for Postgres. This is an experimental feature; use at your own risk");
+        tracing::warn!(
+            "Proceeding with node state pruning for Postgres. This is an experimental feature; use at your own risk"
+        );
 
         let minimum_l1_batch_age = config.optional.pruning_data_retention();
         tracing::info!(
@@ -329,8 +336,9 @@ async fn run_core(
         remote_diamond_proxy_addr
     };
 
-    // Run validation asynchronously: the node starting shouldn't depend on Ethereum client availability,
-    // and the impact of a failed async check is reasonably low (the commitment mode is only used in consistency checker).
+    // Run validation asynchronously: the node starting shouldn't depend on Ethereum client
+    // availability, and the impact of a failed async check is reasonably low (the commitment
+    // mode is only used in consistency checker).
     let validation_task = L1BatchCommitmentModeValidationTask::new(
         diamond_proxy_addr,
         config.optional.l1_batch_commit_data_generator_mode,
@@ -489,7 +497,8 @@ async fn run_api(
         .build(
             fee_params_fetcher,
             Arc::new(vm_concurrency_limiter),
-            ApiContracts::load_from_disk(), // TODO (BFT-138): Allow to dynamically reload API contracts
+            ApiContracts::load_from_disk(), /* TODO (BFT-138): Allow to dynamically reload API
+                                             * contracts */
             storage_caches,
         )
         .await;
@@ -699,8 +708,8 @@ struct Cli {
     /// Revert the pending L1 batch and exit.
     #[arg(long)]
     revert_pending_l1_batch: bool,
-    /// Enables consensus-based syncing instead of JSON-RPC based one. This is an experimental and incomplete feature;
-    /// do not use unless you know what you're doing.
+    /// Enables consensus-based syncing instead of JSON-RPC based one. This is an experimental and
+    /// incomplete feature; do not use unless you know what you're doing.
     #[arg(long)]
     enable_consensus: bool,
 
@@ -821,7 +830,8 @@ async fn main() -> anyhow::Result<()> {
     .await
 }
 
-/// Environment for the node encapsulating its interactions. Used in EN tests to mock signal sending etc.
+/// Environment for the node encapsulating its interactions. Used in EN tests to mock signal sending
+/// etc.
 trait NodeEnvironment {
     /// Sets the SIGINT handler, returning a future that will resolve when a signal is sent.
     fn setup_sigint_handler(&mut self) -> oneshot::Receiver<()>;
@@ -866,12 +876,14 @@ async fn run_node(
         connection_pool.clone(),
     )))?;
 
-    // Start the health check server early into the node lifecycle so that its health can be monitored from the very start.
+    // Start the health check server early into the node lifecycle so that its health can be
+    // monitored from the very start.
     let healthcheck_handle = HealthCheckHandle::spawn_server(
         ([0, 0, 0, 0], config.required.healthcheck_port).into(),
         app_health.clone(),
     );
-    // Start exporting metrics at the very start so that e.g., snapshot recovery metrics are timely reported.
+    // Start exporting metrics at the very start so that e.g., snapshot recovery metrics are timely
+    // reported.
     let prometheus_task = if let Some(prometheus) = config.observability.prometheus() {
         tracing::info!("Starting Prometheus exporter with configuration: {prometheus:?}");
 
@@ -938,8 +950,8 @@ async fn run_node(
     )
     .await?;
     let sigint_receiver = env.setup_sigint_handler();
-    // Spawn reacting to signals in a separate task so that the node is responsive to signals right away
-    // (e.g., during the initial reorg detection).
+    // Spawn reacting to signals in a separate task so that the node is responsive to signals right
+    // away (e.g., during the initial reorg detection).
     tokio::spawn({
         let stop_sender = stop_sender.clone();
         async move {
@@ -959,10 +971,10 @@ async fn run_node(
         .enable_rolling_back_state_keeper_cache(config.required.state_cache_path.clone());
 
     let mut reorg_detector = ReorgDetector::new(main_node_client.clone(), connection_pool.clone());
-    // We're checking for the reorg in the beginning because we expect that if reorg is detected during
-    // the node lifecycle, the node will exit the same way as it does with any other critical error,
-    // and would restart. Then, on the 2nd launch reorg would be detected here, then processed and the node
-    // will be able to operate normally afterwards.
+    // We're checking for the reorg in the beginning because we expect that if reorg is detected
+    // during the node lifecycle, the node will exit the same way as it does with any other
+    // critical error, and would restart. Then, on the 2nd launch reorg would be detected here,
+    // then processed and the node will be able to operate normally afterwards.
     match reorg_detector.run_once(stop_receiver.clone()).await {
         Ok(()) if *stop_receiver.borrow() => {
             tracing::info!("Stop signal received during initial reorg detection; shutting down");
@@ -1030,8 +1042,9 @@ async fn run_node(
         () = tasks.wait_single() => {},
     }
 
-    // Reaching this point means that either some actor exited unexpectedly or we received a stop signal.
-    // Broadcast the stop signal (in case it wasn't broadcast previously) to all actors and exit.
+    // Reaching this point means that either some actor exited unexpectedly or we received a stop
+    // signal. Broadcast the stop signal (in case it wasn't broadcast previously) to all actors
+    // and exit.
     stop_sender.send_replace(true);
     shutdown_components(tasks, healthcheck_handle).await?;
     tracing::info!("Stopped");

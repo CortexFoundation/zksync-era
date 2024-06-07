@@ -15,7 +15,8 @@ pub(crate) struct BootloaderTx {
     pub(crate) refund: u32,
     /// Gas overhead
     pub(crate) gas_overhead: u32,
-    /// Gas Limit for this transaction. It can be different from the gas limit inside the transaction
+    /// Gas Limit for this transaction. It can be different from the gas limit inside the
+    /// transaction
     pub(crate) trusted_gas_limit: U256,
     /// Offset of the tx in bootloader memory
     pub(crate) offset: usize,

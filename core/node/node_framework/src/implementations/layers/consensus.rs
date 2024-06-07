@@ -81,8 +81,8 @@ impl WiringLayer for ConsensusLayer {
                         ));
                     }
                     (None, _) => {
-                        // Secrets may be unconditionally embedded in some environments, but they are unused
-                        // unless a consensus config is provided.
+                        // Secrets may be unconditionally embedded in some environments, but they
+                        // are unused unless a consensus config is provided.
                         None
                     }
                 };
@@ -116,11 +116,12 @@ impl Task for MainNodeConsensusTask {
 
     async fn run(self: Box<Self>, mut stop_receiver: StopReceiver) -> anyhow::Result<()> {
         // We instantiate the root context here, since the consensus task is the only user of the
-        // structured concurrency framework (`MainNodeConsensusTask` and `FetcherTask` are considered mutually
-        // exclusive).
-        // Note, however, that awaiting for the `stop_receiver` is related to the root context behavior,
-        // not the consensus task itself. There may have been any number of tasks running in the root context,
-        // but we only need to wait for stop signal once, and it will be propagated to all child contexts.
+        // structured concurrency framework (`MainNodeConsensusTask` and `FetcherTask` are
+        // considered mutually exclusive).
+        // Note, however, that awaiting for the `stop_receiver` is related to the root context
+        // behavior, not the consensus task itself. There may have been any number of tasks
+        // running in the root context, but we only need to wait for stop signal once, and
+        // it will be propagated to all child contexts.
         let root_ctx = ctx::root();
         scope::run!(&root_ctx, |ctx, s| async move {
             s.spawn_bg(consensus::era::run_main_node(
@@ -153,11 +154,12 @@ impl Task for FetcherTask {
 
     async fn run(self: Box<Self>, mut stop_receiver: StopReceiver) -> anyhow::Result<()> {
         // We instantiate the root context here, since the consensus task is the only user of the
-        // structured concurrency framework (`MainNodeConsensusTask` and `FetcherTask` are considered mutually
-        // exclusive).
-        // Note, however, that awaiting for the `stop_receiver` is related to the root context behavior,
-        // not the consensus task itself. There may have been any number of tasks running in the root context,
-        // but we only need to wait for stop signal once, and it will be propagated to all child contexts.
+        // structured concurrency framework (`MainNodeConsensusTask` and `FetcherTask` are
+        // considered mutually exclusive).
+        // Note, however, that awaiting for the `stop_receiver` is related to the root context
+        // behavior, not the consensus task itself. There may have been any number of tasks
+        // running in the root context, but we only need to wait for stop signal once, and
+        // it will be propagated to all child contexts.
         let root_ctx = ctx::root();
         scope::run!(&root_ctx, |ctx, s| async {
             s.spawn_bg(consensus::era::run_en(

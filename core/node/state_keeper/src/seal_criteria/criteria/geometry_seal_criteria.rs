@@ -29,7 +29,9 @@ impl SealCriterion for CircuitsCriterion {
         assert!(
             config.max_circuits_per_batch <= max_allowed_base_layer_circuits,
             "Configured max_circuits_per_batch ({}) must be lower than the constant MAX_BASE_LAYER_CIRCUITS={} for protocol version {}",
-            config.max_circuits_per_batch, max_allowed_base_layer_circuits, protocol_version as u16
+            config.max_circuits_per_batch,
+            max_allowed_base_layer_circuits,
+            protocol_version as u16
         );
 
         let batch_tip_circuit_overhead =

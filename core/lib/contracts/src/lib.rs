@@ -1,6 +1,7 @@
 //! Set of utility functions to read contracts both in Yul and Sol format.
 //!
-//! Careful: some of the methods are reading the contracts based on the workspace environment variable.
+//! Careful: some of the methods are reading the contracts based on the workspace environment
+//! variable.
 
 #![allow(clippy::derive_partial_eq_without_eq)]
 
@@ -27,8 +28,9 @@ pub enum ContractLanguage {
 
 /// During the transition period we have to support both paths for contracts artifacts
 /// One for forge and another for hardhat.
-/// Meanwhile, hardhat has one more intermediate folder. That's why, we have to represent each contract
-/// by two constants, intermediate folder and actual contract name. For Forge we use only second part
+/// Meanwhile, hardhat has one more intermediate folder. That's why, we have to represent each
+/// contract by two constants, intermediate folder and actual contract name. For Forge we use only
+/// second part
 const HARDHAT_PATH_PREFIX: &str = "contracts/l1-contracts/artifacts/contracts";
 const FORGE_PATH_PREFIX: &str = "contracts/l1-contracts-foundry/out";
 
@@ -50,10 +52,8 @@ const MULTICALL3_CONTRACT_FILE: (&str, &str) = ("dev-contracts", "Multicall3.sol
 const VERIFIER_CONTRACT_FILE: (&str, &str) = ("state-transition", "Verifier.sol/Verifier.json");
 const _IERC20_CONTRACT_FILE: &str =
     "contracts/l1-contracts/artifacts/contracts/common/interfaces/IERC20.sol/IERC20.json";
-const _FAIL_ON_RECEIVE_CONTRACT_FILE:  &str  =
-    "contracts/l1-contracts/artifacts/contracts/zksync/dev-contracts/FailOnReceive.sol/FailOnReceive.json";
-const LOADNEXT_CONTRACT_FILE: &str =
-    "etc/contracts-test-data/artifacts-zk/contracts/loadnext/loadnext_contract.sol/LoadnextContract.json";
+const _FAIL_ON_RECEIVE_CONTRACT_FILE: &str = "contracts/l1-contracts/artifacts/contracts/zksync/dev-contracts/FailOnReceive.sol/FailOnReceive.json";
+const LOADNEXT_CONTRACT_FILE: &str = "etc/contracts-test-data/artifacts-zk/contracts/loadnext/loadnext_contract.sol/LoadnextContract.json";
 const LOADNEXT_SIMPLE_CONTRACT_FILE: &str =
     "etc/contracts-test-data/artifacts-zk/contracts/loadnext/loadnext_contract.sol/Foo.json";
 
@@ -171,7 +171,9 @@ pub fn get_loadnext_contract() -> TestContract {
 
 // Returns loadnext contract and its factory dependencies
 fn loadnext_contract() -> Contract {
-    load_contract("etc/contracts-test-data/artifacts-zk/contracts/loadnext/loadnext_contract.sol/LoadnextContract.json")
+    load_contract(
+        "etc/contracts-test-data/artifacts-zk/contracts/loadnext/loadnext_contract.sol/LoadnextContract.json",
+    )
 }
 
 pub fn deployer_contract() -> Contract {
@@ -218,14 +220,16 @@ static DEFAULT_SYSTEM_CONTRACTS_REPO: Lazy<SystemContractsRepo> =
 
 /// Structure representing a system contract repository - that allows
 /// fetching contracts that are located there.
-/// As most of the static methods in this file, is loading data based on the Cargo workspace location.
+/// As most of the static methods in this file, is loading data based on the Cargo workspace
+/// location.
 pub struct SystemContractsRepo {
     // Path to the root of the system contracts repository.
     pub root: PathBuf,
 }
 
 impl SystemContractsRepo {
-    /// Returns the default system contracts repository with directory based on the Cargo workspace location.
+    /// Returns the default system contracts repository with directory based on the Cargo workspace
+    /// location.
     pub fn from_env() -> Self {
         SystemContractsRepo {
             root: home_path().join("contracts/system-contracts"),
@@ -345,22 +349,30 @@ impl BaseSystemContracts {
     }
 
     pub fn playground_post_virtual_blocks() -> Self {
-        let bootloader_bytecode = read_zbin_bytecode("etc/multivm_bootloaders/vm_virtual_blocks/playground_batch.yul/playground_batch.yul.zbin");
+        let bootloader_bytecode = read_zbin_bytecode(
+            "etc/multivm_bootloaders/vm_virtual_blocks/playground_batch.yul/playground_batch.yul.zbin",
+        );
         BaseSystemContracts::load_with_bootloader(bootloader_bytecode)
     }
 
     pub fn playground_post_virtual_blocks_finish_upgrade_fix() -> Self {
-        let bootloader_bytecode = read_zbin_bytecode("etc/multivm_bootloaders/vm_virtual_blocks_finish_upgrade_fix/playground_batch.yul/playground_batch.yul.zbin");
+        let bootloader_bytecode = read_zbin_bytecode(
+            "etc/multivm_bootloaders/vm_virtual_blocks_finish_upgrade_fix/playground_batch.yul/playground_batch.yul.zbin",
+        );
         BaseSystemContracts::load_with_bootloader(bootloader_bytecode)
     }
 
     pub fn playground_post_boojum() -> Self {
-        let bootloader_bytecode = read_zbin_bytecode("etc/multivm_bootloaders/vm_boojum_integration/playground_batch.yul/playground_batch.yul.zbin");
+        let bootloader_bytecode = read_zbin_bytecode(
+            "etc/multivm_bootloaders/vm_boojum_integration/playground_batch.yul/playground_batch.yul.zbin",
+        );
         BaseSystemContracts::load_with_bootloader(bootloader_bytecode)
     }
 
     pub fn playground_post_allowlist_removal() -> Self {
-        let bootloader_bytecode = read_zbin_bytecode("etc/multivm_bootloaders/vm_remove_allowlist/playground_batch.yul/playground_batch.yul.zbin");
+        let bootloader_bytecode = read_zbin_bytecode(
+            "etc/multivm_bootloaders/vm_remove_allowlist/playground_batch.yul/playground_batch.yul.zbin",
+        );
         BaseSystemContracts::load_with_bootloader(bootloader_bytecode)
     }
 

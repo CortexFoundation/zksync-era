@@ -46,7 +46,8 @@ impl PKSigningClient {
 /// This is an emergency value, which will not be used normally.
 const FALLBACK_GAS_LIMIT: u64 = 3_000_000;
 
-/// HTTP-based client, instantiated for a certain account. This client is capable of signing transactions.
+/// HTTP-based client, instantiated for a certain account. This client is capable of signing
+/// transactions.
 #[derive(Clone)]
 pub struct SigningClient<S: EthereumSigner> {
     inner: Arc<EthDirectClientInner<S>>,

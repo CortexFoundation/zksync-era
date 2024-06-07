@@ -51,8 +51,8 @@ struct InflightTx {
 /// it will send transactions, both correct and incorrect, and will check
 /// whether outcome matches expected one.
 ///
-/// This structure is expected to not care about the server behavior; even if the server is down, it will only cause
-/// performed actions to be considered failed.
+/// This structure is expected to not care about the server behavior; even if the server is down, it
+/// will only cause performed actions to be considered failed.
 #[derive(Debug, Clone)]
 pub struct AccountLifespan {
     /// Wallet used to perform the test.
@@ -73,7 +73,8 @@ pub struct AccountLifespan {
     report_sink: mpsc::Sender<Report>,
     /// Pool of sent but not yet executed txs
     inflight_txs: VecDeque<InflightTx>,
-    /// Current account nonce, it is None at the beginning and will be set after the first transaction
+    /// Current account nonce, it is None at the beginning and will be set after the first
+    /// transaction
     current_nonce: Option<Nonce>,
 }
 
@@ -255,8 +256,8 @@ impl AccountLifespan {
     /// before considering it completely failed. Such an approach makes us a bit more resilient to
     /// volatile errors such as random connection drop or insufficient fee error.
     async fn execute_command(&mut self, command: TxCommand) -> Result<(), Aborted> {
-        // We consider API errors to be somewhat likely, thus we will retry the operation if it fails
-        // due to connection issues.
+        // We consider API errors to be somewhat likely, thus we will retry the operation if it
+        // fails due to connection issues.
         const MAX_RETRIES: usize = 3;
 
         let mut attempt = 0;
@@ -357,8 +358,8 @@ impl AccountLifespan {
     /// Generic submitter for zkSync network: it can operate individual transactions,
     /// as long as we can provide a `SyncTransactionHandle` to wait for the commitment and the
     /// execution result.
-    /// Once result is obtained, it's compared to the expected operation outcome in order to check whether
-    /// command was completed as planned.
+    /// Once result is obtained, it's compared to the expected operation outcome in order to check
+    /// whether command was completed as planned.
     async fn submit(
         &mut self,
         modifier: IncorrectnessModifier,
@@ -373,7 +374,8 @@ impl AccountLifespan {
                 SubmitResult::ReportLabel(ReportLabel::failed(error))
             }
             (_, Ok(handle)) => {
-                // Transaction should have been accepted by API and it was; now wait for the commitment.
+                // Transaction should have been accepted by API and it was; now wait for the
+                // commitment.
                 SubmitResult::TxHash(handle.hash())
             }
             (ExpectedOutcome::ApiRequestFailed, Err(_)) => {

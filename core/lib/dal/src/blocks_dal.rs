@@ -127,7 +127,8 @@ impl BlocksDal<'_, '_> {
         Ok(row.number.map(|number| L2BlockNumber(number as u32)))
     }
 
-    /// Returns the number of the earliest L1 batch present in the DB, or `None` if there are no L1 batches.
+    /// Returns the number of the earliest L1 batch present in the DB, or `None` if there are no L1
+    /// batches.
     pub async fn get_earliest_l1_batch_number(&mut self) -> DalResult<Option<L1BatchNumber>> {
         let row = sqlx::query!(
             r#"
@@ -166,8 +167,8 @@ impl BlocksDal<'_, '_> {
         Ok(row.number.map(|num| L1BatchNumber(num as u32)))
     }
 
-    /// Gets a number of the earliest L1 batch that is ready for commitment generation (i.e., doesn't have commitment
-    /// yet, and has tree data).
+    /// Gets a number of the earliest L1 batch that is ready for commitment generation (i.e.,
+    /// doesn't have commitment yet, and has tree data).
     pub async fn get_next_l1_batch_ready_for_commitment_generation(
         &mut self,
     ) -> DalResult<Option<L1BatchNumber>> {
@@ -194,8 +195,8 @@ impl BlocksDal<'_, '_> {
         Ok(row.map(|row| L1BatchNumber(row.number as u32)))
     }
 
-    /// Gets a number of the last L1 batch that is ready for commitment generation (i.e., doesn't have commitment
-    /// yet, and has tree data).
+    /// Gets a number of the last L1 batch that is ready for commitment generation (i.e., doesn't
+    /// have commitment yet, and has tree data).
     pub async fn get_last_l1_batch_ready_for_commitment_generation(
         &mut self,
     ) -> DalResult<Option<L1BatchNumber>> {
@@ -540,7 +541,8 @@ impl BlocksDal<'_, '_> {
         predicted_block_gas: BlockGasCount,
         storage_refunds: &[u32],
         pubdata_costs: &[i32],
-        predicted_circuits_by_type: CircuitStatistic, // predicted number of circuits for each circuit type
+        predicted_circuits_by_type: CircuitStatistic, /* predicted number of circuits for each
+                                                       * circuit type */
     ) -> DalResult<()> {
         let initial_bootloader_contents_len = initial_bootloader_contents.len();
         let instrumentation = Instrumented::new("insert_l1_batch")
@@ -1036,7 +1038,8 @@ impl BlocksDal<'_, '_> {
         .instrument("get_last_committed_to_eth_l1_batch")
         .fetch_one(self.storage)
         .await?;
-        // genesis block is first generated without commitment, we should wait for the tree to set it.
+        // genesis block is first generated without commitment, we should wait for the tree to set
+        // it.
         if block.commitment.is_none() {
             return Ok(None);
         }
@@ -1044,7 +1047,8 @@ impl BlocksDal<'_, '_> {
         self.map_storage_l1_batch(block).await
     }
 
-    /// Returns the number of the last L1 batch for which an Ethereum commit tx was sent and confirmed.
+    /// Returns the number of the last L1 batch for which an Ethereum commit tx was sent and
+    /// confirmed.
     pub async fn get_number_of_last_l1_batch_committed_on_eth(
         &mut self,
     ) -> DalResult<Option<L1BatchNumber>> {
@@ -1069,7 +1073,8 @@ impl BlocksDal<'_, '_> {
         .map(|row| L1BatchNumber(row.number as u32)))
     }
 
-    /// Returns the number of the last L1 batch for which an Ethereum prove tx exists in the database.
+    /// Returns the number of the last L1 batch for which an Ethereum prove tx exists in the
+    /// database.
     pub async fn get_last_l1_batch_with_prove_tx(&mut self) -> DalResult<L1BatchNumber> {
         let row = sqlx::query!(
             r#"
@@ -1111,7 +1116,8 @@ impl BlocksDal<'_, '_> {
         Ok(row.and_then(|row| row.eth_commit_tx_id.map(|n| n as u64)))
     }
 
-    /// Returns the number of the last L1 batch for which an Ethereum prove tx was sent and confirmed.
+    /// Returns the number of the last L1 batch for which an Ethereum prove tx was sent and
+    /// confirmed.
     pub async fn get_number_of_last_l1_batch_proven_on_eth(
         &mut self,
     ) -> DalResult<Option<L1BatchNumber>> {
@@ -1136,7 +1142,8 @@ impl BlocksDal<'_, '_> {
         .map(|record| L1BatchNumber(record.number as u32)))
     }
 
-    /// Returns the number of the last L1 batch for which an Ethereum execute tx was sent and confirmed.
+    /// Returns the number of the last L1 batch for which an Ethereum execute tx was sent and
+    /// confirmed.
     pub async fn get_number_of_last_l1_batch_executed_on_eth(
         &mut self,
     ) -> DalResult<Option<L1BatchNumber>> {
@@ -1161,7 +1168,8 @@ impl BlocksDal<'_, '_> {
         .map(|row| L1BatchNumber(row.number as u32)))
     }
 
-    /// This method returns batches that are confirmed on L1. That is, it doesn't wait for the proofs to be generated.
+    /// This method returns batches that are confirmed on L1. That is, it doesn't wait for the
+    /// proofs to be generated.
     ///
     /// # Params:
     /// * `commited_tx_confirmed`: whether to look for ready proofs only for txs for which
@@ -1249,8 +1257,8 @@ impl BlocksDal<'_, '_> {
             .get_last_l1_batch_with_prove_tx()
             .await
             .context("get_last_l1_batch_with_prove_tx()")?;
-        // Witness jobs can be processed out of order, so `WHERE l1_batches.number - row_number = $1`
-        // is used to avoid having gaps in the list of blocks to send dummy proofs for.
+        // Witness jobs can be processed out of order, so `WHERE l1_batches.number - row_number =
+        // $1` is used to avoid having gaps in the list of blocks to send dummy proofs for.
         let raw_batches = sqlx::query_as!(
             StorageL1Batch,
             r#"
@@ -1396,7 +1404,8 @@ impl BlocksDal<'_, '_> {
         limit: usize,
     ) -> anyhow::Result<Vec<StorageL1Batch>> {
         // We need to find the first L1 batch that is supposed to be executed.
-        // Here we ignore the time delay, so we just take the first L1 batch that is ready for execution.
+        // Here we ignore the time delay, so we just take the first L1 batch that is ready for
+        // execution.
         let row = sqlx::query!(
             r#"
             SELECT
@@ -1448,8 +1457,9 @@ impl BlocksDal<'_, '_> {
         .await?;
 
         Ok(if let Some(max_ready_to_send_block) = row.max {
-            // If we found at least one ready to execute batch then we can simply return all blocks between
-            // the expected started point and the max ready to send block because we send them to the L1 sequentially.
+            // If we found at least one ready to execute batch then we can simply return all blocks
+            // between the expected started point and the max ready to send block
+            // because we send them to the L1 sequentially.
             assert!(max_ready_to_send_block >= expected_started_point);
             sqlx::query_as!(
                 StorageL1Batch,
@@ -1723,8 +1733,9 @@ impl BlocksDal<'_, '_> {
         self.map_storage_l1_batch(l1_batch).await
     }
 
-    /// Returns the header and optional metadata for an L1 batch with the specified number. If a batch exists
-    /// but does not have all metadata, it's possible to inspect which metadata is missing.
+    /// Returns the header and optional metadata for an L1 batch with the specified number. If a
+    /// batch exists but does not have all metadata, it's possible to inspect which metadata is
+    /// missing.
     pub async fn get_optional_l1_batch_metadata(
         &mut self,
         number: L1BatchNumber,
@@ -1846,7 +1857,8 @@ impl BlocksDal<'_, '_> {
         Ok(())
     }
 
-    /// Deletes all L1 batches from the storage so that the specified batch number is the last one left.
+    /// Deletes all L1 batches from the storage so that the specified batch number is the last one
+    /// left.
     pub async fn delete_l1_batches(&mut self, last_batch_to_keep: L1BatchNumber) -> DalResult<()> {
         self.delete_l1_batches_inner(Some(last_batch_to_keep)).await
     }
@@ -1871,7 +1883,8 @@ impl BlocksDal<'_, '_> {
         Ok(())
     }
 
-    /// Deletes all L2 blocks from the storage so that the specified L2 block number is the last one left.
+    /// Deletes all L2 blocks from the storage so that the specified L2 block number is the last one
+    /// left.
     pub async fn delete_l2_blocks(
         &mut self,
         last_l2_block_to_keep: L2BlockNumber,
@@ -1972,8 +1985,8 @@ impl BlocksDal<'_, '_> {
         Ok(Some((L2BlockNumber(min as u32), L2BlockNumber(max as u32))))
     }
 
-    /// Returns `true` if there exists a non-sealed batch (i.e. there is one+ stored L2 block that isn't assigned
-    /// to any batch yet).
+    /// Returns `true` if there exists a non-sealed batch (i.e. there is one+ stored L2 block that
+    /// isn't assigned to any batch yet).
     pub async fn pending_batch_exists(&mut self) -> DalResult<bool> {
         let count = sqlx::query_scalar!(
             "SELECT COUNT(miniblocks.number) FROM miniblocks WHERE l1_batch_number IS NULL"
@@ -2314,7 +2327,8 @@ impl BlocksDal<'_, '_> {
         .await
     }
 
-    /// Deletes all L2 blocks and L1 batches, including the genesis ones. Should only be used in tests.
+    /// Deletes all L2 blocks and L1 batches, including the genesis ones. Should only be used in
+    /// tests.
     pub async fn delete_genesis(&mut self) -> DalResult<()> {
         self.delete_l2_blocks_inner(None).await?;
         self.delete_l1_batches_inner(None).await?;
@@ -2323,8 +2337,9 @@ impl BlocksDal<'_, '_> {
         Ok(())
     }
 
-    /// Obtains a protocol version projected to be applied for the next L2 block. This is either the version used by the last
-    /// sealed L2 block, or (if there are no L2 blocks), one referenced in the snapshot recovery record.
+    /// Obtains a protocol version projected to be applied for the next L2 block. This is either the
+    /// version used by the last sealed L2 block, or (if there are no L2 blocks), one referenced
+    /// in the snapshot recovery record.
     pub async fn pending_protocol_version(&mut self) -> anyhow::Result<ProtocolVersionId> {
         static WARNED_ABOUT_NO_VERSION: AtomicBool = AtomicBool::new(false);
 
@@ -2335,9 +2350,10 @@ impl BlocksDal<'_, '_> {
             .await?;
         if let Some(last_l2_block) = last_l2_block {
             return Ok(last_l2_block.protocol_version.unwrap_or_else(|| {
-                // Protocol version should be set for the most recent L2 block even in cases it's not filled
-                // for old L2 blocks, hence the warning. We don't want to rely on this assumption, so we treat
-                // the lack of it as in other similar places, replacing with the default value.
+                // Protocol version should be set for the most recent L2 block even in cases it's
+                // not filled for old L2 blocks, hence the warning. We don't want to
+                // rely on this assumption, so we treat the lack of it as in other
+                // similar places, replacing with the default value.
                 if !WARNED_ABOUT_NO_VERSION.fetch_or(true, Ordering::Relaxed) {
                     tracing::warn!(
                         "Protocol version not set for recent L2 block: {last_l2_block:?}"
@@ -2420,65 +2436,71 @@ mod tests {
         save_mock_eth_tx(AggregatedActionType::PublishProofOnchain, &mut conn).await;
         save_mock_eth_tx(AggregatedActionType::Execute, &mut conn).await;
 
-        assert!(conn
-            .blocks_dal()
-            .set_eth_tx_id(
-                L1BatchNumber(1)..=L1BatchNumber(1),
-                1,
-                AggregatedActionType::Commit,
-            )
-            .await
-            .is_ok());
+        assert!(
+            conn.blocks_dal()
+                .set_eth_tx_id(
+                    L1BatchNumber(1)..=L1BatchNumber(1),
+                    1,
+                    AggregatedActionType::Commit,
+                )
+                .await
+                .is_ok()
+        );
 
-        assert!(conn
-            .blocks_dal()
-            .set_eth_tx_id(
-                L1BatchNumber(1)..=L1BatchNumber(1),
-                2,
-                AggregatedActionType::Commit,
-            )
-            .await
-            .is_err());
+        assert!(
+            conn.blocks_dal()
+                .set_eth_tx_id(
+                    L1BatchNumber(1)..=L1BatchNumber(1),
+                    2,
+                    AggregatedActionType::Commit,
+                )
+                .await
+                .is_err()
+        );
 
-        assert!(conn
-            .blocks_dal()
-            .set_eth_tx_id(
-                L1BatchNumber(1)..=L1BatchNumber(1),
-                1,
-                AggregatedActionType::PublishProofOnchain,
-            )
-            .await
-            .is_ok());
+        assert!(
+            conn.blocks_dal()
+                .set_eth_tx_id(
+                    L1BatchNumber(1)..=L1BatchNumber(1),
+                    1,
+                    AggregatedActionType::PublishProofOnchain,
+                )
+                .await
+                .is_ok()
+        );
 
-        assert!(conn
-            .blocks_dal()
-            .set_eth_tx_id(
-                L1BatchNumber(1)..=L1BatchNumber(1),
-                2,
-                AggregatedActionType::PublishProofOnchain,
-            )
-            .await
-            .is_err());
+        assert!(
+            conn.blocks_dal()
+                .set_eth_tx_id(
+                    L1BatchNumber(1)..=L1BatchNumber(1),
+                    2,
+                    AggregatedActionType::PublishProofOnchain,
+                )
+                .await
+                .is_err()
+        );
 
-        assert!(conn
-            .blocks_dal()
-            .set_eth_tx_id(
-                L1BatchNumber(1)..=L1BatchNumber(1),
-                1,
-                AggregatedActionType::Execute,
-            )
-            .await
-            .is_ok());
+        assert!(
+            conn.blocks_dal()
+                .set_eth_tx_id(
+                    L1BatchNumber(1)..=L1BatchNumber(1),
+                    1,
+                    AggregatedActionType::Execute,
+                )
+                .await
+                .is_ok()
+        );
 
-        assert!(conn
-            .blocks_dal()
-            .set_eth_tx_id(
-                L1BatchNumber(1)..=L1BatchNumber(1),
-                2,
-                AggregatedActionType::Execute,
-            )
-            .await
-            .is_err());
+        assert!(
+            conn.blocks_dal()
+                .set_eth_tx_id(
+                    L1BatchNumber(1)..=L1BatchNumber(1),
+                    2,
+                    AggregatedActionType::Execute,
+                )
+                .await
+                .is_err()
+        );
     }
 
     #[tokio::test]
@@ -2510,12 +2532,13 @@ mod tests {
         assert_eq!(loaded_header.l2_to_l1_logs, header.l2_to_l1_logs);
         assert_eq!(loaded_header.l2_to_l1_messages, header.l2_to_l1_messages);
 
-        assert!(conn
-            .blocks_dal()
-            .get_l1_batch_header(L1BatchNumber(2))
-            .await
-            .unwrap()
-            .is_none());
+        assert!(
+            conn.blocks_dal()
+                .get_l1_batch_header(L1BatchNumber(2))
+                .await
+                .unwrap()
+                .is_none()
+        );
     }
 
     #[tokio::test]

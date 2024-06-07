@@ -34,7 +34,8 @@ impl VmTester<HistoryDisabled> {
 #[tokio::test]
 /// This test deploys 'buggy' account abstraction code, and then tries accessing it both with legacy
 /// and EIP712 transactions.
-/// Currently we support both, but in the future, we should allow only EIP712 transactions to access the AA accounts.
+/// Currently we support both, but in the future, we should allow only EIP712 transactions to access
+/// the AA accounts.
 async fn test_require_eip712() {
     // Use 3 accounts:
     // - `private_address` - EOA account, where we have the key
@@ -57,7 +58,8 @@ async fn test_require_eip712() {
     let chain_id: u32 = 270;
 
     // First, let's set the owners of the AA account to the `private_address`.
-    // (so that messages signed by `private_address`, are authorized to act on behalf of the AA account).
+    // (so that messages signed by `private_address`, are authorized to act on behalf of the AA
+    // account).
     let set_owners_function = contract.function("setOwners").unwrap();
     let encoded_input = set_owners_function
         .encode_input(&[Token::Array(vec![Token::Address(private_account.address)])])
@@ -79,8 +81,8 @@ async fn test_require_eip712() {
 
     let private_account_balance = vm.get_eth_balance(private_account.address);
 
-    // And now let's do the transfer from the 'account abstraction' to 'beneficiary' (using 'legacy' transaction).
-    // Normally this would not work - unless the operator is malicious.
+    // And now let's do the transfer from the 'account abstraction' to 'beneficiary' (using 'legacy'
+    // transaction). Normally this would not work - unless the operator is malicious.
     let aa_raw_tx = TransactionParameters {
         nonce: U256::from(0),
         to: Some(beneficiary.address),

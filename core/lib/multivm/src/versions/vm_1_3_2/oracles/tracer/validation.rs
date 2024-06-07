@@ -159,8 +159,8 @@ pub struct ValidationTracerParams {
     /// Trusted addresses (the user can access any slots on these addresses).
     pub trusted_addresses: HashSet<Address>,
     /// Slots, that are trusted and the value of them is the new trusted address.
-    /// They are needed to work correctly with beacon proxy, where the address of the implementation is
-    /// stored in the beacon.
+    /// They are needed to work correctly with beacon proxy, where the address of the
+    /// implementation is stored in the beacon.
     pub trusted_address_slots: HashSet<(Address, U256)>,
     /// Number of computational gas that validation step is allowed to use.
     pub computational_gas_limit: u32,
@@ -221,8 +221,8 @@ impl<S: WriteStorage, H: HistoryMode> ValidationTracer<S, H> {
             return true;
         }
 
-        // The pair of `MSG_VALUE_SIMULATOR_ADDRESS` & `L2_ETH_TOKEN_ADDRESS` simulates the behavior of transferring ETH
-        // that is safe for the DDoS protection rules.
+        // The pair of `MSG_VALUE_SIMULATOR_ADDRESS` & `L2_ETH_TOKEN_ADDRESS` simulates the behavior
+        // of transferring ETH that is safe for the DDoS protection rules.
         if valid_eth_token_call(address, msg_sender) {
             return true;
         }
@@ -268,8 +268,8 @@ impl<S: WriteStorage, H: HistoryMode> ValidationTracer<S, H> {
         // If the `validation_address` is equal to the `potential_address`,
         // then it is a request that could be used for mapping of kind `mapping(address => ...)`.
         //
-        // If the `potential_position_bytes` were already allowed before, then this keccak might be used
-        // for ERC-20 allowance or any other of `mapping(address => mapping(...))`
+        // If the `potential_position_bytes` were already allowed before, then this keccak might be
+        // used for ERC-20 allowance or any other of `mapping(address => mapping(...))`
         if potential_address == Some(validated_address)
             || self
                 .auxilary_allowed_slots
@@ -350,7 +350,8 @@ impl<S: WriteStorage, H: HistoryMode> ValidationTracer<S, H> {
                         return Err(ViolatedValidationRule::TouchedUnallowedContext);
                     }
                     ContextOpcode::ErgsLeft => {
-                        // TODO (SMA-1168): implement the correct restrictions for the gas left opcode.
+                        // TODO (SMA-1168): implement the correct restrictions for the gas left
+                        // opcode.
                     }
                     _ => {}
                 }
@@ -420,11 +421,13 @@ impl<S: WriteStorage, H: HistoryMode> Tracer for ValidationTracer<S, H> {
         let current_mode = self.validation_mode;
         match (current_mode, hook) {
             (ValidationTracerMode::NoValidation, VmHook::AccountValidationEntered) => {
-                // Account validation can be entered when there is no prior validation (i.e. "nested" validations are not allowed)
+                // Account validation can be entered when there is no prior validation (i.e.
+                // "nested" validations are not allowed)
                 self.validation_mode = ValidationTracerMode::UserTxValidation;
             }
             (ValidationTracerMode::NoValidation, VmHook::PaymasterValidationEntered) => {
-                // Paymaster validation can be entered when there is no prior validation (i.e. "nested" validations are not allowed)
+                // Paymaster validation can be entered when there is no prior validation (i.e.
+                // "nested" validations are not allowed)
                 self.validation_mode = ValidationTracerMode::PaymasterTxValidation;
             }
             (_, VmHook::AccountValidationEntered | VmHook::PaymasterValidationEntered) => {

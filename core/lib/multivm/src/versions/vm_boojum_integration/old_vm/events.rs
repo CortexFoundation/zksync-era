@@ -132,7 +132,8 @@ pub(crate) fn merge_events(events: Vec<EventMessage>) -> Vec<SolidityLikeEvent> 
         .into_iter()
         .filter(|e| e.address == EVENT_WRITER_ADDRESS)
         .map(|event| {
-            // The events writer events where the first topic is the actual address of the event and the rest of the topics are real topics
+            // The events writer events where the first topic is the actual address of the event and
+            // the rest of the topics are real topics
             let address = h256_to_account_address(&H256(event.topics[0]));
             let topics = event.topics.into_iter().skip(1).collect();
 

@@ -98,12 +98,12 @@ impl TreeEntryWithProof {
 
 /// Range digest in a Merkle tree allowing to compute its root hash based on the provided entries.
 ///
-/// - The entries must be ordered by key. I.e., the first entry must have the numerically smallest key,
-///   and the last entry must have the numerically greatest key among all provided entries.
-/// - The first and the last entries must be provided together with a Merkle proof; other entries
-///   do not need proofs.
-/// - Any entry can be [empty](TreeEntry::is_empty()). I.e., there's no requirement to only
-///   provide existing entries.
+/// - The entries must be ordered by key. I.e., the first entry must have the numerically smallest
+///   key, and the last entry must have the numerically greatest key among all provided entries.
+/// - The first and the last entries must be provided together with a Merkle proof; other entries do
+///   not need proofs.
+/// - Any entry can be [empty](TreeEntry::is_empty()). I.e., there's no requirement to only provide
+///   existing entries.
 ///
 /// This construction is useful for verifying *Merkle range proofs*. Such a proof proves that
 /// a certain key range in the Merkle tree contains the specified entries and no other entries.
@@ -162,7 +162,8 @@ impl<'a> TreeRangeDigest<'a> {
             hasher: HasherWithStats::new(hasher),
             current_leaf: LeafNode::new(start_entry.base),
             left_contour: left_contour.try_into().unwrap(),
-            // ^ `unwrap()` is safe by construction; `left_contour` will always have necessary length
+            // ^ `unwrap()` is safe by construction; `left_contour` will always have necessary
+            // length
         }
     }
 
@@ -179,7 +180,8 @@ impl<'a> TreeRangeDigest<'a> {
 
         let diverging_level = utils::find_diverging_bit(self.current_leaf.full_key, entry.key) + 1;
 
-        // Hash the current leaf up to the `diverging_level`, taking current `left_contour` into account.
+        // Hash the current leaf up to the `diverging_level`, taking current `left_contour` into
+        // account.
         let mut hash = self
             .hasher
             .hash_leaf(&self.current_leaf.value_hash, self.current_leaf.leaf_index);
@@ -191,8 +193,8 @@ impl<'a> TreeRangeDigest<'a> {
             hash = if self.current_leaf.full_key.bit(depth) {
                 self.hasher.hash_branch(&left_hash, &hash)
             } else {
-                // We don't take right contour into account, since by construction (because we iterate
-                // over keys in ascending order) it's always empty.
+                // We don't take right contour into account, since by construction (because we
+                // iterate over keys in ascending order) it's always empty.
                 self.hasher.hash_branch(&hash, &empty_subtree_hash)
             };
         }
@@ -205,7 +207,8 @@ impl<'a> TreeRangeDigest<'a> {
     ///
     /// # Panics
     ///
-    /// Panics if the provided `final_key` is not greater than the previous key provided to this digest.
+    /// Panics if the provided `final_key` is not greater than the previous key provided to this
+    /// digest.
     pub fn finalize(mut self, final_entry: &TreeEntryWithProof) -> ValueHash {
         self.update(final_entry.base);
 

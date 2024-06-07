@@ -61,12 +61,12 @@ pub(crate) mod tests;
 /// Timeout for graceful shutdown logic within API servers.
 const GRACEFUL_SHUTDOWN_TIMEOUT: Duration = Duration::from_secs(5);
 
-/// Interval to wait for the traffic to be stopped to the API server (e.g., by a load balancer) before
-/// the server will cease processing any further traffic. If this interval is exceeded, the server will start
-/// shutting down anyway.
+/// Interval to wait for the traffic to be stopped to the API server (e.g., by a load balancer)
+/// before the server will cease processing any further traffic. If this interval is exceeded, the
+/// server will start shutting down anyway.
 const NO_REQUESTS_WAIT_TIMEOUT: Duration = Duration::from_secs(30);
-/// Time interval with no requests sent to the API server to declare that traffic to the server is ceased,
-/// and start gracefully shutting down the server.
+/// Time interval with no requests sent to the API server to declare that traffic to the server is
+/// ceased, and start gracefully shutting down the server.
 const SHUTDOWN_INTERVAL_WITHOUT_REQUESTS: Duration = Duration::from_millis(500);
 
 /// Represents all kinds of `Filter`.
@@ -200,8 +200,9 @@ impl ApiBuilder {
 
     /// Configures a dedicated DB pool to be used for updating different information,
     /// such as last mined block number or account nonces. This pool is used to execute
-    /// in a background task. If not called, the main pool will be used. If the API server is under high load,
-    /// it may make sense to supply a single-connection pool to reduce pool contention with the API methods.
+    /// in a background task. If not called, the main pool will be used. If the API server is under
+    /// high load, it may make sense to supply a single-connection pool to reduce pool
+    /// contention with the API methods.
     pub fn with_updaters_pool(mut self, pool: ConnectionPool<Core>) -> Self {
         self.updaters_pool = pool;
         self
@@ -341,7 +342,8 @@ impl ApiServer {
             BlockStartInfo::new(&mut storage, self.pruning_info_refresh_interval).await?;
         drop(storage);
 
-        // Disable filter API for HTTP endpoints, WS endpoints are unaffected by the `filters_disabled` flag
+        // Disable filter API for HTTP endpoints, WS endpoints are unaffected by the
+        // `filters_disabled` flag
         let installed_filters =
             if matches!(self.transport, ApiTransport::Http(_)) && self.config.filters_disabled {
                 None
@@ -469,7 +471,8 @@ impl ApiServer {
         // Chosen to be significantly smaller than the interval between L2 blocks, but larger than
         // the latency of getting the latest sealed L2 block number from Postgres. If the API server
         // processes enough requests, information about the latest sealed L2 block will be updated
-        // by reporting block difference metrics, so the actual update lag would be much smaller than this value.
+        // by reporting block difference metrics, so the actual update lag would be much smaller
+        // than this value.
         const SEALED_L2_BLOCK_UPDATE_INTERVAL: Duration = Duration::from_millis(25);
 
         let transport = self.transport;
@@ -499,8 +502,8 @@ impl ApiServer {
             None
         };
 
-        // TODO (QIT-26): We still expose `health_check` in `ApiServerHandles` for the old code. After we switch to the
-        // framework it'll no longer be needed.
+        // TODO (QIT-26): We still expose `health_check` in `ApiServerHandles` for the old code.
+        // After we switch to the framework it'll no longer be needed.
         let health_check = self.health_updater.subscribe();
         let (local_addr_sender, local_addr) = oneshot::channel();
         let server_task = tokio::spawn(self.run_jsonrpsee_server(
@@ -518,8 +521,8 @@ impl ApiServer {
         })
     }
 
-    /// Overrides max response sizes for specific RPC methods by additionally wrapping their callbacks
-    /// to which the max response size is passed as a param.
+    /// Overrides max response sizes for specific RPC methods by additionally wrapping their
+    /// callbacks to which the max response size is passed as a param.
     fn override_method_response_sizes(
         rpc: RpcModule<()>,
         response_size_overrides: &MaxResponseSizeOverrides,
@@ -596,17 +599,22 @@ impl ApiServer {
         tracing::info!(
             "Waiting for at least one L1 batch in Postgres to start {transport_str} API server"
         );
-        // Starting the server before L1 batches are present in Postgres can lead to some invariants the server logic
-        // implicitly assumes not being upheld. The only case when we'll actually wait here is immediately after snapshot recovery.
+        // Starting the server before L1 batches are present in Postgres can lead to some invariants
+        // the server logic implicitly assumes not being upheld. The only case when we'll
+        // actually wait here is immediately after snapshot recovery.
         let earliest_l1_batch_number =
             wait_for_l1_batch(&self.pool, self.polling_interval, &mut stop_receiver)
                 .await
                 .context("error while waiting for L1 batch in Postgres")?;
 
         if let Some(number) = earliest_l1_batch_number {
-            tracing::info!("Successfully waited for at least one L1 batch in Postgres; the earliest one is #{number}");
+            tracing::info!(
+                "Successfully waited for at least one L1 batch in Postgres; the earliest one is #{number}"
+            );
         } else {
-            tracing::info!("Received shutdown signal before {transport_str} API server is started; shutting down");
+            tracing::info!(
+                "Received shutdown signal before {transport_str} API server is started; shutting down"
+            );
             return Ok(());
         }
 
@@ -630,7 +638,9 @@ impl ApiServer {
 
         let extended_tracing = self.optional.extended_tracing;
         if extended_tracing {
-            tracing::info!("Enabled extended call tracing for {transport_str} API server; this might negatively affect performance");
+            tracing::info!(
+                "Enabled extended call tracing for {transport_str} API server; this might negatively affect performance"
+            );
         }
 
         let rpc = self.build_rpc_module(pub_sub, last_sealed_l2_block).await?;
@@ -678,18 +688,20 @@ impl ApiServer {
         let traffic_tracker = TrafficTracker::default();
         let traffic_tracker_for_middleware = traffic_tracker.clone();
 
-        // **Important.** The ordering of layers matters! Layers added first will receive the request earlier
-        // (i.e., are outermost in the call chain).
+        // **Important.** The ordering of layers matters! Layers added first will receive the
+        // request earlier (i.e., are outermost in the call chain).
         let rpc_middleware = RpcServiceBuilder::new()
             .layer_fn(move |svc| {
                 ShutdownMiddleware::new(svc, traffic_tracker_for_middleware.clone())
             })
-            // We want to output method logs with a correlation ID; hence, `CorrelationMiddleware` must precede `metadata_layer`.
+            // We want to output method logs with a correlation ID; hence, `CorrelationMiddleware`
+            // must precede `metadata_layer`.
             .option_layer(
                 extended_tracing.then(|| tower::layer::layer_fn(CorrelationMiddleware::new)),
             )
             .layer(metadata_layer)
-            // We want to capture limit middleware errors with `metadata_layer`; hence, `LimitMiddleware` is placed after it.
+            // We want to capture limit middleware errors with `metadata_layer`; hence,
+            // `LimitMiddleware` is placed after it.
             .option_layer((!is_http).then(|| {
                 tower::layer::layer_fn(move |svc| {
                     LimitMiddleware::new(svc, websocket_requests_per_minute_limit)
@@ -727,13 +739,14 @@ impl ApiServer {
         local_addr_sender.send(local_addr).ok();
         health_updater.update(HealthStatus::Ready.into());
 
-        // We want to be able to immediately stop the server task if the server stops on its own for whatever reason.
-        // Hence, we monitor `stop_receiver` on a separate Tokio task.
+        // We want to be able to immediately stop the server task if the server stops on its own for
+        // whatever reason. Hence, we monitor `stop_receiver` on a separate Tokio task.
         let close_handle = server_handle.clone();
         let closing_vm_barrier = vm_barrier.clone();
-        // We use `Weak` reference to the health updater in order to not prevent its drop if the server stops on its own.
-        // TODO (QIT-26): While `Arc<HealthUpdater>` is stored in `self`, we rely on the fact that `self` is consumed and
-        // dropped by `self.build_rpc_module` above, so we should still have just one strong reference.
+        // We use `Weak` reference to the health updater in order to not prevent its drop if the
+        // server stops on its own. TODO (QIT-26): While `Arc<HealthUpdater>` is stored in
+        // `self`, we rely on the fact that `self` is consumed and dropped by
+        // `self.build_rpc_module` above, so we should still have just one strong reference.
         let closing_health_updater = Arc::downgrade(&health_updater);
         tokio::spawn(async move {
             if stop_receiver.changed().await.is_err() {
@@ -749,14 +762,15 @@ impl ApiServer {
                 "Stop signal received, {transport_str} JSON-RPC server is shutting down"
             );
 
-            // Wait some time until the traffic to the server stops. This may be necessary if the API server
-            // is behind a load balancer which is not immediately aware of API server termination. In this case,
-            // the load balancer will continue directing traffic to the server for some time until it reads
-            // the server health (which *is* changed to "shutting down" immediately). Starting graceful server shutdown immediately
-            // would lead to all this traffic to get dropped.
+            // Wait some time until the traffic to the server stops. This may be necessary if the
+            // API server is behind a load balancer which is not immediately aware of
+            // API server termination. In this case, the load balancer will continue
+            // directing traffic to the server for some time until it reads the server
+            // health (which *is* changed to "shutting down" immediately). Starting graceful server
+            // shutdown immediately would lead to all this traffic to get dropped.
             //
-            // If the load balancer *is* aware of the API server termination, we'll wait for `SHUTDOWN_INTERVAL_WITHOUT_REQUESTS`,
-            // which is fairly short.
+            // If the load balancer *is* aware of the API server termination, we'll wait for
+            // `SHUTDOWN_INTERVAL_WITHOUT_REQUESTS`, which is fairly short.
             let wait_result = tokio::time::timeout(
                 NO_REQUESTS_WAIT_TIMEOUT,
                 traffic_tracker.wait_for_no_requests(SHUTDOWN_INTERVAL_WITHOUT_REQUESTS),

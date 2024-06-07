@@ -115,7 +115,8 @@ impl EthClient for EthHttpQueryClient {
         let mut result = self.get_filter_logs(from, to, self.topics.clone()).await;
 
         // This code is compatible with both Infura and Alchemy API providers.
-        // Note: we don't handle rate-limits here - assumption is that we're never going to hit them.
+        // Note: we don't handle rate-limits here - assumption is that we're never going to hit
+        // them.
         if let Err(EthClientError::EthereumGateway(err)) = &result {
             tracing::warn!("Provider returned error message: {err}");
             let err_message = err.as_ref().to_string();
@@ -158,7 +159,9 @@ impl EthClient for EthHttpQueryClient {
 
                 // safety check to prevent infinite recursion (quite unlikely)
                 if from_number >= mid {
-                    tracing::warn!("Infinite recursion detected while getting events: from_number={from_number:?}, mid={mid:?}");
+                    tracing::warn!(
+                        "Infinite recursion detected while getting events: from_number={from_number:?}, mid={mid:?}"
+                    );
                     return result;
                 }
 

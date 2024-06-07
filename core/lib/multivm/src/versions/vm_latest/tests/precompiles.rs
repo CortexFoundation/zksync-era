@@ -100,7 +100,8 @@ fn test_sha256() {
 
 #[test]
 fn test_ecrecover() {
-    // Execute simple transfer and check that exactly 1 `ecrecover` call was made (it's done during tx validation).
+    // Execute simple transfer and check that exactly 1 `ecrecover` call was made (it's done during
+    // tx validation).
     let mut vm = VmTesterBuilder::new(HistoryEnabled)
         .with_empty_in_memory_storage()
         .with_random_rich_accounts(1)

@@ -51,7 +51,8 @@ impl<H: HistoryMode> InMemoryEventSink<H> {
         let events = self.frames_stack.forward().current_frame();
 
         // Select all of the last elements where `e.timestamp >= from_timestamp`.
-        // Note, that using binary search here is dangerous, because the logs are not sorted by timestamp.
+        // Note, that using binary search here is dangerous, because the logs are not sorted by
+        // timestamp.
         events
             .rsplit(|e| e.timestamp < from_timestamp)
             .next()

@@ -170,7 +170,8 @@ impl StorageLogsDal<'_, '_> {
             .collect())
     }
 
-    /// Removes all storage logs with a L2 block number strictly greater than the specified `block_number`.
+    /// Removes all storage logs with a L2 block number strictly greater than the specified
+    /// `block_number`.
     pub async fn roll_back_storage_logs(&mut self, block_number: L2BlockNumber) -> DalResult<()> {
         sqlx::query!(
             r#"
@@ -234,8 +235,8 @@ impl StorageLogsDal<'_, '_> {
         row.count > 0
     }
 
-    /// Returns addresses and the corresponding deployment L2 block numbers among the specified contract
-    /// `addresses`. `at_l2_block` allows filtering deployment by L2 blocks.
+    /// Returns addresses and the corresponding deployment L2 block numbers among the specified
+    /// contract `addresses`. `at_l2_block` allows filtering deployment by L2 blocks.
     pub async fn filter_deployed_contracts(
         &mut self,
         addresses: impl Iterator<Item = Address>,
@@ -248,8 +249,9 @@ impl StorageLogsDal<'_, '_> {
             })
             .unzip();
         let max_l2_block_number = at_l2_block.map_or(u32::MAX, |number| number.0);
-        // Get the latest `value` and corresponding `miniblock_number` for each of `bytecode_hashed_keys`. For failed deployments,
-        // this value will equal `FAILED_CONTRACT_DEPLOYMENT_BYTECODE_HASH`, so that they can be easily filtered.
+        // Get the latest `value` and corresponding `miniblock_number` for each of
+        // `bytecode_hashed_keys`. For failed deployments, this value will equal
+        // `FAILED_CONTRACT_DEPLOYMENT_BYTECODE_HASH`, so that they can be easily filtered.
         let rows = sqlx::query!(
             r#"
             SELECT DISTINCT
@@ -352,8 +354,9 @@ impl StorageLogsDal<'_, '_> {
         Ok(touched_slots.collect())
     }
 
-    /// Returns (hashed) storage keys and the corresponding values that need to be applied to a storage
-    /// in order to revert it to the specified L1 batch. Deduplication is taken into account.
+    /// Returns (hashed) storage keys and the corresponding values that need to be applied to a
+    /// storage in order to revert it to the specified L1 batch. Deduplication is taken into
+    /// account.
     pub async fn get_storage_logs_for_revert(
         &mut self,
         l1_batch_number: L1BatchNumber,
@@ -377,10 +380,10 @@ impl StorageLogsDal<'_, '_> {
             stage_start.elapsed()
         );
 
-        // We need to filter `modified_keys` using the `initial_writes` table (i.e., take dedup logic
-        // into account). Some keys that have `storage_logs` entries are actually never written to
-        // as per `initial_writes`, so if we return such keys from this method, it will lead to
-        // the incorrect state after revert.
+        // We need to filter `modified_keys` using the `initial_writes` table (i.e., take dedup
+        // logic into account). Some keys that have `storage_logs` entries are actually
+        // never written to as per `initial_writes`, so if we return such keys from this
+        // method, it will lead to the incorrect state after revert.
         let stage_start = Instant::now();
         let l1_batch_and_index_by_key = self
             .get_l1_batches_and_indices_for_initial_writes(&modified_keys)
@@ -485,8 +488,8 @@ impl StorageLogsDal<'_, '_> {
     ///
     /// # Performance
     ///
-    /// This DB query is slow, especially when used with large `hashed_keys` slices. Prefer using alternatives
-    /// wherever possible.
+    /// This DB query is slow, especially when used with large `hashed_keys` slices. Prefer using
+    /// alternatives wherever possible.
     pub async fn get_previous_storage_values(
         &mut self,
         hashed_keys: &[H256],
@@ -591,7 +594,8 @@ impl StorageLogsDal<'_, '_> {
             .collect()
     }
 
-    /// Returns the total number of rows in the `storage_logs` table before and at the specified L2 block.
+    /// Returns the total number of rows in the `storage_logs` table before and at the specified L2
+    /// block.
     ///
     /// **Warning.** This method is slow (requires a full table scan).
     pub async fn get_storage_logs_row_count(
@@ -679,8 +683,8 @@ impl StorageLogsDal<'_, '_> {
         Ok(rows.collect())
     }
 
-    /// Fetches tree entries for the specified `l2_block_number` and `key_range`. This is used during
-    /// Merkle tree recovery.
+    /// Fetches tree entries for the specified `l2_block_number` and `key_range`. This is used
+    /// during Merkle tree recovery.
     pub async fn get_tree_entries_for_l2_block(
         &mut self,
         l2_block_number: L2BlockNumber,
@@ -1081,8 +1085,9 @@ mod tests {
             .save_protocol_version_with_tx(&ProtocolVersion::default())
             .await
             .unwrap();
-        // If deployment fails then two writes are issued, one that writes `bytecode_hash` to the "correct" value,
-        // and the next write reverts its value back to `FAILED_CONTRACT_DEPLOYMENT_BYTECODE_HASH`.
+        // If deployment fails then two writes are issued, one that writes `bytecode_hash` to the
+        // "correct" value, and the next write reverts its value back to
+        // `FAILED_CONTRACT_DEPLOYMENT_BYTECODE_HASH`.
         insert_l2_block(&mut conn, 1, vec![successful_deployment, failed_deployment]).await;
 
         let tested_l2_blocks = [

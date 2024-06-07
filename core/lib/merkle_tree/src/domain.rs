@@ -22,7 +22,8 @@ pub struct TreeMetadata {
     pub root_hash: ValueHash,
     /// 1-based index of the next leaf to be inserted in the tree.
     pub rollup_last_leaf_index: u64,
-    /// Witness information. As with `repeated_writes`, no-op updates will be omitted from Merkle paths.
+    /// Witness information. As with `repeated_writes`, no-op updates will be omitted from Merkle
+    /// paths.
     pub witness: Option<PrepareBasicCircuitsJob>,
 }
 
@@ -118,8 +119,8 @@ impl ZkSyncTree {
     ///
     /// # Panics
     ///
-    /// Panics if this method was already called for the tree instance; it's logically unsound to run
-    /// multiple pruners for the same tree concurrently.
+    /// Panics if this method was already called for the tree instance; it's logically unsound to
+    /// run multiple pruners for the same tree concurrently.
     pub fn pruner(&mut self) -> (MerkleTreePruner<RocksDBWrapper>, MerkleTreePrunerHandle) {
         assert!(
             !self.pruning_enabled,
@@ -130,8 +131,8 @@ impl ZkSyncTree {
         MerkleTreePruner::new(db)
     }
 
-    /// Returns a readonly handle to the tree. The handle **does not** see uncommitted changes to the tree,
-    /// only ones flushed to RocksDB.
+    /// Returns a readonly handle to the tree. The handle **does not** see uncommitted changes to
+    /// the tree, only ones flushed to RocksDB.
     pub fn reader(&self) -> ZkSyncTreeReader {
         let db = self.tree.db.inner().clone();
         ZkSyncTreeReader(MerkleTree::new_unchecked(db))
@@ -265,8 +266,10 @@ impl ZkSyncTree {
                     TreeInstruction::Read(_) => match log.base {
                         TreeLogEntry::Read { leaf_index, .. } => leaf_index,
                         TreeLogEntry::ReadMissingKey => 0,
-                        _ => unreachable!("Read instructions always transform to Read / ReadMissingKey log entries"),
-                    }
+                        _ => unreachable!(
+                            "Read instructions always transform to Read / ReadMissingKey log entries"
+                        ),
+                    },
                 },
                 value_written,
                 value_read: match log.base {
@@ -348,7 +351,8 @@ impl ZkSyncTree {
         kvs.collect()
     }
 
-    /// Rolls back this tree to a previous state. This method will overwrite all unsaved changes in the tree.
+    /// Rolls back this tree to a previous state. This method will overwrite all unsaved changes in
+    /// the tree.
     ///
     /// # Errors
     ///
@@ -381,7 +385,8 @@ impl ZkSyncTree {
 #[derive(Debug)]
 pub struct ZkSyncTreeReader(MerkleTree<RocksDBWrapper>);
 
-// While cloning `MerkleTree` is logically unsound, cloning a reader is reasonable since it is readonly.
+// While cloning `MerkleTree` is logically unsound, cloning a reader is reasonable since it is
+// readonly.
 impl Clone for ZkSyncTreeReader {
     fn clone(&self) -> Self {
         Self(MerkleTree::new_unchecked(self.0.db.clone()))
@@ -426,8 +431,8 @@ impl ZkSyncTreeReader {
         })
     }
 
-    /// Reads entries together with Merkle proofs with the specified keys from the tree. The entries are returned
-    /// in the same order as requested.
+    /// Reads entries together with Merkle proofs with the specified keys from the tree. The entries
+    /// are returned in the same order as requested.
     ///
     /// # Errors
     ///

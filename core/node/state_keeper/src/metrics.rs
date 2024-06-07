@@ -65,7 +65,8 @@ pub struct StateKeeperMetrics {
     /// Time spent waiting for the header of a previous L2 block.
     #[metrics(buckets = Buckets::LATENCIES)]
     pub load_previous_miniblock_header: Histogram<Duration>,
-    /// The time it takes for transactions to be included in a block. Representative of the time user must wait before their transaction is confirmed.
+    /// The time it takes for transactions to be included in a block. Representative of the time
+    /// user must wait before their transaction is confirmed.
     #[metrics(buckets = INCLUSION_DELAY_BUCKETS)]
     pub transaction_inclusion_delay: Family<TxExecutionType, Histogram<Duration>>,
     /// Time spent by the state keeper on transaction execution.
@@ -192,7 +193,8 @@ pub(super) enum L1BatchSealStage {
 const COUNT_BUCKETS: Buckets = Buckets::values(&[
     10.0, 20.0, 50.0, 100.0, 200.0, 500.0, 1_000.0, 2_000.0, 5_000.0, 10_000.0, 20_000.0, 50_000.0,
 ]);
-/// Buckets for sealing deltas for L1 batches (in seconds). The expected delta is approximately 1 minute.
+/// Buckets for sealing deltas for L1 batches (in seconds). The expected delta is approximately 1
+/// minute.
 const L1_BATCH_SEAL_DELTA_BUCKETS: Buckets = Buckets::values(&[
     0.1, 0.5, 1.0, 5.0, 10.0, 20.0, 30.0, 40.0, 60.0, 90.0, 120.0, 180.0, 240.0, 300.0,
 ]);

@@ -179,11 +179,12 @@ async fn recovery_detects_incorrect_chunk_size_change() {
     let mut snapshot = SnapshotParameters::new(&pool, &snapshot_recovery, &config)
         .await
         .unwrap();
-    assert!(tree
-        .recover(snapshot, recovery_options, &pool, &stop_receiver)
-        .await
-        .unwrap()
-        .is_none());
+    assert!(
+        tree.recover(snapshot, recovery_options, &pool, &stop_receiver)
+            .await
+            .unwrap()
+            .is_none()
+    );
 
     let tree = create_tree_recovery(&tree_path, L1BatchNumber(1)).await;
     let health_updater = ReactiveHealthCheck::new("tree").1;
@@ -221,11 +222,12 @@ async fn recovery_fault_tolerance(chunk_count: u64) {
     let snapshot = SnapshotParameters::new(&pool, &snapshot_recovery, &config)
         .await
         .unwrap();
-    assert!(tree
-        .recover(snapshot, recovery_options, &pool, &stop_receiver)
-        .await
-        .unwrap()
-        .is_none());
+    assert!(
+        tree.recover(snapshot, recovery_options, &pool, &stop_receiver)
+            .await
+            .unwrap()
+            .is_none()
+    );
 
     // Emulate a restart and recover 2 more chunks.
     let mut tree = create_tree_recovery(&tree_path, L1BatchNumber(1)).await;
@@ -237,11 +239,12 @@ async fn recovery_fault_tolerance(chunk_count: u64) {
         concurrency_limit: 1,
         events: Box::new(event_listener),
     };
-    assert!(tree
-        .recover(snapshot, recovery_options, &pool, &stop_receiver)
-        .await
-        .unwrap()
-        .is_none());
+    assert!(
+        tree.recover(snapshot, recovery_options, &pool, &stop_receiver)
+            .await
+            .unwrap()
+            .is_none()
+    );
 
     // Emulate another restart and recover remaining chunks.
     let mut tree = create_tree_recovery(&tree_path, L1BatchNumber(1)).await;

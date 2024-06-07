@@ -50,8 +50,8 @@ impl VmPermit {
     }
 }
 
-/// Barrier-like synchronization primitive allowing to close a [`VmConcurrencyLimiter`] it's attached to
-/// so that it doesn't issue new permits, and to wait for all permits to drop.
+/// Barrier-like synchronization primitive allowing to close a [`VmConcurrencyLimiter`] it's
+/// attached to so that it doesn't issue new permits, and to wait for all permits to drop.
 #[derive(Debug, Clone)]
 pub struct VmConcurrencyBarrier {
     limiter: Arc<tokio::sync::Semaphore>,
@@ -196,7 +196,8 @@ struct BlockStartInfoInner {
 }
 
 impl BlockStartInfoInner {
-    // We make max age a bit random so that all threads don't start refreshing cache at the same time
+    // We make max age a bit random so that all threads don't start refreshing cache at the same
+    // time
     const MAX_RANDOM_DELAY: Duration = Duration::from_millis(100);
 
     fn is_expired(&self, now: Instant, max_cache_age: Duration) -> bool {
@@ -364,8 +365,8 @@ impl BlockArgs {
         start_info: &BlockStartInfo,
     ) -> Result<Self, BlockArgsError> {
         // We need to check that `block_id` is present in Postgres or can be present in the future
-        // (i.e., it does not refer to a pruned block). If called for a pruned block, the returned value
-        // (specifically, `l1_batch_timestamp_s`) will be nonsensical.
+        // (i.e., it does not refer to a pruned block). If called for a pruned block, the returned
+        // value (specifically, `l1_batch_timestamp_s`) will be nonsensical.
         start_info
             .ensure_not_pruned_block(block_id, connection)
             .await?;

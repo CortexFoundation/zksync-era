@@ -9,8 +9,8 @@ pub struct ExperimentalDBConfig {
     /// Block cache capacity of the state keeper RocksDB cache. The default value is 128 MB.
     #[serde(default = "ExperimentalDBConfig::default_state_keeper_db_block_cache_capacity_mb")]
     pub state_keeper_db_block_cache_capacity_mb: usize,
-    /// Maximum number of files concurrently opened by state keeper cache RocksDB. Useful to fit into OS limits; can be used
-    /// as a rudimentary way to control RAM usage of the cache.
+    /// Maximum number of files concurrently opened by state keeper cache RocksDB. Useful to fit
+    /// into OS limits; can be used as a rudimentary way to control RAM usage of the cache.
     pub state_keeper_db_max_open_files: Option<NonZeroU32>,
 }
 

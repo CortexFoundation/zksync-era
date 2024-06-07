@@ -10,8 +10,8 @@ use crate::{io::IoCursor, updates::UpdatesManager};
 /// Handler for state keeper outputs (L2 blocks and L1 batches).
 #[async_trait]
 pub trait StateKeeperOutputHandler: 'static + Send + fmt::Debug {
-    /// Initializes this handler. This method will be called on state keeper initialization before any other calls.
-    /// The default implementation does nothing.
+    /// Initializes this handler. This method will be called on state keeper initialization before
+    /// any other calls. The default implementation does nothing.
     async fn initialize(&mut self, _cursor: &IoCursor) -> anyhow::Result<()> {
         Ok(())
     }
@@ -31,9 +31,10 @@ pub trait StateKeeperOutputHandler: 'static + Send + fmt::Debug {
 /// Compound output handler plugged into the state keeper.
 ///
 /// This handle aggregates one or more [`StateKeeperOutputHandler`]s executing their hooks
-/// on each new L2 block / L1 batch produced by the state keeper. These are executed sequentially in the order
-/// handlers were inserted into this `OutputHandler`. Errors from handlers are bubbled up to the state keeper level,
-/// meaning that if a handler fails, the corresponding hook won't run for subsequent handlers.
+/// on each new L2 block / L1 batch produced by the state keeper. These are executed sequentially in
+/// the order handlers were inserted into this `OutputHandler`. Errors from handlers are bubbled up
+/// to the state keeper level, meaning that if a handler fails, the corresponding hook won't run for
+/// subsequent handlers.
 #[derive(Debug)]
 pub struct OutputHandler {
     inner: Vec<Box<dyn StateKeeperOutputHandler>>,

@@ -112,8 +112,8 @@ impl<H> ValidationTracer<H> {
             return true;
         }
 
-        // The pair of `MSG_VALUE_SIMULATOR_ADDRESS` & `L2_ETH_TOKEN_ADDRESS` simulates the behavior of transferring ETH
-        // that is safe for the DDoS protection rules.
+        // The pair of `MSG_VALUE_SIMULATOR_ADDRESS` & `L2_ETH_TOKEN_ADDRESS` simulates the behavior
+        // of transferring ETH that is safe for the DDoS protection rules.
         if valid_eth_token_call(address, msg_sender) {
             return true;
         }
@@ -159,8 +159,8 @@ impl<H> ValidationTracer<H> {
         // If the `validation_address` is equal to the `potential_address`,
         // then it is a request that could be used for mapping of kind `mapping(address => ...).`
         //
-        // If the `potential_position_bytes` were already allowed before, then this keccak might be used
-        // for ERC-20 allowance or any other of `mapping(address => mapping(...))`
+        // If the `potential_position_bytes` were already allowed before, then this keccak might be
+        // used for ERC-20 allowance or any other of `mapping(address => mapping(...))`
         if potential_address == Some(validated_address)
             || self
                 .auxilary_allowed_slots

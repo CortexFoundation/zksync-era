@@ -153,7 +153,8 @@ pub trait TreeApiClient: 'static + Send + Sync + fmt::Debug {
     /// Obtains general information about the tree.
     async fn get_info(&self) -> Result<MerkleTreeInfo, TreeApiError>;
 
-    /// Obtains proofs for the specified `hashed_keys` at the specified tree version (= L1 batch number).
+    /// Obtains proofs for the specified `hashed_keys` at the specified tree version (= L1 batch
+    /// number).
     async fn get_proofs(
         &self,
         l1_batch_number: L1BatchNumber,
@@ -221,7 +222,8 @@ impl CheckHealth for TreeApiHttpClient {
     async fn check_health(&self) -> Health {
         match self.get_info().await {
             Ok(info) => Health::from(HealthStatus::Ready).with_details(info),
-            // Tree API is not a critical component, so its errors are not considered fatal for the app health.
+            // Tree API is not a critical component, so its errors are not considered fatal for the
+            // app health.
             Err(err) => Health::from(HealthStatus::Affected).with_details(serde_json::json!({
                 "error": err.to_string(),
                 // Transient error detection is a best-effort estimate

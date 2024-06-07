@@ -35,9 +35,9 @@ impl<const LEAF_SIZE: usize> MiniMerkleTree<LEAF_SIZE>
 where
     KeccakHasher: HashEmptySubtree<LEAF_SIZE>,
 {
-    /// Creates a new Merkle tree from the supplied leaves. If `min_tree_size` is supplied and is larger
-    /// than the number of the supplied leaves, the leaves are padded to `min_tree_size` with `[0_u8; LEAF_SIZE]` entries.
-    /// The hash function used in keccak-256.
+    /// Creates a new Merkle tree from the supplied leaves. If `min_tree_size` is supplied and is
+    /// larger than the number of the supplied leaves, the leaves are padded to `min_tree_size`
+    /// with `[0_u8; LEAF_SIZE]` entries. The hash function used in keccak-256.
     ///
     /// # Panics
     ///
@@ -54,8 +54,9 @@ impl<const LEAF_SIZE: usize, H> MiniMerkleTree<LEAF_SIZE, H>
 where
     H: HashEmptySubtree<LEAF_SIZE>,
 {
-    /// Creates a new Merkle tree from the supplied leaves. If `min_tree_size` is supplied and is larger than the
-    /// number of the supplied leaves, the leaves are padded to `min_tree_size` with `[0_u8; LEAF_SIZE]` entries.
+    /// Creates a new Merkle tree from the supplied leaves. If `min_tree_size` is supplied and is
+    /// larger than the number of the supplied leaves, the leaves are padded to `min_tree_size`
+    /// with `[0_u8; LEAF_SIZE]` entries.
     ///
     /// # Panics
     ///

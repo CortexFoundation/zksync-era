@@ -677,10 +677,12 @@ fn recovery_workflow_with_multiple_stages() {
     let (output, _) = storage.extend_with_proofs(instructions.collect());
     assert_eq!(output.leaf_count, 200);
     assert_eq!(output.logs.len(), 200);
-    assert!(output
-        .logs
-        .iter()
-        .all(|log| matches!(log.base, TreeLogEntry::Read { .. })));
+    assert!(
+        output
+            .logs
+            .iter()
+            .all(|log| matches!(log.base, TreeLogEntry::Read { .. }))
+    );
 }
 
 #[derive(Debug, Clone, Copy)]

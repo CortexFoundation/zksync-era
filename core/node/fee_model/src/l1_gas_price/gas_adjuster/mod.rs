@@ -26,8 +26,9 @@ mod tests;
 pub struct GasAdjuster {
     pub(super) base_fee_statistics: GasStatistics<u64>,
     // Type for blob base fee is chosen to be `U256`.
-    // In practice, it's very unlikely to overflow `u64` (if `blob_base_fee_statistics` = 10 ^ 18, then price for one blob is 2 ^ 17 ETH).
-    // But it's still possible and code shouldn't panic if that happens. One more argument is that geth uses big int type for blob prices.
+    // In practice, it's very unlikely to overflow `u64` (if `blob_base_fee_statistics` = 10 ^ 18,
+    // then price for one blob is 2 ^ 17 ETH). But it's still possible and code shouldn't panic
+    // if that happens. One more argument is that geth uses big int type for blob prices.
     pub(super) blob_base_fee_statistics: GasStatistics<U256>,
     pub(super) config: GasAdjusterConfig,
     pubdata_sending_mode: PubdataSendingMode,
@@ -56,8 +57,8 @@ impl GasAdjuster {
             .base_fee_history(current_block, config.max_base_fee_samples)
             .await?;
 
-        // Web3 API doesn't provide a method to fetch blob fees for multiple blocks using single request,
-        // so we request blob base fee only for the latest block.
+        // Web3 API doesn't provide a method to fetch blob fees for multiple blocks using single
+        // request, so we request blob base fee only for the latest block.
         let (_, last_block_blob_base_fee) =
             Self::get_base_fees_history(eth_client.as_ref(), current_block..=current_block).await?;
 
@@ -101,7 +102,8 @@ impl GasAdjuster {
             )
             .await?;
 
-            // We shouldn't rely on L1 provider to return consistent results, so we check that we have at least one new sample.
+            // We shouldn't rely on L1 provider to return consistent results, so we check that we
+            // have at least one new sample.
             if let Some(current_base_fee_per_gas) = base_fee_history.last() {
                 METRICS
                     .current_base_fee_per_gas
@@ -111,10 +113,13 @@ impl GasAdjuster {
 
             if let Some(current_blob_base_fee) = blob_base_fee_history.last() {
                 // Blob base fee overflows `u64` only in very extreme cases.
-                // It doesn't worth to observe exact value with metric because anyway values that can be used
-                // are capped by `self.config.max_blob_base_fee()` of `u64` type.
+                // It doesn't worth to observe exact value with metric because anyway values that
+                // can be used are capped by `self.config.max_blob_base_fee()` of
+                // `u64` type.
                 if current_blob_base_fee > &U256::from(u64::MAX) {
-                    tracing::error!("Failed to report current_blob_base_fee = {current_blob_base_fee}, it exceeds u64::MAX");
+                    tracing::error!(
+                        "Failed to report current_blob_base_fee = {current_blob_base_fee}, it exceeds u64::MAX"
+                    );
                 } else {
                     METRICS
                         .current_blob_base_fee
@@ -182,10 +187,13 @@ impl GasAdjuster {
 
                 let blob_base_fee_median = self.blob_base_fee_statistics.median();
 
-                // Check if blob base fee overflows `u64` before converting. Can happen only in very extreme cases.
+                // Check if blob base fee overflows `u64` before converting. Can happen only in very
+                // extreme cases.
                 if blob_base_fee_median > U256::from(u64::MAX) {
                     let max_allowed = self.config.max_blob_base_fee();
-                    tracing::error!("Blob base fee is too high: {blob_base_fee_median}, using max allowed: {max_allowed}");
+                    tracing::error!(
+                        "Blob base fee is too high: {blob_base_fee_median}, using max allowed: {max_allowed}"
+                    );
                     return max_allowed;
                 }
                 METRICS
@@ -216,7 +224,9 @@ impl GasAdjuster {
             L1BatchCommitmentMode::Validium => 0,
             L1BatchCommitmentMode::Rollup => {
                 if blob_base_fee > max_blob_base_fee as f64 {
-                    tracing::error!("Blob base fee is too high: {blob_base_fee}, using max allowed: {max_blob_base_fee}");
+                    tracing::error!(
+                        "Blob base fee is too high: {blob_base_fee}, using max allowed: {max_blob_base_fee}"
+                    );
                     return max_blob_base_fee;
                 }
                 blob_base_fee as u64

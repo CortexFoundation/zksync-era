@@ -23,8 +23,9 @@ impl<S: Storage> VmInstance<S> {
 
         let (events, l2_to_l1_logs) =
             self.collect_events_and_l1_logs_after_timestamp(from_timestamp);
-        // For the first transaction in L1 batch there may be (it depends on the execution mode) an L2->L1 log
-        // that is sent by `SystemContext` in `setNewBlock`. It's a part of the L1 batch pubdata overhead and not the transaction itself.
+        // For the first transaction in L1 batch there may be (it depends on the execution mode) an
+        // L2->L1 log that is sent by `SystemContext` in `setNewBlock`. It's a part of the
+        // L1 batch pubdata overhead and not the transaction itself.
         let l2_l1_logs_bytes = (l2_to_l1_logs
             .iter()
             .filter(|log| log.sender != SYSTEM_CONTEXT_ADDRESS)
@@ -49,9 +50,10 @@ impl<S: Storage> VmInstance<S> {
     }
 
     fn pubdata_published_for_writes(&self, from_timestamp: Timestamp) -> u32 {
-        // This `HashMap` contains how much was already paid for every slot that was paid during the last tx execution.
-        // For the slots that weren't paid during the last tx execution we can just use
-        // `self.state.storage.paid_changes.inner().get(&key)` to get how much it was paid before.
+        // This `HashMap` contains how much was already paid for every slot that was paid during the
+        // last tx execution. For the slots that weren't paid during the last tx execution
+        // we can just use `self.state.storage.paid_changes.inner().get(&key)` to get how
+        // much it was paid before.
         let pre_paid_before_tx_map: HashMap<StorageKey, u32> = self
             .state
             .storage

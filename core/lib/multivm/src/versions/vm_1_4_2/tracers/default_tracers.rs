@@ -53,19 +53,21 @@ pub(crate) struct DefaultExecutionTracer<S: WriteStorage, H: HistoryMode> {
     in_account_validation: bool,
     final_batch_info_requested: bool,
     pub(crate) result_tracer: ResultTracer<S>,
-    // This tracer is designed specifically for calculating refunds. Its separation from the custom tracer
-    // ensures static dispatch, enhancing performance by avoiding dynamic dispatch overhead.
-    // Additionally, being an internal tracer, it saves the results directly to `VmResultAndLogs`.
+    // This tracer is designed specifically for calculating refunds. Its separation from the custom
+    // tracer ensures static dispatch, enhancing performance by avoiding dynamic dispatch
+    // overhead. Additionally, being an internal tracer, it saves the results directly to
+    // `VmResultAndLogs`.
     pub(crate) refund_tracer: Option<RefundsTracer<S>>,
-    // The pubdata tracer is responsible for inserting the pubdata packing information into the bootloader
-    // memory at the end of the batch. Its separation from the custom tracer
+    // The pubdata tracer is responsible for inserting the pubdata packing information into the
+    // bootloader memory at the end of the batch. Its separation from the custom tracer
     // ensures static dispatch, enhancing performance by avoiding dynamic dispatch overhead.
     pub(crate) pubdata_tracer: Option<PubdataTracer<S>>,
     pub(crate) dispatcher: TracerDispatcher<S, H>,
     ret_from_the_bootloader: Option<RetOpcode>,
-    // This tracer tracks what opcodes were executed and calculates how much circuits will be generated.
-    // It only takes into account circuits that are generated for actual execution. It doesn't
-    // take into account e.g circuits produced by the initial bootloader memory commitment.
+    // This tracer tracks what opcodes were executed and calculates how much circuits will be
+    // generated. It only takes into account circuits that are generated for actual execution.
+    // It doesn't take into account e.g circuits produced by the initial bootloader memory
+    // commitment.
     pub(crate) circuits_tracer: CircuitsTracer<S, H>,
     storage: StoragePtr<S>,
     _phantom: PhantomData<H>,
@@ -154,9 +156,9 @@ impl<S: WriteStorage, H: HistoryMode> Debug for DefaultExecutionTracer<S, H> {
     }
 }
 
-/// The default tracer for the VM manages all other tracers. For the sake of optimization, these tracers are statically dispatched.
-/// At the same time, the boilerplate for calling these tracers for all tracer calls is quite extensive.
-/// This macro is used to reduce the boilerplate.
+/// The default tracer for the VM manages all other tracers. For the sake of optimization, these
+/// tracers are statically dispatched. At the same time, the boilerplate for calling these tracers
+/// for all tracer calls is quite extensive. This macro is used to reduce the boilerplate.
 ///
 /// Usage:
 /// ```
@@ -307,7 +309,7 @@ impl<S: WriteStorage, H: HistoryMode> DefaultExecutionTracer<S, H> {
 
 fn current_frame_is_bootloader(local_state: &VmLocalState) -> bool {
     // The current frame is bootloader if the call stack depth is 1.
-    // Some of the near calls inside the bootloader can be out of gas, which is totally normal behavior
-    // and it shouldn't result in `is_bootloader_out_of_gas` becoming true.
+    // Some of the near calls inside the bootloader can be out of gas, which is totally normal
+    // behavior and it shouldn't result in `is_bootloader_out_of_gas` becoming true.
     local_state.callstack.inner.len() == 1
 }

@@ -81,7 +81,8 @@ pub fn get_batch_base_fee(l1_batch_env: &L1BatchEnv, vm_version: VmVersion) -> u
     }
 }
 
-/// Changes the batch fee input so that the expected gas per pubdata is smaller than or the `tx_gas_per_pubdata_limit`.
+/// Changes the batch fee input so that the expected gas per pubdata is smaller than or the
+/// `tx_gas_per_pubdata_limit`.
 pub fn adjust_pubdata_price_for_tx(
     batch_fee_input: BatchFeeInput,
     tx_gas_per_pubdata_limit: U256,
@@ -273,7 +274,8 @@ pub fn gas_bootloader_batch_tip_overhead(version: VmVersion) -> u32 {
         | VmVersion::Vm1_3_2
         | VmVersion::VmVirtualBlocks
         | VmVersion::VmVirtualBlocksRefundsEnhancement => {
-            // For these versions the overhead has not been calculated and it has not been used with those versions.
+            // For these versions the overhead has not been calculated and it has not been used with
+            // those versions.
             0
         }
         VmVersion::VmBoojumIntegration => {
@@ -298,7 +300,8 @@ pub fn circuit_statistics_bootloader_batch_tip_overhead(version: VmVersion) -> u
         | VmVersion::VmVirtualBlocksRefundsEnhancement
         | VmVersion::VmBoojumIntegration
         | VmVersion::Vm1_4_1 => {
-            // For these versions the overhead has not been calculated and it has not been used with those versions.
+            // For these versions the overhead has not been calculated and it has not been used with
+            // those versions.
             0
         }
         VmVersion::Vm1_4_2 => {
@@ -321,7 +324,8 @@ pub fn execution_metrics_bootloader_batch_tip_overhead(version: VmVersion) -> us
         | VmVersion::VmVirtualBlocksRefundsEnhancement
         | VmVersion::VmBoojumIntegration
         | VmVersion::Vm1_4_1 => {
-            // For these versions the overhead has not been calculated and it has not been used with those versions.
+            // For these versions the overhead has not been calculated and it has not been used with
+            // those versions.
             0
         }
         VmVersion::Vm1_4_2 => {
@@ -486,8 +490,9 @@ pub fn get_max_batch_base_layer_circuits(version: VmVersion) -> usize {
         | VmVersion::Vm1_4_1
         | VmVersion::Vm1_4_2 => {
             // For pre-v1.4.2 the maximal number of circuits has not been calculated, but since
-            // these are used only for replaying transactions, we'll reuse the same value as for v1.4.2.
-            // We avoid providing `0` for the old versions to avoid potential errors when working with old versions.
+            // these are used only for replaying transactions, we'll reuse the same value as for
+            // v1.4.2. We avoid providing `0` for the old versions to avoid potential
+            // errors when working with old versions.
             crate::vm_1_4_2::constants::MAX_BASE_LAYER_CIRCUITS
         }
         VmVersion::Vm1_5_0SmallBootloaderMemory | VmVersion::Vm1_5_0IncreasedBootloaderMemory => {

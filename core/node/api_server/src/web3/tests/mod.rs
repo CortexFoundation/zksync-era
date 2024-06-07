@@ -131,7 +131,8 @@ async fn setting_response_size_limits() {
 
 #[async_trait]
 trait HttpTest: Send + Sync {
-    /// Prepares the storage before the server is started. The default implementation performs genesis.
+    /// Prepares the storage before the server is started. The default implementation performs
+    /// genesis.
     fn storage_initialization(&self) -> StorageInitialization {
         StorageInitialization::Genesis
     }
@@ -145,7 +146,7 @@ trait HttpTest: Send + Sync {
     }
 
     async fn test(&self, client: &DynClient<L2>, pool: &ConnectionPool<Core>)
-        -> anyhow::Result<()>;
+    -> anyhow::Result<()>;
 
     /// Overrides the `filters_disabled` configuration parameter for HTTP server startup
     fn filters_disabled(&self) -> bool {

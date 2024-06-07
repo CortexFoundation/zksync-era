@@ -659,7 +659,8 @@ async fn detector_does_not_deadlock_if_main_node_is_not_available() {
         .unwrap();
     drop(storage);
 
-    // `client` will always return transient errors making the detector to retry its checks indefinitely
+    // `client` will always return transient errors making the detector to retry its checks
+    // indefinitely
     let client = MockMainNodeClient::default();
     *client.error_kind.lock().unwrap() = Some(RpcErrorKind::Transient);
     let mut detector = create_mock_detector(client, pool);

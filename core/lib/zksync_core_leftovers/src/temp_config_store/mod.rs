@@ -29,9 +29,11 @@ pub fn decode_yaml_repr<T: ProtoRepr>(yaml: &str) -> anyhow::Result<T::Type> {
     this.read()
 }
 //
-// TODO (QIT-22): This structure is going to be removed when components will be responsible for their own configs.
-/// A temporary config store allowing to pass deserialized configs from `zksync_server` to `zksync_core`.
-/// All the configs are optional, since for some component combination it is not needed to pass all the configs.
+// TODO (QIT-22): This structure is going to be removed when components will be responsible for
+// their own configs.
+/// A temporary config store allowing to pass deserialized configs from `zksync_server` to
+/// `zksync_core`. All the configs are optional, since for some component combination it is not
+/// needed to pass all the configs.
 #[derive(Debug, PartialEq)]
 pub struct TempConfigStore {
     pub postgres_config: Option<PostgresConfig>,

@@ -77,8 +77,8 @@ impl TransactionsWeb3Dal<'_, '_> {
                 transactions.hash = ANY ($3)
                 AND transactions.data != '{}'::jsonb
             "#,
-            // ^ Filter out transactions with pruned data, which would lead to potentially incomplete / bogus
-            // transaction info.
+            // ^ Filter out transactions with pruned data, which would lead to potentially
+            // incomplete / bogus transaction info.
             ACCOUNT_CODE_STORAGE_ADDRESS.as_bytes(),
             FAILED_CONTRACT_DEPLOYMENT_BYTECODE_HASH.as_bytes(),
             &hash_bytes as &[&[u8]]
@@ -133,8 +133,9 @@ impl TransactionsWeb3Dal<'_, '_> {
         Ok(receipts)
     }
 
-    /// Obtains transactions with the specified hashes. Transactions are returned in no particular order; if some hashes
-    /// don't correspond to transactions, the output will contain less elements than `hashes`.
+    /// Obtains transactions with the specified hashes. Transactions are returned in no particular
+    /// order; if some hashes don't correspond to transactions, the output will contain less
+    /// elements than `hashes`.
     pub async fn get_transactions(
         &mut self,
         hashes: &[H256],
@@ -276,8 +277,8 @@ impl TransactionsWeb3Dal<'_, '_> {
                 transactions.hash = $1
                 AND transactions.data != '{}'::jsonb
             "#,
-            // ^ Filter out transactions with pruned data, which would lead to potentially incomplete / bogus
-            // transaction info.
+            // ^ Filter out transactions with pruned data, which would lead to potentially
+            // incomplete / bogus transaction info.
             hash.as_bytes()
         )
         .instrument("get_transaction_details")
@@ -288,7 +289,8 @@ impl TransactionsWeb3Dal<'_, '_> {
         Ok(row.map(Into::into))
     }
 
-    /// Returns hashes of txs which were received after `from_timestamp` and the time of receiving the last tx.
+    /// Returns hashes of txs which were received after `from_timestamp` and the time of receiving
+    /// the last tx.
     pub async fn get_pending_txs_hashes_after(
         &mut self,
         from_timestamp: NaiveDateTime,
@@ -332,9 +334,10 @@ impl TransactionsWeb3Dal<'_, '_> {
     ) -> DalResult<U256> {
         // Get nonces of non-rejected transactions, starting from the 'latest' nonce.
         // `latest` nonce is used, because it is guaranteed that there are no gaps before it.
-        // `(miniblock_number IS NOT NULL OR error IS NULL)` is the condition that filters non-rejected transactions.
-        // Query is fast because we have an index on (`initiator_address`, `nonce`)
-        // and it cannot return more than `max_nonce_ahead` nonces.
+        // `(miniblock_number IS NOT NULL OR error IS NULL)` is the condition that filters
+        // non-rejected transactions. Query is fast because we have an index on
+        // (`initiator_address`, `nonce`) and it cannot return more than `max_nonce_ahead`
+        // nonces.
         let non_rejected_nonces: Vec<u64> = sqlx::query!(
             r#"
             SELECT
@@ -618,7 +621,8 @@ mod tests {
             .unwrap();
         assert_eq!(next_nonce, 1.into());
 
-        // Include transactions in a L2 block (including the rejected one), so that they are taken into account again.
+        // Include transactions in a L2 block (including the rejected one), so that they are taken
+        // into account again.
         let mut l2_block = create_l2_block_header(1);
         l2_block.l2_tx_count = 2;
         conn.blocks_dal().insert_l2_block(&l2_block).await.unwrap();

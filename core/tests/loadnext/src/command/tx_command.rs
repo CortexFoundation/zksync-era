@@ -13,7 +13,8 @@ use crate::{
 static WEIGHTS: OnceCell<[(TxType, f32); 5]> = OnceCell::new();
 
 /// Type of transaction. It doesn't copy the zkSync operation list, because
-/// it divides some transactions in subcategories (e.g. to new account / to existing account; to self / to other; etc)/
+/// it divides some transactions in subcategories (e.g. to new account / to existing account; to
+/// self / to other; etc)/
 #[derive(Debug, Copy, Clone, PartialEq)]
 pub enum TxType {
     Deposit,
@@ -83,7 +84,8 @@ pub enum IncorrectnessModifier {
 }
 
 impl IncorrectnessModifier {
-    // Have to implement this as a const function, since const functions in traits are not stabilized yet.
+    // Have to implement this as a const function, since const functions in traits are not
+    // stabilized yet.
     const fn const_all() -> &'static [Self] {
         &[Self::ZeroFee, Self::IncorrectSignature, Self::None]
     }

@@ -185,9 +185,10 @@ impl Display for TxRevertReason {
             }
             TxRevertReason::Unknown(reason) => write!(f, "Unknown reason: {}", reason),
             TxRevertReason::UnexpectedVMBehavior(problem) => {
-                write!(f,
+                write!(
+                    f,
                     "virtual machine entered unexpected state. Please contact developers and provide transaction details \
-                    that caused this error. Error description: {problem}" 
+                    that caused this error. Error description: {problem}"
                 )
             }
             TxRevertReason::BootloaderOutOfGas => write!(f, "Bootloader out of gas"),

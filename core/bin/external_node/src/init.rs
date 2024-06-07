@@ -52,7 +52,9 @@ pub(crate) async fn ensure_storage_initialized(
             InitDecision::Genesis
         }
         (None, Some(snapshot_recovery)) => {
-            tracing::info!("Node has no genesis L1 batch and snapshot recovery information: {snapshot_recovery:?}");
+            tracing::info!(
+                "Node has no genesis L1 batch and snapshot recovery information: {snapshot_recovery:?}"
+            );
             InitDecision::SnapshotRecovery
         }
         (None, None) => {
@@ -84,7 +86,9 @@ pub(crate) async fn ensure_storage_initialized(
                  `EN_SNAPSHOTS_RECOVERY_ENABLED=true` env variable to the node binary, or use a Postgres dump for recovery"
             );
 
-            tracing::warn!("Proceeding with snapshot recovery. This is an experimental feature; use at your own risk");
+            tracing::warn!(
+                "Proceeding with snapshot recovery. This is an experimental feature; use at your own risk"
+            );
             let recovery_config = SnapshotsRecoveryConfig::new()?;
             let blob_store = ObjectStoreFactory::new(recovery_config.snapshots_object_store)
                 .create_store()

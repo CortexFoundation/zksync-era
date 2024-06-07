@@ -6,24 +6,26 @@ use zksync_types::{
 
 use crate::{command::IncorrectnessModifier, sdk::signer::Signer};
 
-/// Trait that exists solely to extend the signed zkSync transaction interface, providing the ability
-/// to modify transaction in a way that will make it invalid.
+/// Trait that exists solely to extend the signed zkSync transaction interface, providing the
+/// ability to modify transaction in a way that will make it invalid.
 ///
-/// Loadtest is expected to simulate the user behavior, and it's not that uncommon of users to send incorrect
-/// transactions.
+/// Loadtest is expected to simulate the user behavior, and it's not that uncommon of users to send
+/// incorrect transactions.
 #[async_trait]
 pub trait Corrupted<S: EthereumSigner>: Sized {
     /// Creates a transaction without fee provided.
     async fn zero_fee(self, signer: &Signer<S>) -> Self;
 
-    /// Resigns the transaction after the modification in order to make signatures correct (if applicable).
+    /// Resigns the transaction after the modification in order to make signatures correct (if
+    /// applicable).
     async fn resign(&mut self, signer: &Signer<S>);
 
-    /// Automatically chooses one of the methods of this trait based on the provided incorrectness modifier.
+    /// Automatically chooses one of the methods of this trait based on the provided incorrectness
+    /// modifier.
     async fn apply_modifier(self, modifier: IncorrectnessModifier, signer: &Signer<S>) -> Self {
         match modifier {
             IncorrectnessModifier::None => self,
-            IncorrectnessModifier::IncorrectSignature => self, // signature will be changed before submitting transaction
+            IncorrectnessModifier::IncorrectSignature => self, /* signature will be changed before submitting transaction */
             IncorrectnessModifier::ZeroFee => self.zero_fee(signer).await,
         }
     }

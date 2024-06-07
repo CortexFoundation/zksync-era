@@ -54,8 +54,9 @@ impl<DB: DbMarker> ConnectionPoolBuilder<DB> {
         self
     }
 
-    /// Sets the acquire timeout for a single connection attempt. There are multiple attempts (currently 3)
-    /// before `connection*` methods return an error. If not specified, the acquire timeout will not be set.
+    /// Sets the acquire timeout for a single connection attempt. There are multiple attempts
+    /// (currently 3) before `connection*` methods return an error. If not specified, the
+    /// acquire timeout will not be set.
     pub fn set_acquire_timeout(&mut self, timeout: Option<Duration>) -> &mut Self {
         if let Some(timeout) = timeout {
             self.acquire_timeout = timeout;
@@ -178,8 +179,8 @@ impl TestTemplate {
     /// The template is expected to have all migrations from dal/migrations applied.
     /// For efficiency, the Postgres container of TEST_DATABASE_URL should be
     /// configured with option "fsync=off" - it disables waiting for disk synchronization
-    /// whenever you write to the DBs, therefore making it as fast as an in-memory Postgres instance.
-    /// The database is not cleaned up automatically, but rather the whole Postgres
+    /// whenever you write to the DBs, therefore making it as fast as an in-memory Postgres
+    /// instance. The database is not cleaned up automatically, but rather the whole Postgres
     /// container is recreated whenever you call "zk test rust".
     pub async fn create_db<DB: DbMarker>(
         &self,
@@ -227,7 +228,8 @@ impl GlobalConnectionPoolConfig {
         Duration::from_millis(self.slow_query_threshold_ms.load(Ordering::Relaxed))
     }
 
-    /// Sets the threshold for the DB connection lifetime to denote a connection as long-living and log its details.
+    /// Sets the threshold for the DB connection lifetime to denote a connection as long-living and
+    /// log its details.
     pub fn set_long_connection_threshold(&self, threshold: Duration) -> anyhow::Result<&Self> {
         let millis = u64::try_from(threshold.as_millis())
             .context("long_connection_threshold is unreasonably large")?;
@@ -275,8 +277,8 @@ impl<DB: DbMarker> fmt::Debug for ConnectionPool<DB> {
 impl<DB: DbMarker> ConnectionPool<DB> {
     const TEST_ACQUIRE_TIMEOUT: Duration = Duration::from_secs(10);
 
-    /// Returns a reference to the global configuration parameters applied for all DB pools. For consistency, these parameters
-    /// should be changed early in the app life cycle.
+    /// Returns a reference to the global configuration parameters applied for all DB pools. For
+    /// consistency, these parameters should be changed early in the app life cycle.
     pub fn global_config() -> &'static GlobalConnectionPoolConfig {
         static CONFIG: GlobalConnectionPoolConfig = GlobalConnectionPoolConfig::new();
         &CONFIG
@@ -284,15 +286,15 @@ impl<DB: DbMarker> ConnectionPool<DB> {
 
     /// Creates a test pool with a reasonably large number of connections.
     ///
-    /// Test pools trace their active connections. If acquiring a connection fails (e.g., with a timeout),
-    /// the returned error will contain information on all active connections.
+    /// Test pools trace their active connections. If acquiring a connection fails (e.g., with a
+    /// timeout), the returned error will contain information on all active connections.
     pub async fn test_pool() -> ConnectionPool<DB> {
         const DEFAULT_CONNECTIONS: u32 = 100; // Expected to be enough for any unit test.
         Self::constrained_test_pool(DEFAULT_CONNECTIONS).await
     }
 
-    /// Same as [`Self::test_pool()`], but with a configurable number of connections. This is useful to test
-    /// behavior of components that rely on singleton / constrained pools in production.
+    /// Same as [`Self::test_pool()`], but with a configurable number of connections. This is useful
+    /// to test behavior of components that rely on singleton / constrained pools in production.
     pub async fn constrained_test_pool(connections: u32) -> ConnectionPool<DB> {
         assert!(connections > 0, "Number of connections must be positive");
         let mut builder = TestTemplate::empty()
@@ -352,8 +354,9 @@ impl<DB: DbMarker> ConnectionPool<DB> {
     }
 
     /// A version of `connection` that would also expose the duration of the connection
-    /// acquisition tagged to the `requester` name. It also tracks the caller location for the purposes
-    /// of logging (e.g., long-living connections) and debugging (when used with a test connection pool).
+    /// acquisition tagged to the `requester` name. It also tracks the caller location for the
+    /// purposes of logging (e.g., long-living connections) and debugging (when used with a test
+    /// connection pool).
     ///
     /// WARN: This method should not be used if it will result in too many time series (e.g.
     /// from witness generators or provers), otherwise Prometheus won't be able to handle it.

@@ -263,7 +263,8 @@ impl MockEthereumBuilder {
         }
     }
 
-    /// Sets the excess blob gas history for each block in the mocked Ethereum network, starting from the 0th block.
+    /// Sets the excess blob gas history for each block in the mocked Ethereum network, starting
+    /// from the 0th block.
     pub fn with_excess_blob_gas_history(self, history: Vec<u64>) -> Self {
         Self {
             excess_blob_gas_history: history,
@@ -278,8 +279,8 @@ impl MockEthereumBuilder {
         }
     }
 
-    /// Sets the `eth_call` handler. There are "standard" calls that will not be routed to the handler
-    /// (e.g., calls to determine transaction failure reason).
+    /// Sets the `eth_call` handler. There are "standard" calls that will not be routed to the
+    /// handler (e.g., calls to determine transaction failure reason).
     pub fn with_call_handler<F>(self, call_handler: F) -> Self
     where
         F: 'static + Send + Sync + Fn(&web3::CallRequest, BlockId) -> ethabi::Token,
@@ -290,8 +291,8 @@ impl MockEthereumBuilder {
         }
     }
 
-    /// Same as [`Self::with_call_handler()`], with a difference that the provided closure should return a `Result`.
-    /// Thus, it can emulate network errors, reversions etc.
+    /// Same as [`Self::with_call_handler()`], with a difference that the provided closure should
+    /// return a `Result`. Thus, it can emulate network errors, reversions etc.
     pub fn with_fallible_call_handler<F>(self, call_handler: F) -> Self
     where
         F: 'static

@@ -81,7 +81,8 @@ struct TestEnvironmentHandles {
     app_health_receiver: oneshot::Receiver<Arc<AppHealthCheck>>,
 }
 
-// The returned components have the fully implemented health check life cycle (i.e., signal their shutdown).
+// The returned components have the fully implemented health check life cycle (i.e., signal their
+// shutdown).
 fn expected_health_components(components: &ComponentsToRun) -> Vec<&'static str> {
     let mut output = vec!["reorg_detector"];
     if components.0.contains(&Component::Core) {
@@ -134,8 +135,8 @@ async fn external_node_basics(components_str: &'static str) {
     let _guard = vlog::ObservabilityBuilder::new().build(); // Enable logging to simplify debugging
     let temp_dir = tempfile::TempDir::new().unwrap();
 
-    // Simplest case to mock: the EN already has a genesis L1 batch / L2 block, and it's the only L1 batch / L2 block
-    // in the network.
+    // Simplest case to mock: the EN already has a genesis L1 batch / L2 block, and it's the only L1
+    // batch / L2 block in the network.
     let connection_pool = ConnectionPool::test_pool().await;
     let singleton_pool_builder = ConnectionPool::singleton(connection_pool.database_url().clone());
     let mut storage = connection_pool.connection().await.unwrap();

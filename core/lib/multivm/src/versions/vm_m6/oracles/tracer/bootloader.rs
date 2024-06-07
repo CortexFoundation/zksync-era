@@ -18,8 +18,8 @@ use crate::vm_m6::{
     },
 };
 
-/// Tells the VM to end the execution before `ret` from the bootloader if there is no panic or revert.
-/// Also, saves the information if this `ret` was caused by "out of gas" panic.
+/// Tells the VM to end the execution before `ret` from the bootloader if there is no panic or
+/// revert. Also, saves the information if this `ret` was caused by "out of gas" panic.
 #[derive(Debug, Clone, Default)]
 pub struct BootloaderTracer<H: HistoryMode> {
     is_bootloader_out_of_gas: bool,
@@ -41,7 +41,8 @@ impl<H: HistoryMode> Tracer for BootloaderTracer<H> {
         data: AfterDecodingData,
         _memory: &Self::SupportedMemory,
     ) {
-        // We should check not only for the `NOT_ENOUGH_ERGS` flag but if the current frame is bootloader too.
+        // We should check not only for the `NOT_ENOUGH_ERGS` flag but if the current frame is
+        // bootloader too.
         if Self::current_frame_is_bootloader(state.vm_local_state)
             && data
                 .error_flags_accumulated
@@ -68,7 +69,8 @@ impl<H: HistoryMode> Tracer for BootloaderTracer<H> {
         memory: &Self::SupportedMemory,
     ) {
         // Decodes next opcode.
-        // `self` is passed as `tracer`, so `self.after_decoding` will be called and it will catch "out of gas".
+        // `self` is passed as `tracer`, so `self.after_decoding` will be called and it will catch
+        // "out of gas".
         let (next_opcode, _, _) = zk_evm_1_3_1::vm_state::read_and_decode(
             state.vm_local_state,
             memory,
@@ -101,8 +103,8 @@ impl<H: HistoryMode> PubdataSpentTracer<H> for BootloaderTracer<H> {
 impl<H: HistoryMode> BootloaderTracer<H> {
     fn current_frame_is_bootloader(local_state: &VmLocalState) -> bool {
         // The current frame is bootloader if the call stack depth is 1.
-        // Some of the near calls inside the bootloader can be out of gas, which is totally normal behavior
-        // and it shouldn't result in `is_bootloader_out_of_gas` becoming true.
+        // Some of the near calls inside the bootloader can be out of gas, which is totally normal
+        // behavior and it shouldn't result in `is_bootloader_out_of_gas` becoming true.
         local_state.callstack.inner.len() == 1
     }
 

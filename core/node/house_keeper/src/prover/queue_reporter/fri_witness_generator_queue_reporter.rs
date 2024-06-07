@@ -10,8 +10,9 @@ use zksync_types::{
 
 use crate::{periodic_job::PeriodicJob, prover::metrics::SERVER_METRICS};
 
-/// `FriWitnessGeneratorQueueReporter` is a task that periodically reports witness generator jobs status.
-/// Note: these values will be used for auto-scaling witness generators (Basic, Leaf, Node, Recursion Tip and Scheduler).
+/// `FriWitnessGeneratorQueueReporter` is a task that periodically reports witness generator jobs
+/// status. Note: these values will be used for auto-scaling witness generators (Basic, Leaf, Node,
+/// Recursion Tip and Scheduler).
 #[derive(Debug)]
 pub struct FriWitnessGeneratorQueueReporter {
     reporting_interval_ms: u64,

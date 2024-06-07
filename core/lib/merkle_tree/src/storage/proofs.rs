@@ -20,13 +20,13 @@
 //! The proofs produced by different groups only intersect at levels 0..4. This can be dealt with
 //! as follows:
 //!
-//! - Produce partial Merkle proofs for levels 4.. (rather than full proofs for levels 0..)
-//!   when working in groups. The root hash for each of the proofs will actually be the
-//!   *subtree* root hash, and Merkle proofs would have at most 252 `ValueHash`es.
-//! - Recombine the proofs in the original `instructions` order. For each write instruction,
-//!   update the corresponding child reference hash in the root node to equal
-//!   the (subtree) root hash from the proof, and recompute the root hash of the root node.
-//!   Then, extend the Merkle proof with upper 4 `ValueHash`es based on the root node.
+//! - Produce partial Merkle proofs for levels 4.. (rather than full proofs for levels 0..) when
+//!   working in groups. The root hash for each of the proofs will actually be the *subtree* root
+//!   hash, and Merkle proofs would have at most 252 `ValueHash`es.
+//! - Recombine the proofs in the original `instructions` order. For each write instruction, update
+//!   the corresponding child reference hash in the root node to equal the (subtree) root hash from
+//!   the proof, and recompute the root hash of the root node. Then, extend the Merkle proof with
+//!   upper 4 `ValueHash`es based on the root node.
 //!
 //! This approach only works if the root is an [`InternalNode`]. Fortunately, we can always
 //! transform the root to an `InternalNode` and then transform it back if necessary.

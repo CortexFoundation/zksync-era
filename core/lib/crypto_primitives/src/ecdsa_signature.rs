@@ -2,12 +2,12 @@
 // https://github.com/paritytech/parity-common/blob/parity-crypto-v0.9.0/parity-crypto/src/publickey/keypair.rs
 // https://github.com/paritytech/parity-common/blob/parity-crypto-v0.9.0/parity-crypto/src/publickey/ecdsa_signature.rs
 //
-// Reason: parity-crypto crate is not maintained, and it provides convenience wrappers over secp256k1 we rely on.
-// For the time being, vendoring these files is more convenient than rewriting the rest of the codebase to use
-// secp256k1 directly.
+// Reason: parity-crypto crate is not maintained, and it provides convenience wrappers over
+// secp256k1 we rely on. For the time being, vendoring these files is more convenient than rewriting
+// the rest of the codebase to use secp256k1 directly.
 //
-// Changes made: adapting the code for the newer version of secp256k1, stripping down some code we don't need,
-// type replacements for the ease of use.
+// Changes made: adapting the code for the newer version of secp256k1, stripping down some code we
+// don't need, type replacements for the ease of use.
 
 // Copyright 2020 Parity Technologies
 //
@@ -60,8 +60,9 @@ impl K256PrivateKey {
     ///
     /// # Errors
     ///
-    /// Returns an error if the deserialized scalar (as a big-endian number) is zero or is greater or equal
-    /// than the secp256k1 group order. The probability of this is negligible if the bytes are random.
+    /// Returns an error if the deserialized scalar (as a big-endian number) is zero or is greater
+    /// or equal than the secp256k1 group order. The probability of this is negligible if the
+    /// bytes are random.
     pub fn from_bytes(bytes: H256) -> Result<Self, Error> {
         Ok(Self(SecretKey::from_slice(bytes.as_bytes())?))
     }

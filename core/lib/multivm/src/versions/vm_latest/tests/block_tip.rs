@@ -129,8 +129,8 @@ fn execute_test(test_data: L1MessengerTestData) -> TestStatistics {
         .borrow_mut()
         .store_factory_dep(hash_bytecode(&complex_upgrade_code), complex_upgrade_code);
 
-    // We are measuring computational cost, so prices for pubdata don't matter, while they artificially dilute
-    // the gas limit
+    // We are measuring computational cost, so prices for pubdata don't matter, while they
+    // artificially dilute the gas limit
 
     let batch_env = L1BatchEnv {
         fee_input: BatchFeeInput::pubdata_independent(100_000, 100_000, 100_000),
@@ -271,14 +271,15 @@ fn get_valid_bytecode_length(length: usize) -> usize {
 
 #[test]
 fn test_dry_run_upper_bound() {
-    // Some of the pubdata is consumed by constant fields (such as length of messages, number of logs, etc.).
-    // While this leaves some room for error, at the end of the test we require that the `BOOTLOADER_BATCH_TIP_OVERHEAD`
-    // is sufficient with a very large margin, so it is okay to ignore 1% of possible pubdata.
+    // Some of the pubdata is consumed by constant fields (such as length of messages, number of
+    // logs, etc.). While this leaves some room for error, at the end of the test we require
+    // that the `BOOTLOADER_BATCH_TIP_OVERHEAD` is sufficient with a very large margin, so it is
+    // okay to ignore 1% of possible pubdata.
     const MAX_EFFECTIVE_PUBDATA_PER_BATCH: usize =
         (MAX_VM_PUBDATA_PER_BATCH as f64 * 0.99) as usize;
 
-    // We are re-using the `ComplexUpgrade` contract as it already has the `mimicCall` functionality.
-    // To get the upper bound, we'll try to do the following:
+    // We are re-using the `ComplexUpgrade` contract as it already has the `mimicCall`
+    // functionality. To get the upper bound, we'll try to do the following:
     // 1. Max number of logs.
     // 2. Lots of small L2->L1 messages / one large L2->L1 message.
     // 3. Lots of small bytecodes / one large bytecode.
@@ -296,8 +297,8 @@ fn test_dry_run_upper_bound() {
         // max messages
         StatisticsTagged {
             statistics: execute_test(L1MessengerTestData {
-                // Each L2->L1 message is accompanied by a Log + its length, which is a 4 byte number,
-                // so the max number of pubdata is bound by it
+                // Each L2->L1 message is accompanied by a Log + its length, which is a 4 byte
+                // number, so the max number of pubdata is bound by it
                 messages: vec![
                     vec![0; 0];
                     MAX_EFFECTIVE_PUBDATA_PER_BATCH / (L2ToL1Log::SERIALIZED_SIZE + 4)
@@ -309,7 +310,8 @@ fn test_dry_run_upper_bound() {
         // long message
         StatisticsTagged {
             statistics: execute_test(L1MessengerTestData {
-                // Each L2->L1 message is accompanied by a Log, so the max number of pubdata is bound by it
+                // Each L2->L1 message is accompanied by a Log, so the max number of pubdata is
+                // bound by it
                 messages: vec![vec![0; MAX_EFFECTIVE_PUBDATA_PER_BATCH]; 1],
                 ..Default::default()
             }),
@@ -339,7 +341,8 @@ fn test_dry_run_upper_bound() {
         // lots of small repeated writes
         StatisticsTagged {
             statistics: execute_test(L1MessengerTestData {
-                // In theory each state diff can require only 5 bytes to be published (enum index + 4 bytes for the key)
+                // In theory each state diff can require only 5 bytes to be published (enum index +
+                // 4 bytes for the key)
                 state_diffs: generate_state_diffs(true, true, MAX_EFFECTIVE_PUBDATA_PER_BATCH / 5),
                 ..Default::default()
             }),
@@ -348,7 +351,8 @@ fn test_dry_run_upper_bound() {
         // lots of big repeated writes
         StatisticsTagged {
             statistics: execute_test(L1MessengerTestData {
-                // Each big repeated write will approximately require 4 bytes for key + 1 byte for encoding type + 32 bytes for value
+                // Each big repeated write will approximately require 4 bytes for key + 1 byte for
+                // encoding type + 32 bytes for value
                 state_diffs: generate_state_diffs(
                     true,
                     false,
@@ -361,7 +365,8 @@ fn test_dry_run_upper_bound() {
         // lots of small initial writes
         StatisticsTagged {
             statistics: execute_test(L1MessengerTestData {
-                // Each small initial write will take at least 32 bytes for derived key + 1 bytes encoding zeroing out
+                // Each small initial write will take at least 32 bytes for derived key + 1 bytes
+                // encoding zeroing out
                 state_diffs: generate_state_diffs(
                     false,
                     true,
@@ -374,7 +379,8 @@ fn test_dry_run_upper_bound() {
         // lots of large initial writes
         StatisticsTagged {
             statistics: execute_test(L1MessengerTestData {
-                // Each big write will take at least 32 bytes for derived key + 1 byte for encoding type + 32 bytes for value
+                // Each big write will take at least 32 bytes for derived key + 1 byte for encoding
+                // type + 32 bytes for value
                 state_diffs: generate_state_diffs(
                     false,
                     false,

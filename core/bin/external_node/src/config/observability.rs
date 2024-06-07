@@ -10,11 +10,12 @@ use super::{ConfigurationSource, Environment};
 /// Observability part of the node configuration.
 #[derive(Debug, Default, Deserialize)]
 pub(crate) struct ObservabilityENConfig {
-    /// Port to bind the Prometheus exporter server to. If not specified, the server will not be launched.
-    /// If the push gateway URL is specified, it will prevail.
+    /// Port to bind the Prometheus exporter server to. If not specified, the server will not be
+    /// launched. If the push gateway URL is specified, it will prevail.
     pub prometheus_port: Option<u16>,
-    /// Prometheus push gateway to push metrics to. Overrides `prometheus_port`. A full URL must be specified
-    /// including `job_id` and other path segments; it will be used verbatim as the URL to push data to.
+    /// Prometheus push gateway to push metrics to. Overrides `prometheus_port`. A full URL must be
+    /// specified including `job_id` and other path segments; it will be used verbatim as the
+    /// URL to push data to.
     pub prometheus_pushgateway_url: Option<String>,
     /// Interval between pushing metrics to the Prometheus push gateway.
     #[serde(default = "ObservabilityENConfig::default_prometheus_push_interval_ms")]
@@ -68,7 +69,9 @@ impl ObservabilityENConfig {
         match (self.prometheus_port, &self.prometheus_pushgateway_url) {
             (_, Some(url)) => {
                 if self.prometheus_port.is_some() {
-                    tracing::info!("Both Prometheus port and push gateway URLs are specified; the push gateway URL will be used");
+                    tracing::info!(
+                        "Both Prometheus port and push gateway URLs are specified; the push gateway URL will be used"
+                    );
                 }
                 let push_interval = Duration::from_millis(self.prometheus_push_interval_ms);
                 Some(PrometheusExporterConfig::push(url.clone(), push_interval))

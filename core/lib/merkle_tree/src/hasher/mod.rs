@@ -30,7 +30,8 @@ pub trait HashTree: Send + Sync {
     /// are encouraged to cache the returned values.
     fn empty_subtree_hash(&self, depth: usize) -> ValueHash;
 
-    /// Returns the hash of the empty tree. The default implementation uses [`Self::empty_subtree_hash()`].
+    /// Returns the hash of the empty tree. The default implementation uses
+    /// [`Self::empty_subtree_hash()`].
     fn empty_tree_hash(&self) -> ValueHash {
         self.empty_subtree_hash(TREE_DEPTH)
     }

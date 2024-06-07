@@ -101,7 +101,8 @@ impl Cli {
                         }
                     } else {
                         last_key += key_step - Key::from(rng.gen::<u64>());
-                        // ^ Increases the key by a random increment close to `key` step with some randomness.
+                        // ^ Increases the key by a random increment close to `key` step with some
+                        // randomness.
                         TreeEntry {
                             key: last_key,
                             value: ValueHash::zero(),

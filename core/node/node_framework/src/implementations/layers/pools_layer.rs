@@ -103,8 +103,8 @@ impl WiringLayer for PoolsLayer {
         }
 
         if self.with_replica {
-            // We're most interested in setting acquire / statement timeouts for the API server, which puts the most load
-            // on Postgres.
+            // We're most interested in setting acquire / statement timeouts for the API server,
+            // which puts the most load on Postgres.
             context.insert_resource(PoolResource::<ReplicaPool>::new(
                 self.secrets.replica_url()?,
                 self.config.max_connections()?,

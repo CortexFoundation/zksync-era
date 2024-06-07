@@ -146,26 +146,29 @@ async fn assert_l1_batch_objects_exists(
 ) {
     for l1_batch_number in l1_batches_range.start().0..l1_batches_range.end().0 {
         let l1_batch_number = L1BatchNumber(l1_batch_number);
-        assert!(conn
-            .blocks_dal()
-            .get_l2_block_header(L2BlockNumber(l1_batch_number.0 * 2))
-            .await
-            .unwrap()
-            .is_some());
+        assert!(
+            conn.blocks_dal()
+                .get_l2_block_header(L2BlockNumber(l1_batch_number.0 * 2))
+                .await
+                .unwrap()
+                .is_some()
+        );
 
-        assert!(conn
-            .blocks_dal()
-            .get_l2_block_header(L2BlockNumber(l1_batch_number.0 * 2 + 1))
-            .await
-            .unwrap()
-            .is_some());
+        assert!(
+            conn.blocks_dal()
+                .get_l2_block_header(L2BlockNumber(l1_batch_number.0 * 2 + 1))
+                .await
+                .unwrap()
+                .is_some()
+        );
 
-        assert!(conn
-            .blocks_dal()
-            .get_l1_batch_header(l1_batch_number)
-            .await
-            .unwrap()
-            .is_some());
+        assert!(
+            conn.blocks_dal()
+                .get_l1_batch_header(l1_batch_number)
+                .await
+                .unwrap()
+                .is_some()
+        );
     }
 }
 
@@ -181,12 +184,13 @@ async fn assert_l1_batch_objects_dont_exist(
     for l1_batch_number in l1_batches_range.start().0..l1_batches_range.end().0 {
         let l1_batch_number = L1BatchNumber(l1_batch_number);
         let mut l2_block_number = L2BlockNumber(l1_batch_number.0 * 2);
-        assert!(conn
-            .blocks_dal()
-            .get_l2_block_header(l2_block_number)
-            .await
-            .unwrap()
-            .is_none());
+        assert!(
+            conn.blocks_dal()
+                .get_l2_block_header(l2_block_number)
+                .await
+                .unwrap()
+                .is_none()
+        );
         let l2_block_logs: Vec<_> = all_logs
             .iter()
             .filter(|log| log.l2_block_number == l2_block_number)
@@ -194,24 +198,26 @@ async fn assert_l1_batch_objects_dont_exist(
         assert!(l2_block_logs.is_empty(), "{l2_block_logs:?}");
 
         l2_block_number += 1;
-        assert!(conn
-            .blocks_dal()
-            .get_l2_block_header(l2_block_number)
-            .await
-            .unwrap()
-            .is_none());
+        assert!(
+            conn.blocks_dal()
+                .get_l2_block_header(l2_block_number)
+                .await
+                .unwrap()
+                .is_none()
+        );
         let l2_block_logs: Vec<_> = all_logs
             .iter()
             .filter(|log| log.l2_block_number == l2_block_number)
             .collect();
         assert!(l2_block_logs.is_empty(), "{l2_block_logs:?}");
 
-        assert!(conn
-            .blocks_dal()
-            .get_l1_batch_header(l1_batch_number)
-            .await
-            .unwrap()
-            .is_none());
+        assert!(
+            conn.blocks_dal()
+                .get_l1_batch_header(l1_batch_number)
+                .await
+                .unwrap()
+                .is_none()
+        );
     }
 }
 
@@ -411,13 +417,15 @@ async fn l1_batches_can_be_hard_pruned() {
     insert_realistic_l1_batches(&mut transaction, 10).await;
 
     assert_l1_batch_objects_exists(&mut transaction, L1BatchNumber(1)..=L1BatchNumber(10)).await;
-    assert!(transaction
-        .pruning_dal()
-        .get_pruning_info()
-        .await
-        .unwrap()
-        .last_hard_pruned_l1_batch
-        .is_none());
+    assert!(
+        transaction
+            .pruning_dal()
+            .get_pruning_info()
+            .await
+            .unwrap()
+            .last_hard_pruned_l1_batch
+            .is_none()
+    );
 
     transaction
         .pruning_dal()

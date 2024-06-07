@@ -24,8 +24,8 @@ use crate::vm_latest::old_vm::history_recorder::{
 pub struct DecommitterOracle<const B: bool, S, H: HistoryMode> {
     /// Pointer that enables to read contract bytecodes from the database.
     storage: StoragePtr<S>,
-    /// The cache of bytecodes that the bootloader "knows", but that are not necessarily in the database.
-    /// And it is also used as a database cache.
+    /// The cache of bytecodes that the bootloader "knows", but that are not necessarily in the
+    /// database. And it is also used as a database cache.
     pub known_bytecodes: HistoryRecorder<HashMap<U256, Vec<U256>>, H>,
     /// Stores pages of memory where certain code hashes have already been decommitted.
     /// It is expected that they all are present in the DB.
@@ -45,8 +45,8 @@ impl<S: ReadStorage, const B: bool, H: HistoryMode> DecommitterOracle<B, S, H> {
         }
     }
 
-    /// Gets the bytecode for a given hash (either from storage, or from 'known_bytecodes' that were populated by `populate` method).
-    /// Panics if bytecode doesn't exist.
+    /// Gets the bytecode for a given hash (either from storage, or from 'known_bytecodes' that were
+    /// populated by `populate` method). Panics if bytecode doesn't exist.
     pub fn get_bytecode(&mut self, hash: U256, timestamp: Timestamp) -> Vec<U256> {
         let entry = self.known_bytecodes.inner().get(&hash);
 
@@ -157,8 +157,8 @@ impl<S: ReadStorage + Debug, const B: bool, H: HistoryMode> DecommittmentProcess
     for DecommitterOracle<B, S, H>
 {
     /// Prepares the decommitment query for the given bytecode hash.
-    /// The main purpose of this method is to tell the VM whether this bytecode is fresh (i.e. decommitted for the first time)
-    /// or not.
+    /// The main purpose of this method is to tell the VM whether this bytecode is fresh (i.e.
+    /// decommitted for the first time) or not.
     fn prepare_to_decommit(
         &mut self,
         _monotonic_cycle_counter: u32,
@@ -251,7 +251,8 @@ fn concat_header_and_preimage(
     buffer
 }
 
-/// For a given decommitment query, returns a pair of the stored hash as U256 and the length of the preimage in 32-byte words.
+/// For a given decommitment query, returns a pair of the stored hash as U256 and the length of the
+/// preimage in 32-byte words.
 fn stored_hash_from_query(partial_query: &DecommittmentQuery) -> (U256, u16) {
     let full_hash =
         concat_header_and_preimage(partial_query.header, partial_query.normalized_preimage);

@@ -92,7 +92,9 @@ impl RequestProcessor {
 
         let l1_batch_number = match l1_batch_number_result {
             Some(number) => number,
-            None => return Ok(Json(ProofGenerationDataResponse::Success(None))), // no batches pending to be proven
+            None => return Ok(Json(ProofGenerationDataResponse::Success(None))), /* no batches
+                                                                                  * pending to be
+                                                                                  * proven */
         };
 
         let blob = self
@@ -213,8 +215,12 @@ impl RequestProcessor {
                         || bootloader_heap_initial_content
                             != bootloader_heap_initial_content_from_prover
                     {
-                        let server_values = format!("events_queue_state = {events_queue_state}, bootloader_heap_initial_content = {bootloader_heap_initial_content}");
-                        let prover_values = format!("events_queue_state = {events_queue_state_from_prover}, bootloader_heap_initial_content = {bootloader_heap_initial_content_from_prover}");
+                        let server_values = format!(
+                            "events_queue_state = {events_queue_state}, bootloader_heap_initial_content = {bootloader_heap_initial_content}"
+                        );
+                        let prover_values = format!(
+                            "events_queue_state = {events_queue_state_from_prover}, bootloader_heap_initial_content = {bootloader_heap_initial_content_from_prover}"
+                        );
                         panic!(
                             "Auxilary output doesn't match, server values: {} prover values: {}",
                             server_values, prover_values
@@ -238,8 +244,12 @@ impl RequestProcessor {
                     if state_diff_hash != state_diff_hash_from_prover
                         || system_logs_hash != system_logs_hash_from_prover
                     {
-                        let server_values = format!("system_logs_hash = {system_logs_hash}, state_diff_hash = {state_diff_hash}");
-                        let prover_values = format!("system_logs_hash = {system_logs_hash_from_prover}, state_diff_hash = {state_diff_hash_from_prover}");
+                        let server_values = format!(
+                            "system_logs_hash = {system_logs_hash}, state_diff_hash = {state_diff_hash}"
+                        );
+                        let prover_values = format!(
+                            "system_logs_hash = {system_logs_hash_from_prover}, state_diff_hash = {state_diff_hash_from_prover}"
+                        );
                         panic!(
                             "Auxilary output doesn't match, server values: {} prover values: {}",
                             server_values, prover_values

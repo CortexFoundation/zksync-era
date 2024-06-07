@@ -148,7 +148,8 @@ pub enum Component {
     TeeVerifierInputProducer,
     /// Component for housekeeping task such as cleaning blobs from GCS, reporting metrics etc.
     Housekeeper,
-    /// Component for exposing APIs to prover for providing proof generation data and accepting proofs.
+    /// Component for exposing APIs to prover for providing proof generation data and accepting
+    /// proofs.
     ProofDataHandler,
     /// Component generating BFT consensus certificates for L2 blocks.
     Consensus,
@@ -231,8 +232,8 @@ pub async fn initialize_components(
             .build()
             .await
             .context("failed to build connection_pool")?;
-    // We're most interested in setting acquire / statement timeouts for the API server, which puts the most load
-    // on Postgres.
+    // We're most interested in setting acquire / statement timeouts for the API server, which puts
+    // the most load on Postgres.
     let replica_connection_pool =
         ConnectionPool::<Core>::builder(database_secrets.replica_url()?, pool_size)
             .set_acquire_timeout(postgres_config.acquire_timeout())
@@ -335,10 +336,10 @@ pub async fn initialize_components(
         let internal_api_config =
             InternalApiConfig::new(&api_config.web3_json_rpc, contracts_config, genesis_config);
 
-        // Lazily initialize storage caches only when they are needed (e.g., skip their initialization
-        // if we only run the explorer APIs). This is required because the cache update task will
-        // terminate immediately if storage caches are dropped, which will lead to the (unexpected)
-        // program termination.
+        // Lazily initialize storage caches only when they are needed (e.g., skip their
+        // initialization if we only run the explorer APIs). This is required because the
+        // cache update task will terminate immediately if storage caches are dropped, which
+        // will lead to the (unexpected) program termination.
         let mut storage_caches = None;
 
         let mempool_cache = MempoolCache::new(api_config.web3_json_rpc.mempool_cache_size());
@@ -532,11 +533,12 @@ pub async fn initialize_components(
         let pool = connection_pool.clone();
         let mut stop_receiver = stop_receiver.clone();
         task_futures.push(tokio::spawn(async move {
-            // We instantiate the root context here, since the consensus task is the only user of the
-            // structured concurrency framework.
-            // Note, however, that awaiting for the `stop_receiver` is related to the root context behavior,
-            // not the consensus task itself. There may have been any number of tasks running in the root context,
-            // but we only need to wait for stop signal once, and it will be propagated to all child contexts.
+            // We instantiate the root context here, since the consensus task is the only user of
+            // the structured concurrency framework.
+            // Note, however, that awaiting for the `stop_receiver` is related to the root context
+            // behavior, not the consensus task itself. There may have been any number
+            // of tasks running in the root context, but we only need to wait for stop
+            // signal once, and it will be propagated to all child contexts.
             let root_ctx = ctx::root();
             scope::run!(&root_ctx, |ctx, s| async move {
                 s.spawn_bg(zksync_node_consensus::era::run_main_node(
@@ -613,8 +615,8 @@ pub async fn initialize_components(
 
         let l1_batch_commit_data_generator_mode =
             genesis_config.l1_batch_commit_data_generator_mode;
-        // Run the task synchronously: the main node is expected to have a stable Ethereum client connection,
-        // and the cost of detecting an incorrect mode with a delay is higher.
+        // Run the task synchronously: the main node is expected to have a stable Ethereum client
+        // connection, and the cost of detecting an incorrect mode with a delay is higher.
         L1BatchCommitmentModeValidationTask::new(
             contracts_config.diamond_proxy_addr,
             l1_batch_commit_data_generator_mode,
@@ -999,8 +1001,9 @@ async fn run_tree(
         .build()
         .await
         .context("failed to build connection pool for Merkle tree")?;
-    // The number of connections in a recovery pool is based on the mainnet recovery runs. It doesn't need
-    // to be particularly accurate at this point, since the main node isn't expected to recover from a snapshot.
+    // The number of connections in a recovery pool is based on the mainnet recovery runs. It
+    // doesn't need to be particularly accurate at this point, since the main node isn't
+    // expected to recover from a snapshot.
     let recovery_pool = ConnectionPool::builder(database_secrets.replica_url()?, 10)
         .build()
         .await

@@ -674,7 +674,8 @@ impl FriProverDal<'_, '_> {
         .map(|row| ProverJobFriInfo {
             id: row.id as u32,
             l1_batch_number,
-            // It is necessary to correct the circuit IDs due to the discrepancy between different aggregation rounds.
+            // It is necessary to correct the circuit IDs due to the discrepancy between different
+            // aggregation rounds.
             circuit_id: correct_circuit_id(row.circuit_id, aggregation_round),
             circuit_blob_url: row.circuit_blob_url.clone(),
             aggregation_round,

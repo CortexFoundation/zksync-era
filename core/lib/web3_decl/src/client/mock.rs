@@ -16,7 +16,8 @@ use serde::{de::DeserializeOwned, Serialize};
 
 use super::{boxed::RawParams, ForNetwork, Network, TaggedClient};
 
-/// Object-safe counterpart to [`Handler`]. We need it because async closures aren't available on stable Rust.
+/// Object-safe counterpart to [`Handler`]. We need it because async closures aren't available on
+/// stable Rust.
 #[async_trait]
 trait HandleGenericRequest: Send + Sync + fmt::Debug {
     async fn handle_generic_request(

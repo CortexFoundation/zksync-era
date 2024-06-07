@@ -1,0 +1,12 @@
+edition = "2021"
+
+version = "Two"
+
+comment_width = 120
+max_width = 100
+newline_style = "Unix"
+
+imports_granularity = "Crate"
+reorder_imports = true
+wrap_comments = true
+group_imports = "StdExternalCrate"

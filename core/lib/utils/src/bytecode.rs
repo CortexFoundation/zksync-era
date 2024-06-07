@@ -216,7 +216,8 @@ mod test {
                 .unwrap();
         // The size of the dictionary should be `0x0003`
         // The dictionary itself should put the most common chunk first, i.e. `0x1111111111111111`
-        // Then, the ordering does not matter, but the algorithm will return the one with the highest position, i.e. `0x2222222222222222`
+        // Then, the ordering does not matter, but the algorithm will return the one with the
+        // highest position, i.e. `0x2222222222222222`
         let expected_encoding =
             hex::decode("00031111111111111111222222222222222200000000000000000002000000000001")
                 .unwrap();

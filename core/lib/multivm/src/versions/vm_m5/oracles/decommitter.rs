@@ -19,7 +19,8 @@ use crate::vm_m5::{
 pub struct DecommitterOracle<S, const B: bool> {
     /// Pointer that enables to read contract bytecodes from the database.
     storage: StoragePtr<S>,
-    /// The cache of bytecodes that the bootloader "knows", but that are not necessarily in the database.
+    /// The cache of bytecodes that the bootloader "knows", but that are not necessarily in the
+    /// database.
     pub known_bytecodes: HistoryRecorder<HashMap<U256, Vec<U256>>>,
     /// Stores pages of memory where certain code hashes have already been decommitted.
     decommitted_code_hashes: HistoryRecorder<HashMap<U256, u32>>,

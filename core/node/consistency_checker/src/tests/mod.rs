@@ -20,7 +20,8 @@ use zksync_types::{
 
 use super::*;
 
-/// **NB.** For tests to run correctly, the returned value must be deterministic (i.e., depend only on `number`).
+/// **NB.** For tests to run correctly, the returned value must be deterministic (i.e., depend only
+/// on `number`).
 pub(crate) fn create_l1_batch_with_metadata(number: u32) -> L1BatchWithMetadata {
     L1BatchWithMetadata {
         header: create_l1_batch(number),
@@ -57,9 +58,9 @@ pub(crate) fn build_commit_tx_input_data(
     let protocol_version = batches[0].header.protocol_version.unwrap();
     let contract = zksync_contracts::hyperchain_contract();
 
-    // Mock an additional argument used in real `commitBlocks` / `commitBatches`. In real transactions,
-    // it's taken from the L1 batch previous to `batches[0]`, but since this argument is not checked,
-    // it's OK to use `batches[0]`.
+    // Mock an additional argument used in real `commitBlocks` / `commitBatches`. In real
+    // transactions, it's taken from the L1 batch previous to `batches[0]`, but since this
+    // argument is not checked, it's OK to use `batches[0]`.
     let tokens = CommitBatches {
         last_committed_l1_batch: &batches[0],
         l1_batches: batches,
@@ -307,7 +308,8 @@ impl SaveAction<'_> {
 
 pub(crate) type SaveActionMapper = fn(&[L1BatchWithMetadata]) -> Vec<SaveAction<'_>>;
 
-/// Various strategies to persist L1 batches in the DB. Strings are added for debugging failed test cases.
+/// Various strategies to persist L1 batches in the DB. Strings are added for debugging failed test
+/// cases.
 const SAVE_ACTION_MAPPERS: [(&str, SaveActionMapper); 4] = [
     ("sequential_metadata_first", |l1_batches| {
         l1_batches
@@ -736,7 +738,8 @@ impl IncorrectDataKind {
 }
 
 #[test_casing(18, Product((IncorrectDataKind::ALL, [false], COMMITMENT_MODES)))]
-// ^ `snapshot_recovery = true` is tested below; we don't want to run it with all incorrect data kinds
+// ^ `snapshot_recovery = true` is tested below; we don't want to run it with all incorrect data
+// kinds
 #[tokio::test]
 async fn checker_detects_incorrect_tx_data(
     kind: IncorrectDataKind,

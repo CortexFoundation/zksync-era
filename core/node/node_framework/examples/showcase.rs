@@ -61,14 +61,16 @@ struct DatabaseResource(pub Arc<dyn Database>);
 /// to any non-static lifetime) and also `Clone`, since any task may receive their own copy of a
 /// resource.
 ///
-/// For the latter requirement, there exists an `Unique` wrapper that can be used to store non-`Clone`
-/// resources. It's not used in this example, but it's a useful thing to know about.
+/// For the latter requirement, there exists an `Unique` wrapper that can be used to store
+/// non-`Clone` resources. It's not used in this example, but it's a useful thing to know about.
 ///
-/// Finally, there are other wrappers for resources as well, like `ResourceCollection` and `LazyResource`.
+/// Finally, there are other wrappers for resources as well, like `ResourceCollection` and
+/// `LazyResource`.
 impl Resource for DatabaseResource {
     fn name() -> String {
-        // The convention for resource names is `<scope>/<name>`. In this case, the scope is `common`, but
-        // for anything that is component-specific it could have been e.g. `state_keeper` or `api`.
+        // The convention for resource names is `<scope>/<name>`. In this case, the scope is
+        // `common`, but for anything that is component-specific it could have been e.g.
+        // `state_keeper` or `api`.
         "common/database".into()
     }
 }
@@ -116,7 +118,8 @@ impl Task for PutTask {
     }
 }
 
-/// A second task that will be checking the contents of the database and use the same shared resource.
+/// A second task that will be checking the contents of the database and use the same shared
+/// resource.
 struct CheckTask {
     db: Arc<dyn Database>,
 }
@@ -192,8 +195,8 @@ impl WiringLayer for TasksLayer {
 
     async fn wire(self: Box<Self>, mut context: ServiceContext<'_>) -> Result<(), WiringError> {
         // We fetch the database resource from the context.
-        // Note that we don't really care where it comes from or what's the actual implementation is.
-        // We only care whether it's available and bail out if not.
+        // Note that we don't really care where it comes from or what's the actual implementation
+        // is. We only care whether it's available and bail out if not.
         let db = context.get_resource::<DatabaseResource>().await?.0;
         let put_task = PutTask { db: db.clone() };
         let check_task = CheckTask { db };

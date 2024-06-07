@@ -1049,10 +1049,12 @@ async fn test_parse_multicall_data(commitment_mode: L1BatchCommitmentMode) {
     )
     .await;
 
-    assert!(tester
-        .aggregator
-        .parse_multicall_data(mock_multicall_response())
-        .is_ok());
+    assert!(
+        tester
+            .aggregator
+            .parse_multicall_data(mock_multicall_response())
+            .is_ok()
+    );
 
     let original_wrong_form_data = vec![
         // should contain 5 tuples

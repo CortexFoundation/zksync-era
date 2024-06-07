@@ -203,8 +203,9 @@ impl<'a, DB: DbMarker> Connection<'a, DB> {
         matches!(self.inner, ConnectionInner::Transaction { .. })
     }
 
-    /// Commits a transactional connection (one which was created by calling [`Self::start_transaction()`]).
-    /// If this connection is not transactional, returns an error.
+    /// Commits a transactional connection (one which was created by calling
+    /// [`Self::start_transaction()`]). If this connection is not transactional, returns an
+    /// error.
     pub async fn commit(self) -> DalResult<()> {
         match self.inner {
             ConnectionInner::Transaction {
@@ -224,8 +225,9 @@ impl<'a, DB: DbMarker> Connection<'a, DB> {
         }
     }
 
-    /// Rolls back a transactional connection (one which was created by calling [`Self::start_transaction()`]).
-    /// If this connection is not transactional, returns an error.
+    /// Rolls back a transactional connection (one which was created by calling
+    /// [`Self::start_transaction()`]). If this connection is not transactional, returns an
+    /// error.
     pub async fn rollback(self) -> DalResult<()> {
         match self.inner {
             ConnectionInner::Transaction {

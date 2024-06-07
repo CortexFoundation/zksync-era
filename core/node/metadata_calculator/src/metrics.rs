@@ -133,8 +133,8 @@ pub(super) struct MetadataCalculatorMetrics {
     /// The lag can only be positive if Postgres was restored from a backup truncating some
     /// of the batches already processed by the tree.
     pub backup_lag: Gauge<u64>,
-    /// Number of zero values that need to be checked for L1 batch of the initial write in the process
-    /// of updating the Merkle tree.
+    /// Number of zero values that need to be checked for L1 batch of the initial write in the
+    /// process of updating the Merkle tree.
     #[metrics(buckets = COUNTS_BUCKETS)]
     pub load_changes_zero_values: Histogram<usize>,
     /// Total latency of updating the Merkle tree.

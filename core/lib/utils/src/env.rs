@@ -47,15 +47,17 @@ fn locate_workspace_inner() -> anyhow::Result<PathBuf> {
 /// `https://github.com/mitsuhiko/insta/blob/master/insta/src/env.rs`
 pub fn locate_workspace() -> Option<&'static Path> {
     // Since `locate_workspace_inner()` should be deterministic, it makes little sense to call
-    // `OnceCell::get_or_try_init()` here; the repeated calls are just as unlikely to succeed as the initial call.
-    // Instead, we store `None` in the `OnceCell` if initialization failed.
+    // `OnceCell::get_or_try_init()` here; the repeated calls are just as unlikely to succeed as the
+    // initial call. Instead, we store `None` in the `OnceCell` if initialization failed.
     WORKSPACE
         .get_or_init(|| {
             let result = locate_workspace_inner();
-            if let Err(err) = &result {
+            if result.is_err() {
                 // `get_or_init()` is guaranteed to call the provided closure once per `OnceCell`;
                 // i.e., we won't spam logs here.
-                tracing::warn!("locate_workspace() failed: {err:?}");
+                tracing::info!(
+                    "locate_workspace() failed. You are using an already compiled version"
+                );
             }
             result.ok()
         })

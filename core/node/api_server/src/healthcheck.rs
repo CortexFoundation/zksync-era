@@ -33,7 +33,9 @@ async fn run_server(
         .serve(app.into_make_service())
         .with_graceful_shutdown(async move {
             if stop_receiver.changed().await.is_err() {
-                tracing::warn!("Stop signal sender for healthcheck server was dropped without sending a signal");
+                tracing::warn!(
+                    "Stop signal sender for healthcheck server was dropped without sending a signal"
+                );
             }
             tracing::info!("Stop signal received, healthcheck server is shutting down");
         })
@@ -62,8 +64,8 @@ impl HealthCheckHandle {
     }
 
     pub async fn stop(self) {
-        // Paradoxically, `hyper` server is quite slow to shut down if it isn't queried during shutdown:
-        // <https://github.com/hyperium/hyper/issues/3188>. It is thus recommended to set a timeout for shutdown.
+        // Paradoxically, `hyper` server is quite slow to shut down if it isn't queried during
+        // shutdown: <https://github.com/hyperium/hyper/issues/3188>. It is thus recommended to set a timeout for shutdown.
         const GRACEFUL_SHUTDOWN_WAIT: Duration = Duration::from_secs(10);
 
         self.stop_sender.send(true).ok();
@@ -72,7 +74,9 @@ impl HealthCheckHandle {
             // Propagate potential panics from the server task.
             server_result.unwrap();
         } else {
-            tracing::debug!("Timed out {GRACEFUL_SHUTDOWN_WAIT:?} waiting for healthcheck server to gracefully shut down");
+            tracing::debug!(
+                "Timed out {GRACEFUL_SHUTDOWN_WAIT:?} waiting for healthcheck server to gracefully shut down"
+            );
         }
     }
 }

@@ -501,7 +501,8 @@ async fn pruner_with_real_conditions() {
         .unwrap();
 
     let config = DbPrunerConfig {
-        removal_delay: Duration::from_millis(10), // non-zero to not have a tight loop in `DbPruner::run()`
+        removal_delay: Duration::from_millis(10), /* non-zero to not have a tight loop in
+                                                   * `DbPruner::run()` */
         pruned_batch_chunk_size: 1,
         minimum_l1_batch_age: Duration::ZERO,
     };

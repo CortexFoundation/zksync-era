@@ -43,10 +43,10 @@ pub enum SealResolution {
     /// Latest transaction should be excluded from the block and become the first
     /// tx in the next block.
     /// While it may be kinda counter-intuitive that we first execute transaction and just then
-    /// decided whether we should include it into the block or not, it is required by the architecture of
-    /// zkSync Era. We may not know, for example, how much gas block will consume, because 1) smart contract
-    /// execution is hard to predict and 2) we may have writes to the same storage slots, which will save us
-    /// gas.
+    /// decided whether we should include it into the block or not, it is required by the
+    /// architecture of zkSync Era. We may not know, for example, how much gas block will
+    /// consume, because 1) smart contract execution is hard to predict and 2) we may have
+    /// writes to the same storage slots, which will save us gas.
     ExcludeAndSeal,
     /// Unexecutable means that the last transaction of the block cannot be executed even
     /// if the block will consist of it solely. Such a transaction must be rejected.

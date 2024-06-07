@@ -128,7 +128,8 @@ impl<'de> Deserialize<'de> for MaxResponseSizeOverrides {
 pub struct MaxResponseSize {
     /// Global limit applied to all RPC methods. Measured in bytes.
     pub global: usize,
-    /// Limits applied to specific methods. Limits are measured in bytes; method names are full (e.g., `eth_call`).
+    /// Limits applied to specific methods. Limits are measured in bytes; method names are full
+    /// (e.g., `eth_call`).
     pub overrides: MaxResponseSizeOverrides,
 }
 
@@ -163,7 +164,8 @@ pub struct Web3JsonRpcConfig {
     /// Tx nonce: how far ahead from the committed nonce can it be.
     pub max_nonce_ahead: u32,
     /// The multiplier to use when suggesting gas price. Should be higher than one,
-    /// otherwise if the L1 prices soar, the suggested gas price won't be sufficient to be included in block
+    /// otherwise if the L1 prices soar, the suggested gas price won't be sufficient to be included
+    /// in block
     pub gas_price_scale_factor: f64,
     /// Timeout for requests (in s)
     pub request_timeout: Option<u64>,
@@ -175,8 +177,9 @@ pub struct Web3JsonRpcConfig {
     pub estimate_gas_acceptable_overestimation: u32,
     ///  Max possible size of an ABI encoded tx (in bytes).
     pub max_tx_size: usize,
-    /// Max number of cache misses during one VM execution. If the number of cache misses exceeds this value, the API server panics.
-    /// This is a temporary solution to mitigate API request resulting in thousands of DB queries.
+    /// Max number of cache misses during one VM execution. If the number of cache misses exceeds
+    /// this value, the API server panics. This is a temporary solution to mitigate API request
+    /// resulting in thousands of DB queries.
     pub vm_execution_cache_misses_limit: Option<usize>,
     /// Max number of VM instances to be concurrently spawned by the API server.
     /// This option can be tweaked down if the API server is running out of memory.
@@ -204,8 +207,8 @@ pub struct Web3JsonRpcConfig {
     pub websocket_requests_per_minute_limit: Option<NonZeroU32>,
     /// Tree API url, currently used to proxy `getProof` calls to the tree
     pub tree_api_url: Option<String>,
-    /// Polling period for mempool cache update - how often the mempool cache is updated from the database.
-    /// In milliseconds. Default is 50 milliseconds.
+    /// Polling period for mempool cache update - how often the mempool cache is updated from the
+    /// database. In milliseconds. Default is 50 milliseconds.
     pub mempool_cache_update_interval: Option<u64>,
     /// Maximum number of transactions to be stored in the mempool cache. Default is 10000.
     pub mempool_cache_size: Option<usize>,
@@ -217,8 +220,8 @@ pub struct Web3JsonRpcConfig {
 
 impl Web3JsonRpcConfig {
     /// Creates a mock instance of `Web3JsonRpcConfig` to be used in tests.
-    /// Ports and some fields that may affect execution are set to the same values used by default in
-    /// the localhost environment. Other fields are set to default values.
+    /// Ports and some fields that may affect execution are set to the same values used by default
+    /// in the localhost environment. Other fields are set to default values.
     pub fn for_tests() -> Self {
         Self {
             http_port: 3050,
@@ -348,11 +351,12 @@ impl Web3JsonRpcConfig {
 pub struct HealthCheckConfig {
     /// Port to which the REST server is listening.
     pub port: u16,
-    /// Time limit in milliseconds to mark a health check as slow and log the corresponding warning.
-    /// If not specified, the default value in the health check crate will be used.
+    /// Time limit in milliseconds to mark a health check as slow and log the corresponding
+    /// warning. If not specified, the default value in the health check crate will be used.
     pub slow_time_limit_ms: Option<u64>,
-    /// Time limit in milliseconds to abort a health check and return "not ready" status for the corresponding component.
-    /// If not specified, the default value in the health check crate will be used.
+    /// Time limit in milliseconds to abort a health check and return "not ready" status for the
+    /// corresponding component. If not specified, the default value in the health check crate
+    /// will be used.
     pub hard_time_limit_ms: Option<u64>,
 }
 

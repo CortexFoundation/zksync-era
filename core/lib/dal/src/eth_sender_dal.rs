@@ -377,16 +377,16 @@ impl EthSenderDal<'_, '_> {
         Ok(Some(H256::from_str(tx_hash).context("invalid tx_hash")?))
     }
 
-    /// This method inserts a fake transaction into the database that would make the corresponding L1 batch
-    /// to be considered committed/proven/executed.
+    /// This method inserts a fake transaction into the database that would make the corresponding
+    /// L1 batch to be considered committed/proven/executed.
     ///
-    /// The designed use case is the External Node usage, where we don't really care about the actual transactions apart
-    /// from the hash and the fact that tx was sent.
+    /// The designed use case is the External Node usage, where we don't really care about the
+    /// actual transactions apart from the hash and the fact that tx was sent.
     ///
     /// ## Warning
     ///
-    /// After this method is used anywhere in the codebase, it is considered a bug to try to directly query `eth_txs_history`
-    /// or `eth_txs` tables.
+    /// After this method is used anywhere in the codebase, it is considered a bug to try to
+    /// directly query `eth_txs_history` or `eth_txs` tables.
     pub async fn insert_bogus_confirmed_eth_tx(
         &mut self,
         l1_batch: L1BatchNumber,

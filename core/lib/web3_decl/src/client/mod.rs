@@ -1,15 +1,16 @@
-//! L2 JSON-RPC clients, currently used for interaction between external nodes (from the client side)
-//! and the main node (from the server side).
+//! L2 JSON-RPC clients, currently used for interaction between external nodes (from the client
+//! side) and the main node (from the server side).
 //!
 //! # Overview
 //!
-//! - [`Client`] is the main client implementation. It's parameterized by the transport (e.g., HTTP or WS),
-//!   with HTTP being the default option.
-//! - [`MockClient`] is a mock client useful for testing. Bear in mind that because of the client being generic,
-//!   mock tooling is fairly low-level. Prefer defining a domain-specific wrapper trait for the client functionality and mock it
-//!   where it's possible.
-//! - [`BoxedL2Client`] is a generic client (essentially, a wrapper around a trait object). Use it for dependency injection
-//!   instead of `L2Client`. Both `L2Client` and `MockL2Client` are convertible to `BoxedL2Client`.
+//! - [`Client`] is the main client implementation. It's parameterized by the transport (e.g., HTTP
+//!   or WS), with HTTP being the default option.
+//! - [`MockClient`] is a mock client useful for testing. Bear in mind that because of the client
+//!   being generic, mock tooling is fairly low-level. Prefer defining a domain-specific wrapper
+//!   trait for the client functionality and mock it where it's possible.
+//! - [`BoxedL2Client`] is a generic client (essentially, a wrapper around a trait object). Use it
+//!   for dependency injection instead of `L2Client`. Both `L2Client` and `MockL2Client` are
+//!   convertible to `BoxedL2Client`.
 
 use std::{
     any,
@@ -97,12 +98,13 @@ impl<T: ClientT + Clone + fmt::Debug + Send + Sync + 'static> ClientBase for T {
 
 /// JSON-RPC client for the main node or Ethereum node with built-in middleware support.
 ///
-/// The client should be used instead of `HttpClient` etc. A single instance of the client should be built
-/// and shared among all tasks run by the node in order to correctly rate-limit requests.
+/// The client should be used instead of `HttpClient` etc. A single instance of the client should be
+/// built and shared among all tasks run by the node in order to correctly rate-limit requests.
 //
 // # Why not use `HttpClient` with custom Tower middleware?
 //
-// - `HttpClient` allows to set HTTP-level middleware, not an RPC-level one. The latter is more appropriate for rate limiting.
+// - `HttpClient` allows to set HTTP-level middleware, not an RPC-level one. The latter is more
+//   appropriate for rate limiting.
 // - Observability (logging, metrics) is also easier with RPC-level middleware.
 // - We might want to add other middleware layers that could be better implemented on the RPC level
 //   (e.g., automated batching of requests issued in a quick succession).
@@ -126,8 +128,8 @@ impl<Net: fmt::Debug, C: 'static> fmt::Debug for Client<Net, C> {
     fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
         formatter
             .debug_struct("Client")
-            // Do not expose the entire client `Debug` representation, which may (and in case of `HttpClient`, does)
-            // include potentially sensitive URL and/or HTTP headers
+            // Do not expose the entire client `Debug` representation, which may (and in case of
+            // `HttpClient`, does) include potentially sensitive URL and/or HTTP headers
             .field("inner", &any::type_name::<C>())
             .field("url", &self.url)
             .field("rate_limit", &self.rate_limit)
@@ -339,7 +341,8 @@ impl<Net: Network, C: ClientBase> ClientBuilder<Net, C> {
         }
     }
 
-    /// Specifies the network to be used by the client. The network is logged and is used as a metrics label.
+    /// Specifies the network to be used by the client. The network is logged and is used as a
+    /// metrics label.
     pub fn for_network(mut self, network: Net) -> Self {
         self.network = network;
         self
@@ -349,11 +352,12 @@ impl<Net: Network, C: ClientBase> ClientBuilder<Net, C> {
     /// including cloned ones.
     pub fn with_allowed_requests_per_second(mut self, rps: NonZeroUsize) -> Self {
         let rps = usize::from(rps);
-        // Define the rate limiting window to be sufficiently small so that we don't get stampeding requests.
+        // Define the rate limiting window to be sufficiently small so that we don't get stampeding
+        // requests.
         self.rate_limit = match rps {
             1..=24 => (1, Duration::from_secs(1) / rps as u32),
-            // Round requests per window up if necessary. The relative error of this rounding is selected to be <20%
-            // in all cases.
+            // Round requests per window up if necessary. The relative error of this rounding is
+            // selected to be <20% in all cases.
             25..=49 => (rps.div_ceil(5), Duration::from_millis(200)),
             50..=99 => (rps.div_ceil(10), Duration::from_millis(100)),
             _ => (rps.div_ceil(20), Duration::from_millis(50)),
@@ -431,19 +435,21 @@ impl SharedRateLimit {
         }
     }
 
-    /// Acquires the specified number of requests waiting if necessary. If the number of requests exceeds
-    /// the capacity of the limiter, it is saturated (i.e., this method cannot hang indefinitely or panic
-    /// in this case).
+    /// Acquires the specified number of requests waiting if necessary. If the number of requests
+    /// exceeds the capacity of the limiter, it is saturated (i.e., this method cannot hang
+    /// indefinitely or panic in this case).
     ///
-    /// This implementation is similar to [`RateLimit`] middleware in Tower, but is shared among client instances.
+    /// This implementation is similar to [`RateLimit`] middleware in Tower, but is shared among
+    /// client instances.
     ///
     /// [`RateLimit`]: https://docs.rs/tower/latest/tower/limit/struct.RateLimit.html
     async fn acquire(&self, request_count: usize) -> AcquireStats {
         let mut stats = AcquireStats::default();
         let mut state = loop {
             // A separate scope is required to not hold a mutex guard across the `await` point,
-            // which is not only semantically incorrect, but also makes the future `!Send` (unfortunately,
-            // async Rust doesn't seem to understand non-lexical lifetimes).
+            // which is not only semantically incorrect, but also makes the future `!Send`
+            // (unfortunately, async Rust doesn't seem to understand non-lexical
+            // lifetimes).
             let now = Instant::now();
             let until = {
                 let mut state = self.state.lock().expect("state is poisoned");
@@ -451,7 +457,8 @@ impl SharedRateLimit {
                     SharedRateLimitState::Ready { .. } => break state,
                     SharedRateLimitState::Limited { until } if *until <= now => {
                         // At this point, local time is `>= until`; thus, the state should be reset.
-                        // Because we hold an exclusive lock on `state`, there's no risk of a data race.
+                        // Because we hold an exclusive lock on `state`, there's no risk of a data
+                        // race.
                         *state = SharedRateLimitState::Ready {
                             until: now + self.rate_limit_window,
                             remaining_requests: self.rate_limit,
